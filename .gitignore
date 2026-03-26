@@ -1,3 +1,13 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+#vscode configurations
+.vscode
+
+#godot plugins
+addons
+
+.github
+
+docs
