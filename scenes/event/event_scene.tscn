@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://b7apedjerrh4b"]
+
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_1ggvo"]
+[ext_resource type="Script" uid="uid://cftq8o3u12wwp" path="res://scripts/event_scene.gd" id="1_tn7a5"]
+[ext_resource type="Texture2D" uid="uid://b5cgs8s07bef6" path="res://assets/bg/map_bg.jpg" id="3_5m7pr"]
+
+[node name="EventScene" type="Control" unique_id=1272419499]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_1ggvo")
+script = ExtResource("1_tn7a5")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=446825987]
+layer = -1
+
+[node name="ColorRect" type="TextureRect" parent="Background" unique_id=1739017779]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_5m7pr")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1112020831]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="CenterContainer" unique_id=2018126051]
+custom_minimum_size = Vector2(400, 800)
+layout_mode = 2
+
+[node name="EventTitleLabel" type="Label" parent="CenterContainer/MainVBox" unique_id=1762387064]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 48
+text = "认知废墟"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EventDescLabel" type="Label" parent="CenterContainer/MainVBox" unique_id=312526265]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "你在废墟中看见两种可能。请选择其一。"
+horizontal_alignment = 1
+
+[node name="ChoiceRow" type="HBoxContainer" parent="CenterContainer/MainVBox" unique_id=1668482520]
+custom_minimum_size = Vector2(1600, 400)
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="OptionACard" type="Button" parent="CenterContainer/MainVBox/ChoiceRow" unique_id=449479532]
+custom_minimum_size = Vector2(500, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "存在上限+5，并恢复等量存在值；认知上限-1"
+text_overrun_behavior = 6
+autowrap_mode = 3
+icon_alignment = 1
+
+[node name="OptionBCard" type="Button" parent="CenterContainer/MainVBox/ChoiceRow" unique_id=82429057]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "存在上限-3；每回合额外+1费用"

@@ -1,0 +1,43 @@
+[gd_resource type="Theme" format=3 uid="uid://ctgi6x3cm0i0u"]
+
+[ext_resource type="Texture2D" uid="uid://dmy2dyr78euts" path="res://assets/ui/button.PNG" id="1_cstew"]
+[ext_resource type="Texture2D" uid="uid://6v3njtlt4q1t" path="res://assets/ui/panel.PNG" id="2_mdnfb"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mdnfb"]
+texture = ExtResource("1_cstew")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_left = 50.0
+expand_margin_top = 50.0
+expand_margin_right = 50.0
+expand_margin_bottom = 50.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gx6pb"]
+texture = ExtResource("2_mdnfb")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_r315b"]
+texture = ExtResource("2_mdnfb")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_left = 297.0
+expand_margin_top = 135.0
+expand_margin_right = 216.0
+expand_margin_bottom = 162.0
+
+[resource]
+Button/styles/disabled = SubResource("StyleBoxTexture_mdnfb")
+Button/styles/hover = SubResource("StyleBoxTexture_mdnfb")
+Button/styles/normal = SubResource("StyleBoxTexture_mdnfb")
+Button/styles/pressed = SubResource("StyleBoxTexture_mdnfb")
+Panel/styles/panel = SubResource("StyleBoxTexture_gx6pb")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_r315b")
