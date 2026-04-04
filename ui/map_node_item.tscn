@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://d3vruojexmieq"]
+
+[ext_resource type="Texture2D" uid="uid://cr3suw01xkg4m" path="res://icon.svg" id="1_hc54l"]
+
+[node name="MapNodeItem" type="Control" unique_id=1337932330]
+custom_minimum_size = Vector2(140, 56)
+layout_mode = 3
+anchor_right = 0.065000005
+anchor_bottom = 0.120000005
+offset_right = 25.19999
+offset_bottom = 0.3999939
+
+[node name="NodeIcon" type="TextureRect" parent="." unique_id=469747426]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_hc54l")
+
+[node name="NodeLabel" type="Label" parent="." unique_id=457005320]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.86
+anchor_bottom = 0.99200004
+offset_bottom = 0.039993286

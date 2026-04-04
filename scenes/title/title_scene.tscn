@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://b6ef2udxjx1ub"]
+
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_mxfkm"]
+[ext_resource type="Script" uid="uid://dic11r7i10a4x" path="res://scripts/title_scene.gd" id="1_nvm7s"]
+[ext_resource type="Texture2D" uid="uid://xmir0lyppfpk" path="res://assets/bg/title_bg.jpg" id="3_b670g"]
+
+[sub_resource type="FontVariation" id="FontVariation_lbup6"]
+
+[node name="TitleScene" type="Control" unique_id=402949927]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_mxfkm")
+script = ExtResource("1_nvm7s")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=2097430128]
+layer = -1
+follow_viewport_enabled = true
+
+[node name="ColorRect" type="TextureRect" parent="Background" unique_id=1196900647]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_b670g")
+stretch_mode = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1747667157]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="CenterContainer" unique_id=1014775335]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/MainVBox" unique_id=1167504602]
+layout_mode = 2
+theme_override_fonts/font = SubResource("FontVariation_lbup6")
+theme_override_font_sizes/font_size = 182
+text = "意识残响 Demo"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonBar" type="HBoxContainer" parent="CenterContainer/MainVBox" unique_id=699293791]
+custom_minimum_size = Vector2(800, 300)
+layout_mode = 2
+theme_override_constants/separation = 500
+alignment = 1
+
+[node name="StartButton" type="Button" parent="CenterContainer/MainVBox/ButtonBar" unique_id=1203414852]
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "开始 Demo"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/MainVBox/ButtonBar" unique_id=1692561978]
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_stretch_ratio = 0.0
+theme_override_font_sizes/font_size = 36
+text = "退出游戏"

@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://31oo40ovdvdh"]
+
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_jlibq"]
+[ext_resource type="Script" uid="uid://cxxu2ladukm7s" path="res://scripts/dialogue_scene.gd" id="1_qrb5j"]
+[ext_resource type="Texture2D" uid="uid://el3qf0fk352u" path="res://assets/bg/dialogue_bg.jpg" id="3_wo0l0"]
+[ext_resource type="Texture2D" uid="uid://c0v2k04v1x1dg" path="res://assets/characters/silhouette.png" id="4_wo0l0"]
+
+[node name="DialogueScene" type="Control" unique_id=2101356738]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_jlibq")
+script = ExtResource("1_qrb5j")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=291814461]
+layer = -1
+
+[node name="BgImage" type="TextureRect" parent="Background" unique_id=275712251]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_wo0l0")
+expand_mode = 1
+
+[node name="BgTint" type="ColorRect" parent="Background" unique_id=1812055174]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.09411765, 0.12156863, 0.1764706, 0.6039216)
+
+[node name="CharacterLayer" type="CanvasLayer" parent="." unique_id=146564563]
+layer = -1
+
+[node name="CharacterPortrait" type="TextureRect" parent="CharacterLayer" unique_id=2122943696]
+anchors_preset = -1
+anchor_left = 0.55
+anchor_top = 0.15
+anchor_right = 0.95
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_wo0l0")
+expand_mode = 1
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=127917309]
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer" unique_id=1040396224]
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.68
+anchor_right = 0.95
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="UILayer/MarginContainer" unique_id=364666336]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TopSpacer" type="Control" parent="UILayer/MarginContainer/MainVBox" unique_id=1447121693]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UILayer/MarginContainer/MainVBox" unique_id=569329896]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Control" parent="UILayer/MarginContainer/MainVBox/HBoxContainer2" unique_id=1742471499]
+layout_mode = 2
+
+[node name="CenterSpacer" type="Control" parent="UILayer/MarginContainer/MainVBox/HBoxContainer2" unique_id=1239570966]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="UILayer/MarginContainer/MainVBox" unique_id=755099711]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("1_jlibq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/MarginContainer/MainVBox/PanelContainer" unique_id=1513474388]
+layout_mode = 2
+
+[node name="NpcNameLabel" type="Label" parent="UILayer/MarginContainer/MainVBox/PanelContainer/VBoxContainer" unique_id=1575911640]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "人格残影"
+
+[node name="DialogueTextLabel" type="RichTextLabel" parent="UILayer/MarginContainer/MainVBox/PanelContainer/VBoxContainer" unique_id=1330105633]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 36
+text = "你终于来了。
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UILayer/MarginContainer/MainVBox/PanelContainer/VBoxContainer" unique_id=893469512]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 150
+alignment = 1
+
+[node name="NextButton" type="Button" parent="UILayer/MarginContainer/MainVBox/PanelContainer/VBoxContainer/HBoxContainer" unique_id=761929344]
+layout_mode = 2
+text = "下一句"
+
+[node name="FinishButton" type="Button" parent="UILayer/MarginContainer/MainVBox/PanelContainer/VBoxContainer/HBoxContainer" unique_id=1155739441]
+layout_mode = 2
+text = "结束对话"
