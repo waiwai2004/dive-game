@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://73r7lvrxcflh"]
+
+[ext_resource type="Script" uid="uid://dyhxs3k2ealxi" path="res://scripts/result_scene.gd" id="1_6arnk"]
+
+[node name="ResultScene" type="Control" unique_id=503281395]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6arnk")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=1833932165]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="Background" unique_id=10092272]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.20351997, 0.22515073, 0.50521237, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=484341036]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultLabel" type="Label" parent="VBoxContainer" unique_id=310668047]
+layout_mode = 2
+
+[node name="SummaryLabel" type="Label" parent="VBoxContainer" unique_id=1324736108]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BackToTitleButton" type="Button" parent="VBoxContainer" unique_id=1986522970]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2

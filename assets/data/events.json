@@ -1,0 +1,29 @@
+{
+  "dialogue_01": {
+    "id": "dialogue_01",
+    "npc_name": "人格残影",
+    "lines": [
+      "你终于来了。",
+      "穿过这些残影，找到伤口。",
+      "别让自己消失。"
+    ]
+  },
+  "event_01": {
+    "id": "event_01",
+    "title": "认知废墟",
+    "description": "你在废墟中看见两种可能。请选择其一。",
+    "options": [
+      {
+        "text": "存在上限+5，并恢复等量存在值；认知上限-1",
+        "max_hp_change": 5,
+        "cognition_max_change": -1,
+        "heal_to_max": true
+      },
+      {
+        "text": "存在上限-3；每回合额外+1费用",
+        "max_hp_change": -3,
+        "extra_energy_change": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://c8hewfuqugj87"]
+
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_1hqiq"]
+[ext_resource type="Script" uid="uid://b2sqa0wy6eigu" path="res://scripts/reward_scene.gd" id="1_gmdfe"]
+[ext_resource type="Texture2D" uid="uid://el3qf0fk352u" path="res://assets/bg/dialogue_bg.jpg" id="3_fekdp"]
+
+[node name="RewardScene" type="Control" unique_id=1355954975]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_1hqiq")
+script = ExtResource("1_gmdfe")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=2013216]
+layer = -1
+
+[node name="ColorRect" type="TextureRect" parent="Background" unique_id=854831498]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_fekdp")
+expand_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1195519414]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="CenterContainer" unique_id=904609573]
+custom_minimum_size = Vector2(1000, 800)
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/MainVBox" unique_id=1010570083]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "获得奖励"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/MainVBox" unique_id=380479115]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CardHolder" type="Control" parent="CenterContainer/MainVBox/CenterContainer" unique_id=516775556]
+layout_mode = 2
+
+[node name="AddButton" type="Button" parent="CenterContainer/MainVBox" unique_id=1666502377]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "加入卡组"

@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://baqgdty4tecqq"]
+
+[ext_resource type="Script" uid="uid://cwrnm72gf3ain" path="res://scripts/rest_scene.gd" id="1_33ay4"]
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_jkyf2"]
+[ext_resource type="Texture2D" uid="uid://xmir0lyppfpk" path="res://assets/bg/title_bg.jpg" id="3_4ycd6"]
+
+[node name="RestScene" type="Control" unique_id=352442060]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_jkyf2")
+script = ExtResource("1_33ay4")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=850311628]
+layer = -1
+
+[node name="ColorRect" type="TextureRect" parent="Background" unique_id=746545652]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_4ycd6")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1068036579]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="CenterContainer" unique_id=499133027]
+custom_minimum_size = Vector2(800, 800)
+layout_mode = 2
+theme_override_constants/separation = 80
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/MainVBox" unique_id=1423534022]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 200
+text = "自我锚点"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DescLabel" type="Label" parent="CenterContainer/MainVBox" unique_id=585852099]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5101452, 0.6762584, 1, 1)
+theme_override_colors/font_shadow_color = Color(4.428029e-06, 0, 0.90825146, 0)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 36
+text = "你可以短暂休整，恢复自身状态。"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ButtonRow" type="HBoxContainer" parent="CenterContainer/MainVBox" unique_id=1412011203]
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 2
+theme_override_constants/separation = 1000
+alignment = 1
+
+[node name="RestButton" type="Button" parent="CenterContainer/MainVBox/ButtonRow" unique_id=1367402114]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "休整并继续"
+
+[node name="ContinueButton" type="Button" parent="CenterContainer/MainVBox/ButtonRow" unique_id=1338904378]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "休整并继续"

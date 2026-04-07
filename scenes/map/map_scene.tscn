@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://dw5ogdp1a26i"]
+
+[ext_resource type="Script" uid="uid://b8yoi4eu46ou8" path="res://scripts/map_scene.gd" id="1_81at0"]
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_eenby"]
+[ext_resource type="Texture2D" uid="uid://b5cgs8s07bef6" path="res://assets/bg/map_bg.jpg" id="3_2flw7"]
+
+[node name="MapScene" type="Control" unique_id=617201295]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_eenby")
+script = ExtResource("1_81at0")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=848040949]
+layer = -1
+
+[node name="ColorRect" type="TextureRect" parent="Background" unique_id=1652722948]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_2flw7")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=59091595]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer" unique_id=643797260]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ChapterLabel" type="Label" parent="MarginContainer/MainVBox" unique_id=1511339890]
+layout_mode = 2
+text = "当前节点：起点"
+
+[node name="PlayerSummaryLabel" type="Label" parent="MarginContainer/MainVBox" unique_id=1629503449]
+layout_mode = 2
+text = "存在值 10/10 | 理智 10/10 | 认知上限 10"
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MainVBox" unique_id=1578456341]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NodeLine" type="HBoxContainer" parent="MarginContainer/MainVBox/CenterContainer" unique_id=660383838]
+layout_mode = 2
+
+[node name="EnterNodeButton" type="Button" parent="MarginContainer/MainVBox" unique_id=967899820]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "进入当前节点"

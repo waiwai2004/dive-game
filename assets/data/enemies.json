@@ -1,0 +1,18 @@
+{
+  "normal_01": {
+    "id": "normal_01",
+    "name": "Polluted One",
+    "max_hp": 15,
+    "max_san": 15,
+    "max_energy": 2,
+    "intent_text": "Attack x2"
+  },
+  "boss_01": {
+    "id": "boss_01",
+    "name": "Wound",
+    "max_hp": 30,
+    "max_san": 30,
+    "max_energy": 5,
+    "intent_text": "Attack x5"
+  }
+}

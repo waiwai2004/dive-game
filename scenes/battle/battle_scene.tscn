@@ -1,0 +1,237 @@
+[gd_scene format=3 uid="uid://3fg1pucdvmv5"]
+
+[ext_resource type="Script" uid="uid://cmrx5hbma6nl" path="res://scenes/battle/battle_scene.gd" id="1_3hov6"]
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://assets/ui/main_theme.tres" id="1_6iigb"]
+[ext_resource type="Texture2D" uid="uid://bh05mb7eieyve" path="res://assets/bg/battle_bg.png" id="3_lbt8a"]
+[ext_resource type="Texture2D" uid="uid://bqi0uw8jvjqxd" path="res://assets/ui/node.PNG" id="4_cywj5"]
+[ext_resource type="Texture2D" uid="uid://bhs821rwnxw6w" path="res://assets/characters/enemy_01.png" id="5_2wmvw"]
+[ext_resource type="Texture2D" uid="uid://6v3njtlt4q1t" path="res://assets/ui/panel.PNG" id="6_ww1p6"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7hnyd"]
+texture = ExtResource("4_cywj5")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dddu7"]
+texture = ExtResource("6_ww1p6")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_left = 30.0
+expand_margin_top = 30.0
+expand_margin_right = 30.0
+expand_margin_bottom = 30.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3511k"]
+texture = ExtResource("4_cywj5")
+expand_margin_left = 30.0
+expand_margin_top = 30.0
+expand_margin_right = 30.0
+expand_margin_bottom = 30.0
+
+[node name="BattleScene" type="Control" unique_id=1252357343]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_6iigb")
+script = ExtResource("1_3hov6")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=126050436]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="Background" unique_id=1450810548]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_lbt8a")
+expand_mode = 1
+
+[node name="MainBox" type="VBoxContainer" parent="." unique_id=243507444]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="EnemyPanel" type="PanelContainer" parent="MainBox" unique_id=932370652]
+custom_minimum_size = Vector2(500, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxTexture_7hnyd")
+
+[node name="Enemybar" type="HBoxContainer" parent="MainBox/EnemyPanel" unique_id=1540071601]
+custom_minimum_size = Vector2(1000, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="EnemyVBox" type="VBoxContainer" parent="MainBox/EnemyPanel/Enemybar" unique_id=1325711456]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="EnemyNameLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=984769056]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "敌人：旅行者"
+horizontal_alignment = 1
+
+[node name="EnemyHpLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=564313235]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "HP: 15 / 15"
+horizontal_alignment = 1
+
+[node name="EnemySanLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=807314965]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SAN: 15 / 15"
+horizontal_alignment = 1
+
+[node name="EnemyIntentLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=1634847068]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "意图：攻击（2点伤害）"
+horizontal_alignment = 1
+
+[node name="EnemyStatusLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=1516632858]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "状态：无"
+horizontal_alignment = 1
+
+[node name="TargetEnemyButton" type="Button" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=1319615325]
+custom_minimum_size = Vector2(40, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "选择敌人"
+
+[node name="EnemyPortrait" type="TextureRect" parent="MainBox/EnemyPanel/Enemybar" unique_id=674048620]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+texture = ExtResource("5_2wmvw")
+expand_mode = 1
+
+[node name="MiddleSplit" type="HSplitContainer" parent="MainBox" unique_id=1301048726]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerPanel" type="PanelContainer" parent="MainBox/MiddleSplit" unique_id=1402415971]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_dddu7")
+
+[node name="PlayerVBox" type="VBoxContainer" parent="MainBox/MiddleSplit/PlayerPanel" unique_id=841510179]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 18
+
+[node name="PlayerTitleLabel" type="Label" parent="MainBox/MiddleSplit/PlayerPanel/PlayerVBox" unique_id=521061830]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "玩家"
+
+[node name="PlayerHpLabel" type="Label" parent="MainBox/MiddleSplit/PlayerPanel/PlayerVBox" unique_id=1094969162]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "HP: 10 / 10"
+
+[node name="PlayerSanLabel" type="Label" parent="MainBox/MiddleSplit/PlayerPanel/PlayerVBox" unique_id=574217621]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SAN: 10 / 10"
+
+[node name="PlayerEnergyLabel" type="Label" parent="MainBox/MiddleSplit/PlayerPanel/PlayerVBox" unique_id=1092175350]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "费用: 3 / 3"
+
+[node name="PlayerCognitionLabel" type="Label" parent="MainBox/MiddleSplit/PlayerPanel/PlayerVBox" unique_id=583246744]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "认知负荷： 0 / 10"
+
+[node name="PlayerStatusLabel" type="Label" parent="MainBox/MiddleSplit/PlayerPanel/PlayerVBox" unique_id=135832166]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "状态：正常"
+
+[node name="LogPanel" type="PanelContainer" parent="MainBox/MiddleSplit" unique_id=1496790606]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_3511k")
+
+[node name="LogVBox" type="VBoxContainer" parent="MainBox/MiddleSplit/LogPanel" unique_id=524065320]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LogTitleLabel" type="Label" parent="MainBox/MiddleSplit/LogPanel/LogVBox" unique_id=49149421]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "战斗日志"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LogScroll" type="ScrollContainer" parent="MainBox/MiddleSplit/LogPanel/LogVBox" unique_id=614422563]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BattleLogLabel" type="RichTextLabel" parent="MainBox/MiddleSplit/LogPanel/LogVBox/LogScroll" unique_id=589504736]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/line_separation = 3
+theme_override_font_sizes/normal_font_size = 24
+text = "战斗开始
+抽取5张牌
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HandScroll" type="ScrollContainer" parent="MainBox" unique_id=1868704889]
+clip_contents = false
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="MainBox/HandScroll" unique_id=245281913]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HandContainer" type="HBoxContainer" parent="MainBox/HandScroll/CenterContainer" unique_id=1222243865]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="BottomBar" type="HBoxContainer" parent="MainBox" unique_id=1014179360]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="MainBox/BottomBar" unique_id=2110388677]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "结束回合"
+
+[node name="HintLabel" type="Label" parent="MainBox/BottomBar" unique_id=1624987839]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "打出的手牌"
