@@ -12,6 +12,13 @@ signal card_pressed(instance_id)
 var card_instance_id: int = -1
 var is_selected := false
 
+# 拖动相关变量
+var is_dragging := false           # 是否正在拖动
+var drag_offset := Vector2.ZERO    # 鼠标与卡牌的偏移
+var _original_global_pos := Vector2.ZERO  # 卡牌原始全局位置
+var _drag_start_mouse_pos := Vector2.ZERO # 拖动开始时鼠标位置
+const DRAG_THRESHOLD := 5.0       # 拖动阈值（像素）
+
 var art_path_map := {
 	"strike": "res://assets/cards/strike.png",
 	"bless": "res://assets/cards/bless.png",
@@ -45,6 +52,8 @@ func set_selected(selected: bool) -> void:
 func _ready() -> void:
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
+	button_down.connect(_on_button_down)
+	button_up.connect(_on_button_up)
 
 func _on_mouse_entered() -> void:
 	if not disabled and not is_selected:
@@ -55,7 +64,31 @@ func _on_mouse_exited() -> void:
 		self_modulate = Color(1, 1, 1)
 
 func _pressed() -> void:
-	card_pressed.emit(card_instance_id)
+	# 只有非拖动的点击才触发卡牌选择
+	var mouse_travel = get_global_mouse_position().distance_to(_drag_start_mouse_pos)
+	if mouse_travel < DRAG_THRESHOLD:
+		card_pressed.emit(card_instance_id)
+
+# 鼠标按下：开始拖动
+func _on_button_down() -> void:
+	is_dragging = true
+	_original_global_pos = global_position
+	_drag_start_mouse_pos = get_global_mouse_position()
+	drag_offset = global_position - get_global_mouse_position()
+	top_level = true
+	global_position = _original_global_pos
+	z_index = 10
+
+# 鼠标松开：卡牌回归初始位置
+func _on_button_up() -> void:
+	if is_dragging:
+		is_dragging = false
+		top_level = false
+		z_index = 0
+
+func _process(_delta: float) -> void:
+	if is_dragging:
+		global_position = get_global_mouse_position() + drag_offset
 
 func set_display_size(size: Vector2) -> void:
 	custom_minimum_size = size
