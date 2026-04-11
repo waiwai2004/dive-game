@@ -121,6 +121,14 @@ size_flags_vertical = 5
 theme_override_font_sizes/font_size = 24
 text = "返回基地"
 
+[node name="QuitButton" type="Button" parent="VBoxContainer" unique_id=1234567895]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 5
+theme_override_font_sizes/font_size = 24
+text = "退出游戏"
+
 [node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1569642661]
 oversampling_override = 1.0
 title = "确认放弃？"

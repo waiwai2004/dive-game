@@ -21,6 +21,7 @@
 [ext_resource type="Script" uid="uid://bpbxt2ghooevf" path="res://scripts/ui/dialogue_ui.gd" id="18_8sw60"]
 [ext_resource type="Theme" uid="uid://bimcw68vp6lm1" path="res://Theme and styles/button.tres" id="19_misur"]
 [ext_resource type="FontFile" uid="uid://dloku67c0uk8i" path="res://art/BaDingShiWeiTi-16.ttf" id="20_misur"]
+[ext_resource type="PackedScene" uid="uid://cjiynnvd7worp" path="res://scenes/ui/PauseMenu.tscn" id="pause_menu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q4qdp"]
 size = Vector2(1985, 192)
@@ -338,6 +339,8 @@ offset_bottom = -31.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 48
+
+[node name="PauseMenu" parent="." unique_id=1234567896 instance=ExtResource("pause_menu")]
 
 [connection signal="body_entered" from="World/DiveZone" to="World/DiveZone" method="_on_body_entered"]
 [connection signal="body_exited" from="World/DiveZone" to="World/DiveZone" method="_on_body_exited"]

@@ -70,6 +70,7 @@ func enter_adventure() -> void:
 	interact_tip.visible = false
 	tip_label.text = ""
 
-	var path := "res://scenes/adventure/AdventureScene.tscn"
-	var err = get_tree().change_scene_to_file(path)
-	print("change_scene_to_file err = ", err)
+	# 使用GameManager的start_adventure()函数进入冒险场景
+	var game_manager = get_node_or_null("/root/GameManager")
+	if game_manager:
+		game_manager.start_adventure()
