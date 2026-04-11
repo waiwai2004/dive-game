@@ -28,6 +28,7 @@ MusicManager="*res://scripts/MusicManager.gd"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="viewport"
+window/display/window_mode=2
 
 [dotnet]
 
