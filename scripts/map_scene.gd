@@ -118,4 +118,4 @@ func _on_enter_node_button_pressed() -> void:
 			get_tree().change_scene_to_file("res://scenes/rest/rest_scene.tscn")
 		_:
 			# 切换到结果场景
-			get_tree().change_scene_to_file("res://scenes/result/result_scene.tscn")
+			get_tree().change_scene_to_file("res://scenes/resualt/result_scene.tscn")

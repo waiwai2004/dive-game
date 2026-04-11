@@ -20,11 +20,13 @@ var map_nodes: Array[String] = [
 var player_summary := {
 	"hp": 10,           # 当前生命值
 	"max_hp": 10,       # 最大生命值
-	"san": 10,           # 当前理智值
-	"max_san": 10,       # 最大理智值
-	"cognition_max": 10, # 最大认知负荷
-	"energy_max": 3,     # 最大能量
-	"extra_energy": 0    # 每回合额外能量
+	"san": 10,          # 当前理智值
+	"max_san": 10,      # 最大理智值
+	"cognition": 0,     # 当前认知负荷
+	"cognition_max": 10,# 最大认知负荷
+	"cognition_overloaded": false, # 认知过载状态
+	"energy_max": 3,    # 最大能量
+	"extra_energy": 0   # 每回合额外能量
 }
 
 # 战斗结果
@@ -42,7 +44,9 @@ func reset_demo_progress() -> void:
 		"max_hp": 10,
 		"san": 10,
 		"max_san": 10,
+		"cognition": 0,
 		"cognition_max": 10,
+		"cognition_overloaded": false,
 		"energy_max": 3,
 		"extra_energy": 0
 	}

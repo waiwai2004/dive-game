@@ -1,7 +1,6 @@
 # 卡牌数据类
 # 管理卡牌的定义和实例化
 extends RefCounted
-class_name CardData
 
 # 获取卡牌数据
 static func get_card_data(card_id: String) -> Dictionary:
@@ -180,8 +179,8 @@ static func get_random_deck() -> Array:
 	var all_cards = get_all_card_ids()
 	# 打乱卡牌顺序
 	all_cards.shuffle()
-	# 获取前4张卡牌
-	var deck = all_cards.slice(0, 4)
+	# 获取前6张卡牌
+	var deck = all_cards.slice(0, 6)
 	# 添加一张认知共振（确保卡组中只有一张）
 	deck.append("resonance")
 	# 再次打乱顺序，让认知共振随机出现在卡组中
