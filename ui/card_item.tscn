@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://21ovas6oahha"]
+
+[ext_resource type="Script" uid="uid://dosowy133gve7" path="res://ui/card_item.gd" id="1_ddnvb"]
+[ext_resource type="Texture2D" uid="uid://4t8samgsooyl" path="res://assets/cards/frame.PNG" id="2_hnskw"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hnskw"]
+
+[node name="CardItem" type="Button" unique_id=1036253698]
+custom_minimum_size = Vector2(400, 600)
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 0.994
+offset_bottom = -0.52001953
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_hnskw")
+script = ExtResource("1_ddnvb")
+
+[node name="CardFrame" type="TextureRect" parent="." unique_id=748003833]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_hnskw")
+expand_mode = 1
+
+[node name="ContentMargin" type="MarginContainer" parent="." unique_id=1151443138]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 200
+
+[node name="ContentVBox" type="VBoxContainer" parent="ContentMargin" unique_id=1842858716]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TopSpacer" type="Control" parent="ContentMargin/ContentVBox" unique_id=1933577266]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="ArtHolder" type="Control" parent="ContentMargin/ContentVBox" unique_id=1541396502]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="ArtImage" type="TextureRect" parent="ContentMargin/ContentVBox/ArtHolder" unique_id=1022434584]
+custom_minimum_size = Vector2(140, 110)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="ContentMargin/ContentVBox" unique_id=620946609]
+layout_mode = 2
+text = "Strike"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TypeLabel" type="Label" parent="ContentMargin/ContentVBox" unique_id=247599229]
+layout_mode = 2
+text = "Attack"
+horizontal_alignment = 1
+
+[node name="CostLabel" type="Label" parent="ContentMargin/ContentVBox" unique_id=799705989]
+layout_mode = 2
+text = "Cost 1 | Cog 1"
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="ContentMargin/ContentVBox" unique_id=368696712]
+layout_mode = 2
+text = "Deal 2 damage to one enemy."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
