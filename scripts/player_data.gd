@@ -1,7 +1,6 @@
 # 玩家数据类
 # 管理玩家的属性和状态
 extends RefCounted
-class_name PlayerData
 
 # 玩家名称
 var name: String = "Player"

@@ -1,7 +1,7 @@
 # 敌人数据类
 # 管理敌人的属性和状态
 extends RefCounted
-class_name EnemyData
+
 
 # 敌人名称
 var name: String = "Enemy"

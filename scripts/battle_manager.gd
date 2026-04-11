@@ -1,7 +1,6 @@
 # 战斗管理器
 # 负责处理战斗逻辑，包括回合管理、卡牌使用、伤害计算等
 extends RefCounted
-class_name BattleManager
 
 # 预加载脚本
 const PlayerDataScript = preload("res://scripts/player_data.gd")
@@ -12,6 +11,8 @@ const CardDataScript = preload("res://scripts/card_data.gd")
 signal battle_log_added(text)       # 战斗日志添加信号
 signal battle_state_changed         # 战斗状态改变信号
 signal battle_ended(is_victory)     # 战斗结束信号
+signal enemy_damaged(amount)        # 敌人受到伤害信号
+signal player_damaged(amount)       # 玩家受到伤害信号
 
 # 战斗实体
 var player = null  # 玩家对象
@@ -25,6 +26,8 @@ var draw_pile: Array = []   # 抽牌堆
 var next_instance_id: int = 1          # 下一个卡牌实例ID
 var selected_card_instance_id: int = -1  # 选中的卡牌实例ID
 var battle_finished: bool = false      # 战斗是否结束
+var turn_count: int = 0                # 当前回合数
+var phase_text: String = "PREPARE"    # 当前战斗阶段
 
 # 设置演示战斗
 func setup_demo_battle(is_boss: bool = false) -> void:
@@ -36,7 +39,13 @@ func setup_demo_battle(is_boss: bool = false) -> void:
 	player.extra_energy = GameManager.player_summary.get("extra_energy", 0)
 	player.max_hp = GameManager.player_summary.get("max_hp", 10)
 	player.hp = GameManager.player_summary.get("hp", 10)
+	player.max_san = GameManager.player_summary.get("max_san", 10)
+	player.san = GameManager.player_summary.get("san", 10)
+	player.max_energy = GameManager.player_summary.get("energy_max", 3)
+	player.energy = player.max_energy
+	player.cognition = GameManager.player_summary.get("cognition", 0)
 	player.cognition_max = GameManager.player_summary.get("cognition_max", 10)
+	player.cognition_overloaded = GameManager.player_summary.get("cognition_overloaded", false)
 
 	# 创建敌人对象并根据是否为Boss初始化
 	enemy = EnemyDataScript.new()
@@ -53,6 +62,8 @@ func setup_demo_battle(is_boss: bool = false) -> void:
 	selected_card_instance_id = -1
 	# 重置战斗结束状态
 	battle_finished = false
+	turn_count = 0
+	phase_text = "BATTLE START"
 
 	# 发送战斗开始日志
 	emit_log("战斗开始！")
@@ -67,17 +78,17 @@ func start_player_turn() -> void:
 
 	# 重置玩家能量（会自动加上额外能量）
 	player.reset_energy()
+	turn_count += 1
+	phase_text = "PLAYER TURN"
 	# 重置选中的卡牌
 	selected_card_instance_id = -1
-	# 每回合重新生成随机卡组
-	draw_pile = CardDataScript.get_random_deck()
 	# 抽取演示手牌
-	draw_demo_hand()
+	var drawn_count = draw_demo_hand()
 	# 更新敌人意图
 	update_enemy_intent()
 	# 发送玩家回合开始日志
 	emit_log("该你行动了！")
-	emit_log("你抽取5张牌")
+	emit_log("你抽取了%d张牌" % drawn_count)
 	# 如果有额外能量，显示信息
 	if player.extra_energy > 0:
 		emit_log("你获得了%d点额外费用，当前费用上限：%d" % [player.extra_energy, player.max_energy + player.extra_energy])
@@ -85,12 +96,15 @@ func start_player_turn() -> void:
 	battle_state_changed.emit()
 
 # 抽取演示手牌
-func draw_demo_hand() -> void:
+func draw_demo_hand() -> int:
 	# 清空手牌
 	hand_cards.clear()
 
-	# 遍历抽牌堆中的每个卡牌ID
-	for card_id in draw_pile:
+	# 从抽牌堆中抽取最多5张牌
+	var draw_count = min(5, draw_pile.size())
+	for i in range(draw_count):
+		# 从抽牌堆中取出卡牌
+		var card_id = draw_pile.pop_back()
 		# 创建卡牌实例
 		var card = CardDataScript.create_card_instance(card_id, next_instance_id)
 		# 增加实例ID
@@ -98,10 +112,24 @@ func draw_demo_hand() -> void:
 		# 将卡牌添加到手牌
 		hand_cards.append(card)
 
+	return draw_count
+
 # 获取手牌
 func get_hand_cards() -> Array:
 	# 返回手牌数组
 	return hand_cards
+
+func get_hand_size() -> int:
+	return hand_cards.size()
+
+func get_draw_pile_size() -> int:
+	return draw_pile.size()
+
+func get_turn_count() -> int:
+	return turn_count
+
+func get_phase_text() -> String:
+	return phase_text
 
 # 根据实例ID获取卡牌
 func get_card_by_instance_id(instance_id: int) -> Dictionary:
@@ -154,6 +182,12 @@ func on_card_clicked(instance_id: int) -> String:
 	# 如果卡牌不存在
 	if card.is_empty():
 		return "卡牌不存在"
+
+	# 如果已经选中同一张卡牌，则取消选择
+	if selected_card_instance_id == instance_id:
+		selected_card_instance_id = -1
+		battle_state_changed.emit()
+		return "取消选择%s" % card["name"]
 
 	# 如果能量不足
 	if not can_play_card(card):
@@ -291,6 +325,7 @@ func end_player_turn() -> String:
 
 	# 清除选中的卡牌
 	clear_selected_card()
+	phase_text = "ENDING TURN"
 	# 发送结束回合日志
 	emit_log("玩家结束回合")
 	# 执行敌人回合
@@ -308,6 +343,7 @@ func end_player_turn() -> String:
 
 # 敌人回合
 func enemy_turn() -> void:
+	phase_text = "ENEMY TURN"
 	# 发送敌人回合开始日志
 	emit_log("敌人回合开始")
 
@@ -386,6 +422,7 @@ func check_battle_end() -> void:
 	if enemy.is_dead():
 		# 设置战斗结束
 		battle_finished = true
+		phase_text = "VICTORY"
 		# 发送敌人被击败日志
 		emit_log("敌人被击败！")
 		# 发送战斗结束信号（胜利）
@@ -396,6 +433,7 @@ func check_battle_end() -> void:
 	if player.is_dead():
 		# 设置战斗结束
 		battle_finished = true
+		phase_text = "DEFEAT"
 		# 发送玩家被击败日志
 		emit_log("玩家被击败！")
 		# 发送战斗结束信号（失败）
@@ -407,7 +445,7 @@ func get_modified_damage(base_damage: int, weak_stacks: int) -> int:
 	var result = base_damage - weak_stacks * 2
 	# 如果有虚弱buff，伤害减半
 	if weak_stacks > 0:
-		result = int(result / 2)
+		result = int(float(result) / 2.0)
 	# 确保伤害至少为1
 	if result < 1:
 		result = 1
@@ -421,6 +459,8 @@ func damage_enemy(base_damage: int) -> void:
 	enemy.take_damage(final_damage)
 	# 发送敌人受到伤害日志
 	emit_log("敌人受到：%d点伤害" % final_damage)
+	# 发出伤害信号让UI显示数字与特效
+	enemy_damaged.emit(final_damage)
 
 # 对玩家造成伤害
 func damage_player(base_damage: int) -> void:
@@ -430,6 +470,8 @@ func damage_player(base_damage: int) -> void:
 	player.take_damage(final_damage)
 	# 发送玩家受到伤害日志
 	emit_log("玩家受到：%d点伤害" % final_damage)
+	# 发出伤害信号让UI显示数字与特效
+	player_damaged.emit(final_damage)
 
 # 使用斩击卡牌
 func play_strike(card: Dictionary) -> void:
@@ -642,14 +684,16 @@ func play_draw(card: Dictionary) -> void:
 	apply_cognition(card["cognition"])
 	# 从手牌中移除卡牌
 	remove_card_from_hand(card["instance_id"])
-	# 抽取2张牌（这里简化处理，从抽牌堆中抽取）
+	# 抽取2张牌（从抽牌堆中取出）
 	for i in range(2):
 		if draw_pile.size() > 0:
-			var card_id = draw_pile[randi() % draw_pile.size()]
+			var card_id = draw_pile.pop_back()
 			var new_card = CardDataScript.create_card_instance(card_id, next_instance_id)
 			next_instance_id += 1
 			hand_cards.append(new_card)
 			emit_log("你抽取了%s" % new_card["name"])
+		else:
+			emit_log("抽牌堆已空，无法抽牌")
 	# 检查手牌是否为空
 	check_hand_empty()
 	# 检查战斗是否结束
