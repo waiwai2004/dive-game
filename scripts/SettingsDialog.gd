@@ -39,6 +39,9 @@ func _ready() -> void:
 	sound_slider.value = sound_volume
 	bgm_check.button_pressed = bgm_enabled
 	bgm_slider.value = bgm_volume
+	
+	# 初始化全屏状态
+	fullscreen = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 	fullscreen_check.button_pressed = fullscreen
 
 	# 连接信号
@@ -47,6 +50,7 @@ func _ready() -> void:
 	sound_slider.value_changed.connect(_on_sound_volume_changed)
 	bgm_slider.value_changed.connect(_on_bgm_volume_changed)
 	bgm_check.toggled.connect(_on_bgm_toggled)
+	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	save_button.pressed.connect(_on_save_button_pressed)
 	cancel_button.pressed.connect(_on_cancel_button_pressed)
 	
@@ -102,6 +106,19 @@ func _on_bgm_toggled(enabled: bool) -> void:
 	var music_manager = get_node_or_null("/root/MusicManager")
 	if music_manager:
 		music_manager.set_bgm_enabled(enabled)
+
+# 全屏开关变化时调用
+func _on_fullscreen_toggled(enabled: bool) -> void:
+	fullscreen = enabled
+	
+	# 立即更新全屏状态
+	if enabled:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		# 切换到窗口模式
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		# 设置窗口大小为默认值
+		DisplayServer.window_set_size(Vector2i(1280, 720))
 
 # 保存按钮点击时调用
 func _on_save_button_pressed() -> void:
