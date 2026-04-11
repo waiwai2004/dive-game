@@ -38,6 +38,12 @@ size = Vector2(677, 462)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4l1bw"]
 size = Vector2(169, 383)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_left_boundary"]
+size = Vector2(40, 3000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right_boundary"]
+size = Vector2(40, 3000)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_82383"]
 animations = [{
 "frames": [],
@@ -115,6 +121,18 @@ centered = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/SurfaceGround" unique_id=417144515]
 position = Vector2(957, 851)
 shape = SubResource("RectangleShape2D_im4sb")
+
+[node name="LeftBoundary" type="StaticBody2D" parent="World" unique_id=1234567891]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/LeftBoundary" unique_id=1234567892]
+position = Vector2(-20, 1500)
+shape = SubResource("RectangleShape2D_left_boundary")
+
+[node name="RightBoundary" type="StaticBody2D" parent="World" unique_id=1234567893]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/RightBoundary" unique_id=1234567894]
+position = Vector2(1940, 1500)
+shape = SubResource("RectangleShape2D_right_boundary")
 
 [node name="TeleportGate" type="Area2D" parent="World" unique_id=247660461]
 script = ExtResource("3_im4sb")
