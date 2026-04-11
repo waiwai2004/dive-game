@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cjiynnvd7worp"]
+
+[ext_resource type="Script" uid="uid://m4rneb55kpno" path="res://scripts/PauseMenu.gd" id="1_vb6pq"]
+[ext_resource type="PackedScene" uid="uid://dcwywxh3q34pm" path="res://art/assets/ui/menu.tscn" id="2_7ida2"]
+[ext_resource type="Theme" uid="uid://bimcw68vp6lm1" path="res://Theme and styles/button.tres" id="3_n5dsq"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=820440405]
+script = ExtResource("1_vb6pq")
+
+[node name="Dim" type="ColorRect" parent="." unique_id=1228536474]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.003921569)
+
+[node name="Menu" parent="." unique_id=1443334930 instance=ExtResource("2_7ida2")]
+theme = ExtResource("3_n5dsq")

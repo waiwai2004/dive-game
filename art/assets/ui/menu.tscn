@@ -1,0 +1,132 @@
+[gd_scene format=3 uid="uid://dcwywxh3q34pm"]
+
+[ext_resource type="Texture2D" uid="uid://cccvcefs264mw" path="res://art/assets/ui/GUI_01.png" id="1_pt8p1"]
+[ext_resource type="FontFile" uid="uid://dloku67c0uk8i" path="res://art/BaDingShiWeiTi-16.ttf" id="2_alol5"]
+[ext_resource type="Theme" uid="uid://bimcw68vp6lm1" path="res://Theme and styles/button.tres" id="3_pt8p1"]
+
+[sub_resource type="FontVariation" id="FontVariation_t6mep"]
+base_font = ExtResource("2_alol5")
+variation_embolden = 1.5
+
+[sub_resource type="FontVariation" id="FontVariation_6p10g"]
+base_font = ExtResource("2_alol5")
+variation_embolden = 1.5
+variation_transform = Transform2D(1, 0.25, 0, 1, 0, 0)
+
+[sub_resource type="FontVariation" id="FontVariation_6ikrl"]
+base_font = ExtResource("2_alol5")
+variation_embolden = -0.25
+variation_transform = Transform2D(1, 0.25, 0, 1, 0, 0)
+
+[node name="Menu" type="NinePatchRect" unique_id=1443334930]
+anchors_preset = -1
+anchor_left = 0.23500001
+anchor_top = 0.123
+anchor_right = 0.76500005
+anchor_bottom = 0.87700003
+offset_left = -0.7000122
+offset_top = -0.33999634
+offset_right = 0.6999512
+offset_bottom = 0.33996582
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_pt8p1")
+region_rect = Rect2(2, 1, 998, 733)
+patch_margin_left = 225
+patch_margin_top = 282
+patch_margin_right = 215
+patch_margin_bottom = 268
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=1705703681]
+custom_minimum_size = Vector2(0, 103)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 186.5
+offset_top = 55.5
+offset_right = -187.0
+offset_bottom = -577.0
+grow_horizontal = 2
+theme_override_colors/default_color = Color(0.17163706, 0.17163706, 0.17163703, 1)
+theme_override_colors/font_outline_color = Color(0.7514911, 0.7514911, 0.751491, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.25)
+theme_override_constants/shadow_outline_size = 11
+theme_override_constants/shadow_offset_x = 8
+theme_override_constants/shadow_offset_y = 8
+theme_override_constants/outline_size = 6
+theme_override_fonts/normal_font = ExtResource("2_alol5")
+theme_override_fonts/bold_font = SubResource("FontVariation_t6mep")
+theme_override_fonts/bold_italics_font = SubResource("FontVariation_6p10g")
+theme_override_fonts/italics_font = SubResource("FontVariation_6ikrl")
+theme_override_font_sizes/normal_font_size = 102
+theme_override_font_sizes/bold_font_size = 102
+theme_override_font_sizes/bold_italics_font_size = 102
+theme_override_font_sizes/italics_font_size = 102
+theme_override_font_sizes/mono_font_size = 102
+bbcode_enabled = true
+text = "菜单"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=49773653]
+custom_minimum_size = Vector2(0, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -221.5
+offset_top = -158.0
+offset_right = 221.5
+offset_bottom = 342.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_pt8p1")
+theme_override_constants/separation = 36
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer" unique_id=1986983161]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 5
+theme_override_font_sizes/font_size = 24
+text = "返回游戏"
+
+[node name="SettingsButton" type="Button" parent="VBoxContainer" unique_id=1642725794]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 5
+theme_override_font_sizes/font_size = 24
+text = "设置"
+
+[node name="SaveQuitButton" type="Button" parent="VBoxContainer" unique_id=178730982]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 5
+theme_override_font_sizes/font_size = 24
+text = "保存并退出"
+
+[node name="ReturnBaseButton" type="Button" parent="VBoxContainer" unique_id=839201948]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 5
+theme_override_font_sizes/font_size = 24
+text = "返回基地"
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1569642661]
+oversampling_override = 1.0
+title = "确认放弃？"
+initial_position = 2
+size = Vector2i(288, 108)
+theme = ExtResource("3_pt8p1")
+ok_button_text = "确认"
+dialog_text = "你确定放弃并返回基地？"
+cancel_button_text = "取消"

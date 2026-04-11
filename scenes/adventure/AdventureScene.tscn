@@ -1,0 +1,249 @@
+[gd_scene format=3 uid="uid://cjoiprr0ptdp3"]
+
+[ext_resource type="Script" uid="uid://dpknwab6swdg8" path="res://scripts/AdventureScene.gd" id="1_xrb1e"]
+[ext_resource type="PackedScene" uid="uid://cjiynnvd7worp" path="res://scenes/ui/PauseMenu.tscn" id="2_oe55d"]
+[ext_resource type="Texture2D" uid="uid://cu44t8yxepisk" path="res://art/assets/bg/bg_adventure01.PNG" id="2_tgco5"]
+[ext_resource type="Script" uid="uid://csdrcvoy3ug8x" path="res://scenes/adventure/player.gd" id="3_hy10k"]
+[ext_resource type="Script" uid="uid://b2uelegsdcgdd" path="res://scripts/Adventure/teleport_gate.gd" id="3_im4sb"]
+[ext_resource type="Texture2D" uid="uid://bjoihe0bjfyyg" path="res://art/assets/characters/player/shadow.PNG" id="4_1aahf"]
+[ext_resource type="Texture2D" uid="uid://4t8samgsooyl" path="res://art/assets/cards/frame.PNG" id="4_sklbe"]
+[ext_resource type="Texture2D" uid="uid://bhs821rwnxw6w" path="res://art/assets/characters/enemy_01.png" id="5_4l1bw"]
+[ext_resource type="Script" uid="uid://bwklf7s1hstba" path="res://scripts/Adventure/enemy_zone.gd" id="5_82383"]
+[ext_resource type="Texture2D" uid="uid://depdjp4t776jw" path="res://art/assets/characters/player/stand.png" id="5_sklbe"]
+[ext_resource type="Texture2D" uid="uid://biagqd426373" path="res://art/assets/characters/player/keyframe_1_0.00s.png" id="6_oso1p"]
+[ext_resource type="Texture2D" uid="uid://d2ujb6t3ny1dg" path="res://art/assets/characters/player/keyframe_2_1.00s.png" id="7_yghoa"]
+[ext_resource type="Texture2D" uid="uid://dkq8708v4h4lt" path="res://art/assets/characters/player/keyframe_3_2.00s.png" id="8_p2wt1"]
+[ext_resource type="Texture2D" uid="uid://bcycd1247o483" path="res://art/assets/characters/player/keyframe_4_3.00s.png" id="9_tadat"]
+[ext_resource type="Texture2D" uid="uid://dsgtktj45e7qk" path="res://art/assets/characters/player/keyframe_5_4.00s.png" id="10_cmeme"]
+[ext_resource type="Texture2D" uid="uid://id1syd2cuqld" path="res://art/assets/characters/player/keyframe_6_5.00s.png" id="11_m3oyn"]
+[ext_resource type="Texture2D" uid="uid://e2vna4xpqmot" path="res://art/assets/characters/player/swim/keyframe_1_0.00s.png" id="14_cmeme"]
+[ext_resource type="Texture2D" uid="uid://d14fyhqjvthrs" path="res://art/assets/characters/player/swim/keyframe_2_1.00s.png" id="15_m3oyn"]
+[ext_resource type="Texture2D" uid="uid://cue2oqfl63t64" path="res://art/assets/characters/player/swim/keyframe_3_2.00s.png" id="16_im4sb"]
+[ext_resource type="Texture2D" uid="uid://dxvrnft0oq2mc" path="res://art/assets/characters/player/swim/keyframe_4_3.00s.png" id="17_4l1bw"]
+[ext_resource type="Texture2D" uid="uid://kdnc2gknrqpg" path="res://art/assets/characters/player/swim/keyframe_5_4.00s.png" id="18_82383"]
+[ext_resource type="Texture2D" uid="uid://roqyx6vip0br" path="res://art/assets/characters/player/swim/keyframe_6_5.00s.png" id="19_amtyr"]
+[ext_resource type="Shader" uid="uid://4coy45b6joe" path="res://shaders/player_light_mask.gdshader" id="21_4l1bw"]
+[ext_resource type="Script" uid="uid://cnwp3m00bsgd5" path="res://scripts/Adventure/darkness_overlay.gd" id="22_82383"]
+[ext_resource type="Script" path="res://scripts/Adventure/depth_display.gd" id="23_depth"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_im4sb"]
+size = Vector2(1921, 144)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oso1p"]
+size = Vector2(481, 568.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_82383"]
+size = Vector2(677, 462)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4l1bw"]
+size = Vector2(169, 383)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_82383"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_oso1p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_yghoa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_p2wt1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_tadat")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_cmeme")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_m3oyn")
+}],
+"loop": true,
+"name": &"run",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.5,
+"texture": ExtResource("14_cmeme")
+}, {
+"duration": 1.2,
+"texture": ExtResource("15_m3oyn")
+}, {
+"duration": 0.6,
+"texture": ExtResource("16_im4sb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_4l1bw")
+}, {
+"duration": 1.3,
+"texture": ExtResource("18_82383")
+}, {
+"duration": 1.5,
+"texture": ExtResource("19_amtyr")
+}],
+"loop": true,
+"name": &"swim",
+"speed": 7.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_amtyr"]
+shader = ExtResource("21_4l1bw")
+shader_parameter/light_pos = Vector2(0.5, 0.5)
+shader_parameter/radius = 0.18
+shader_parameter/softness = 0.22
+shader_parameter/darkness = 0.9
+
+[node name="AdventureScene" type="Node2D" unique_id=29216689]
+position = Vector2(2, 1)
+script = ExtResource("1_xrb1e")
+
+[node name="World" type="Node2D" parent="." unique_id=1444025691]
+
+[node name="Background" type="Sprite2D" parent="World" unique_id=1004671174]
+scale = Vector2(1.6649306, 1.6649306)
+texture = ExtResource("2_tgco5")
+centered = false
+
+[node name="SurfaceGround" type="StaticBody2D" parent="World" unique_id=282521848]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/SurfaceGround" unique_id=417144515]
+position = Vector2(957, 851)
+shape = SubResource("RectangleShape2D_im4sb")
+
+[node name="TeleportGate" type="Area2D" parent="World" unique_id=247660461]
+script = ExtResource("3_im4sb")
+player_path = NodePath("../Player")
+underwater_spawn_path = NodePath("../UnderwaterSpawn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/TeleportGate" unique_id=758828224]
+position = Vector2(975.5, 490.25)
+shape = SubResource("RectangleShape2D_oso1p")
+
+[node name="Sprite2D" type="Sprite2D" parent="World/TeleportGate" unique_id=1645738418]
+position = Vector2(957, 497)
+scale = Vector2(0.2802469, 0.2837963)
+texture = ExtResource("4_sklbe")
+
+[node name="SurfaceSpawn" type="Marker2D" parent="World" unique_id=887820390]
+position = Vector2(286, 692)
+
+[node name="UnderwaterSpawn" type="Marker2D" parent="World" unique_id=1931270863]
+position = Vector2(1243, 1159)
+
+[node name="Enemy" type="Area2D" parent="World" unique_id=1713664326]
+script = ExtResource("5_82383")
+return_spawn_path = NodePath("BattleReturnSpawn")
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Enemy" unique_id=2099121765]
+position = Vector2(976.0001, 2833)
+scale = Vector2(0.23003472, 0.21180555)
+texture = ExtResource("5_4l1bw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Enemy" unique_id=1055562259]
+position = Vector2(989.5, 2826)
+shape = SubResource("RectangleShape2D_82383")
+
+[node name="BattleReturnSpawn" type="Marker2D" parent="World/Enemy" unique_id=1595803856]
+position = Vector2(1281, 2500)
+
+[node name="Player" type="CharacterBody2D" parent="World" unique_id=419457327 groups=["player"]]
+script = ExtResource("3_hy10k")
+
+[node name="Shadow" type="Sprite2D" parent="World/Player" unique_id=503849982]
+visible = false
+position = Vector2(909, 884)
+scale = Vector2(0.13427734, 0.08300781)
+texture = ExtResource("4_1aahf")
+
+[node name="IdleSprite" type="Sprite2D" parent="World/Player" unique_id=1568350445]
+position = Vector2(286.00012, 577.00006)
+scale = Vector2(0.21411027, 0.2141103)
+texture = ExtResource("5_sklbe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=1540146445]
+position = Vector2(286, 577)
+shape = SubResource("RectangleShape2D_4l1bw")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="World/Player" unique_id=1330568087]
+visible = false
+position = Vector2(286.00006, 577)
+scale = Vector2(0.6032452, 0.60324514)
+sprite_frames = SubResource("SpriteFrames_82383")
+animation = &"swim"
+autoplay = "run"
+frame_progress = 0.79003865
+
+[node name="Camera2D" type="Camera2D" parent="World/Player" unique_id=1856363958]
+position = Vector2(909, 692)
+limit_left = -46
+limit_top = 0
+limit_right = 1920
+limit_bottom = 1080
+limit_smoothed = true
+position_smoothing_enabled = true
+
+[node name="SurfaceLightAnchor" type="Marker2D" parent="World/Player" unique_id=469714274]
+position = Vector2(286, 461)
+
+[node name="UnderwaterLightAnchor" type="Marker2D" parent="World/Player" unique_id=346803191]
+position = Vector2(286, 461)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1256539851]
+layer = 10
+
+[node name="InteractTip" type="Label" parent="CanvasLayer" unique_id=2011099897]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 882.0
+offset_bottom = -37.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 10
+theme_override_font_sizes/font_size = 36
+text = "[E]下潜"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenu" parent="CanvasLayer" unique_id=820440405 instance=ExtResource("2_oe55d")]
+layer = 10
+visible = false
+
+[node name="DepthDisplay" type="Label" parent="CanvasLayer" unique_id=1234567890]
+anchors_preset = 2
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 150.0
+offset_bottom = 50.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "深度: 0.0 米"
+horizontal_alignment = 0
+vertical_alignment = 0
+script = ExtResource("23_depth")
+player_path = NodePath("../../World/Player")
+
+[node name="DarknessLayer" type="CanvasLayer" parent="." unique_id=2046174584]
+
+[node name="DarknessOverlay" type="ColorRect" parent="DarknessLayer" unique_id=1973944558]
+material = SubResource("ShaderMaterial_amtyr")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+script = ExtResource("22_82383")
+player_path = NodePath("../../World/Player")
+camera_path = NodePath("../../World/Player/Camera2D")

@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://dasn6vvf5igqp"]
+
+[ext_resource type="StyleBox" uid="uid://b4kot7na7hmsh" path="res://Theme and styles/hover_box_texture.tres" id="1_5t6a5"]
+[ext_resource type="FontFile" uid="uid://dloku67c0uk8i" path="res://art/BaDingShiWeiTi-16.ttf" id="1_eso5g"]
+[ext_resource type="Texture2D" uid="uid://bmjbyw4gelb1o" path="res://art/assets/ui/button_normal.PNG" id="2_eso5g"]
+[ext_resource type="PackedScene" uid="uid://dcwywxh3q34pm" path="res://art/assets/ui/menu.tscn" id="4_w2yyd"]
+[ext_resource type="PackedScene" uid="uid://cupe2em64f7qe" path="res://art/assets/ui/inventory.tscn" id="5_tx332"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lbtr6"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eso5g"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3l4ly"]
+texture = ExtResource("2_eso5g")
+region_rect = Rect2(1, 1, 715, 238)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5t6a5"]
+
+[sub_resource type="Theme" id="Theme_ankle"]
+Button/colors/font_color = Color(0, 0, 0, 1)
+Button/colors/font_disabled_color = Color(0.875, 0.875, 0.875, 0.5)
+Button/colors/font_focus_color = Color(0.95, 0.95, 0.95, 1)
+Button/colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_disabled_color = Color(1, 1, 1, 0.4)
+Button/colors/icon_focus_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_normal_color = Color(1, 1, 1, 1)
+Button/colors/icon_pressed_color = Color(1, 1, 1, 1)
+Button/constants/align_to_largest_stylebox = 0
+Button/constants/h_separation = 4
+Button/constants/icon_max_width = 0
+Button/constants/outline_size = 0
+Button/font_sizes/font_size = 36
+Button/fonts/font = ExtResource("1_eso5g")
+Button/styles/disabled = SubResource("StyleBoxFlat_lbtr6")
+Button/styles/focus = SubResource("StyleBoxEmpty_eso5g")
+Button/styles/hover = ExtResource("1_5t6a5")
+Button/styles/normal = SubResource("StyleBoxTexture_3l4ly")
+Button/styles/pressed = SubResource("StyleBoxEmpty_5t6a5")
+
+[node name="Ui" type="Control" unique_id=549495598]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_ankle")
+
+[node name="Menu" parent="." unique_id=1443334930 instance=ExtResource("4_w2yyd")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="Inventory" parent="." unique_id=2127765687 instance=ExtResource("5_tx332")]
+visible = false
+layout_mode = 0
+anchors_preset = 0

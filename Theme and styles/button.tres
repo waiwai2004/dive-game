@@ -1,0 +1,16 @@
+[gd_resource type="Theme" format=3 uid="uid://bimcw68vp6lm1"]
+
+[ext_resource type="FontFile" uid="uid://dloku67c0uk8i" path="res://art/BaDingShiWeiTi-16.ttf" id="1_erjgo"]
+[ext_resource type="StyleBox" uid="uid://b4kot7na7hmsh" path="res://Theme and styles/hover_box_texture.tres" id="2_kg4c6"]
+[ext_resource type="StyleBox" uid="uid://bpkuyifx75ilr" path="res://Theme and styles/normal_box_texture.tres" id="3_302nv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_erjgo"]
+
+[resource]
+Button/colors/font_color = Color(3.7230246e-05, 3.7230428e-05, 3.7230297e-05, 1)
+Button/colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+Button/font_sizes/font_size = 24
+Button/fonts/font = ExtResource("1_erjgo")
+Button/styles/focus = SubResource("StyleBoxEmpty_erjgo")
+Button/styles/hover = ExtResource("2_kg4c6")
+Button/styles/normal = ExtResource("3_302nv")
