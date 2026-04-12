@@ -20,6 +20,8 @@ var drag_start_mouse_pos := Vector2.ZERO
 var drag_threshold := 5.0
 var _original_position := Vector2.ZERO
 var _original_global_pos := Vector2.ZERO
+var _original_local_pos := Vector2.ZERO
+var _original_parent: Control
 var _enemy_panel: Control
 var _selection_tween: Tween
 var _movement_tween: Tween
@@ -119,6 +121,8 @@ func _on_button_down() -> void:
 	_selected_before_drag = is_selected
 	drag_start_mouse_pos = get_global_mouse_position()
 	_original_global_pos = global_position
+	_original_local_pos = position
+	_original_parent = get_parent()
 	drag_offset = _original_global_pos - drag_start_mouse_pos
 
 func _on_button_up() -> void:
@@ -132,6 +136,9 @@ func _on_button_up() -> void:
 		is_dragging = false
 		_update_enemy_target_highlight(false)
 
+		# 保存原始父节点
+		var original_parent = get_parent()
+
 		if dropped_on_enemy:
 			var release_global_position = global_position
 			top_level = false
@@ -139,6 +146,16 @@ func _on_button_up() -> void:
 			self_modulate = Color(1, 1, 1, 1)
 			scale = Vector2.ONE
 			set_selected(false)
+			
+			# 确保卡牌回到正确的父节点
+			if original_parent and is_instance_valid(original_parent):
+				if get_parent() != original_parent:
+					original_parent.add_child(self)
+					# 重新同步布局状态
+					_sync_layout_state()
+					# 设置选中状态
+					set_selected(false)
+			
 			card_dragged_to_enemy.emit(card_instance_id, release_global_position)
 		else:
 			_restore_after_cancel_drag()
@@ -155,6 +172,9 @@ func _on_gui_input(event: InputEvent) -> void:
 				_selection_tween.kill()
 			if _movement_tween:
 				_movement_tween.kill()
+			# 保存原始父节点和位置
+			_original_parent = get_parent()
+			_original_local_pos = position
 			top_level = true
 			global_position = _original_global_pos
 			z_index = 10
@@ -230,27 +250,30 @@ func _restore_after_cancel_drag() -> void:
 		_movement_tween.kill()
 
 	_update_enemy_target_highlight(false)
-	top_level = true
-	z_index = 10
 
-	_movement_tween = create_tween()
-	_movement_tween.set_trans(Tween.TRANS_BACK)
-	_movement_tween.set_ease(Tween.EASE_OUT)
-	_movement_tween.tween_property(self, "global_position", _original_global_pos, 0.22)
-	_movement_tween.parallel().tween_property(self, "self_modulate", Color(1, 1, 1, 1), 0.22)
-	_movement_tween.parallel().tween_property(self, "scale", Vector2(1.03, 1.03) if _selected_before_drag else Vector2.ONE, 0.22)
-	_movement_tween.tween_callback(func():
-		if not is_inside_tree():
-			return
-		top_level = false
-		z_index = 0
-		# 确保卡牌回到正确的父节点
-		if get_parent() != null:
-			# 重新同步布局状态
-			_sync_layout_state()
-			# 设置选中状态
-			set_selected(_selected_before_drag)
-	)
+	# 确保卡牌回到正确的父节点
+	if _original_parent and is_instance_valid(_original_parent):
+		# 保存原始全局位置
+		var original_global_pos = _original_global_pos
+		# 如果当前父节点不是原始父节点，将其移回
+		if get_parent() != _original_parent:
+			_original_parent.add_child(self)
+			# 使用全局位置来确保卡牌回到原来的位置
+			global_position = original_global_pos
+		else:
+			# 如果父节点相同，直接设置全局位置
+			global_position = original_global_pos
+
+	# 重置状态
+	top_level = false
+	z_index = 0
+	self_modulate = Color(1, 1, 1, 1)
+	scale = Vector2(1.03, 1.03) if _selected_before_drag else Vector2.ONE
+
+	# 重新同步布局状态
+	_sync_layout_state()
+	# 设置选中状态
+	set_selected(_selected_before_drag)
 
 func _finalize_after_drag_restore(selected_state: bool) -> void:
 	if not is_inside_tree():

@@ -33,7 +33,7 @@ grow_vertical = 2
 theme_override_constants/margin_left = 28
 theme_override_constants/margin_top = 28
 theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 120
+theme_override_constants/margin_bottom = 80
 
 [node name="ContentVBox" type="VBoxContainer" parent="ContentMargin" unique_id=1842858716]
 layout_mode = 2
