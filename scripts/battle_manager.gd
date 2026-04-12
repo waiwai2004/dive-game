@@ -366,6 +366,14 @@ func enemy_turn() -> void:
 
 # 结束回合清理
 func end_round_cleanup() -> void:
+	# 回收手牌到抽牌堆
+	for card in hand_cards:
+		draw_pile.append(card["id"])
+	# 清空手牌
+	hand_cards.clear()
+	# 打乱抽牌堆
+	draw_pile.shuffle()
+
 	# 减少玩家虚弱层数
 	if player.weak > 0:
 		player.weak -= 1
