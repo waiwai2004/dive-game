@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/attack_effect.gd" id="1"]
+
+[node name="AttackEffect" type="Control"]
+script = ExtResource("1")
+
+[node name="Spear" type="ColorRect" parent="."]
+color = Color(1, 0.9, 0.4, 1)
+
+[node name="Ripple" type="ColorRect" parent="."]
+color = Color(1, 1, 0.4, 0.35)

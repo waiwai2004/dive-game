@@ -1,71 +1,616 @@
-[gd_scene format=3 uid="uid://c2vpncgkjo2ue"]
+[gd_scene format=3 uid="uid://3fg1pucdvmv5"]
 
-[ext_resource type="Script" uid="uid://dao1kqbmffg1t" path="res://scripts/battle/battle_scene.gd" id="1_jb5ws"]
-[ext_resource type="Texture2D" uid="uid://buis63u7rv7dr" path="res://icon.svg" id="2_vd1me"]
+[ext_resource type="Script" uid="uid://cmrx5hbma6nl" path="res://scripts/battle/battle_scene.gd" id="1_3hov6"]
+[ext_resource type="Theme" uid="uid://ctgi6x3cm0i0u" path="res://art/assets/ui/main_theme.tres" id="1_6iigb"]
+[ext_resource type="Texture2D" uid="uid://bh05mb7eieyve" path="res://art/assets/bg/battle_bg.png" id="3_lbt8a"]
+[ext_resource type="Texture2D" uid="uid://bqi0uw8jvjqxd" path="res://art/assets/ui/node.PNG" id="4_cywj5"]
+[ext_resource type="Texture2D" uid="uid://bhs821rwnxw6w" path="res://art/assets/characters/enemy_01.png" id="5_2wmvw"]
+[ext_resource type="Texture2D" uid="uid://6v3njtlt4q1t" path="res://art/assets/ui/panel.PNG" id="6_ww1p6"]
 
-[node name="BattleScene" type="Node2D" unique_id=129476014]
-script = ExtResource("1_jb5ws")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7hnyd"]
+texture = ExtResource("4_cywj5")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_bottom = 12.0
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=309138483]
-custom_minimum_size = Vector2(1920, 1080)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dddu7"]
+texture = ExtResource("6_ww1p6")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_left = 30.0
+expand_margin_top = 30.0
+expand_margin_right = 30.0
+expand_margin_bottom = 30.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3511k"]
+texture = ExtResource("4_cywj5")
+expand_margin_left = 30.0
+expand_margin_top = 30.0
+expand_margin_right = 30.0
+expand_margin_bottom = 30.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.15, 0.15, 0.15, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.8, 0.2, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_san_fill"]
+bg_color = Color(0.2, 0.4, 0.8, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_player_panel"]
+bg_color = Color(0.04, 0.06, 0.1, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62, 0.78, 1, 0.95)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.38)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_player_section"]
+bg_color = Color(0.08, 0.11, 0.16, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.38, 0.5, 0.66, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[node name="BattleScene" type="Control" unique_id=1252357343]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 1920.0
-offset_bottom = 1080.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_6iigb")
+script = ExtResource("1_3hov6")
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=126050436]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="Background" unique_id=1450810548]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_lbt8a")
+expand_mode = 1
+mouse_filter = 2
+
+[node name="DragLayer" type="CanvasLayer" parent="." unique_id=2000000000]
+layer = 1
+z_index = 999
+
+[node name="DragContainer" type="Control" parent="DragLayer" unique_id=2000000001]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HudLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="TurnBanner" type="PanelContainer" parent="HudLayer"]
+visible = false
+z_index = 30
+custom_minimum_size = Vector2(280, 44)
+anchors_left = 0.35
+anchors_top = 0.025
+anchors_right = 0.65
+anchors_bottom = 0.075
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_panel")
+mouse_filter = 2
+
+[node name="TurnBannerLabel" type="Label" parent="HudLayer/TurnBanner"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 22
+text = "PLAYER TURN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MainBox" type="VBoxContainer" parent="." unique_id=243507444]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 34.0
+offset_top = 18.0
+offset_right = -34.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+mouse_filter = 2
+
+[node name="BattleInfoPanel" type="PanelContainer" parent="MainBox"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_panel")
+
+[node name="InfoMargin" type="MarginContainer" parent="MainBox/BattleInfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="InfoRow" type="HBoxContainer" parent="MainBox/BattleInfoPanel/InfoMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RoundPanel" type="PanelContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="RoundVBox" type="VBoxContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/RoundPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BattleRoundTitle" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/RoundPanel/RoundVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "回合"
+
+[node name="BattleRoundLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/RoundPanel/RoundVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "第 01 回合"
+
+[node name="BattlePhaseLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/RoundPanel/RoundVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "阶段：玩家"
+
+[node name="CountPanel" type="PanelContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="CountVBox" type="VBoxContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CountPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BattleCountTitle" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CountPanel/CountVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "牌库"
+
+[node name="BattleCountLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CountPanel/CountVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "手牌 5｜牌库 0"
+
+[node name="BattleCountHintLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CountPanel/CountVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "拖拽即可出牌"
+autowrap_mode = 0
+
+[node name="ThreatPanel" type="PanelContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="ThreatVBox" type="VBoxContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/ThreatPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BattleThreatTitle" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/ThreatPanel/ThreatVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "威胁"
+
+[node name="BattleThreatBadgeLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/ThreatPanel/ThreatVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.68, 1)
+theme_override_font_sizes/font_size = 11
+text = "⚠ 评估中"
+
+[node name="BattleThreatLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/ThreatPanel/ThreatVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "伤害 6｜中"
+
+[node name="BattleIntentSummaryLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/ThreatPanel/ThreatVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "⚔ 敌意：攻击 x3"
+autowrap_mode = 0
+
+[node name="CommandPanel" type="PanelContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="CommandVBox" type="VBoxContainer" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CommandPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BattleCommandTitle" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CommandPanel/CommandVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "指令"
+
+[node name="BattleCommandLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CommandPanel/CommandVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "选择手牌开始行动"
+autowrap_mode = 0
+
+[node name="BattleFlowBar" type="ProgressBar" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CommandPanel/CommandVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 12)
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_san_fill")
+max_value = 100.0
+value = 25.0
+show_percentage = false
+
+[node name="BattleFlowHintLabel" type="Label" parent="MainBox/BattleInfoPanel/InfoMargin/InfoRow/CommandPanel/CommandVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.88, 0.94, 0.92)
+theme_override_font_sizes/font_size = 11
+text = "部署 → 行动 → 敌袭 → 结算"
+autowrap_mode = 0
+
+[node name="EnemyPanel" type="PanelContainer" parent="MainBox" unique_id=932370652]
+custom_minimum_size = Vector2(500, 248)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxTexture_7hnyd")
+
+[node name="Enemybar" type="HBoxContainer" parent="MainBox/EnemyPanel" unique_id=1540071601]
+custom_minimum_size = Vector2(1000, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="EnemyVBox" type="VBoxContainer" parent="MainBox/EnemyPanel/Enemybar" unique_id=1325711456]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="EnemyNameLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=984769056]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "敌人：旅行者"
+horizontal_alignment = 1
+
+[node name="EnemyHpLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=564313235]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "HP: 15 / 15"
+horizontal_alignment = 1
+
+[node name="EnemyHpBar" type="ProgressBar" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=1590000000]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+max_value = 15.0
+value = 15.0
+show_percentage = false
+
+[node name="EnemySanLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=807314965]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SAN: 15 / 15"
+horizontal_alignment = 1
+
+[node name="EnemyIntentLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=1634847068]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "意图：攻击（2点伤害）"
+horizontal_alignment = 1
+
+[node name="EnemyStatusLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox" unique_id=1516632858]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "状态：无"
+horizontal_alignment = 1
+
+[node name="EnemyTagLabel" type="Label" parent="MainBox/EnemyPanel/Enemybar/EnemyVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 0.95)
+theme_override_font_sizes/font_size = 16
+text = "标签：压制 ｜ 稳定"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="EnemyPortrait" type="TextureRect" parent="MainBox/EnemyPanel/Enemybar" unique_id=674048620]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+texture = ExtResource("5_2wmvw")
+expand_mode = 1
+
+[node name="MiddleSplit" type="HSplitContainer" parent="MainBox" unique_id=1301048726]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogPanel" type="PanelContainer" parent="MainBox/MiddleSplit" unique_id=1496790606]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_3511k")
+
+[node name="LogVBox" type="VBoxContainer" parent="MainBox/MiddleSplit/LogPanel" unique_id=524065320]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LogTitleLabel" type="Label" parent="MainBox/MiddleSplit/LogPanel/LogVBox" unique_id=49149421]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "战斗日志"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LogScroll" type="ScrollContainer" parent="MainBox/MiddleSplit/LogPanel/LogVBox" unique_id=614422563]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BattleLogLabel" type="RichTextLabel" parent="MainBox/MiddleSplit/LogPanel/LogVBox/LogScroll" unique_id=589504736]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-color = Color(0.043137256, 0.0627451, 0.1254902, 1)
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1366216707]
-position = Vector2(960, 350)
-texture = ExtResource("2_vd1me")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1628109031]
-
-[node name="Panel" type="Panel" parent="CanvasLayer" unique_id=86814778]
-custom_minimum_size = Vector2(900, 260)
-offset_top = 493.0
-offset_right = 1920.0
-offset_bottom = 984.0
-
-[node name="TitleLabel" type="Label" parent="CanvasLayer/Panel" unique_id=1952248412]
-layout_mode = 0
-offset_right = 1890.0
-offset_bottom = 176.0
-text = "战斗"
+theme_override_constants/line_separation = 3
+theme_override_font_sizes/normal_font_size = 24
+text = "战斗开始
+抽取5张牌
+"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="InfoLabel" type="Label" parent="CanvasLayer/Panel" unique_id=1738498899]
-layout_mode = 0
-offset_top = 246.0
-offset_right = 1920.0
-offset_bottom = 344.0
-text = "你遭遇了敌人。"
-horizontal_alignment = 1
+[node name="HandScroll" type="ScrollContainer" parent="MainBox" unique_id=1868704889]
+clip_contents = false
+custom_minimum_size = Vector2(0, 272)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="MainBox/HandScroll" unique_id=245281913]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HandContainer" type="HBoxContainer" parent="MainBox/HandScroll/CenterContainer" unique_id=1222243865]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="BottomBar" type="HBoxContainer" parent="MainBox" unique_id=1014179360]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="MainBox/BottomBar" unique_id=2110388677]
+custom_minimum_size = Vector2(152, 34)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "结束回合 ▶"
+
+[node name="HintLabel" type="Label" parent="MainBox/BottomBar" unique_id=1624987839]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "战术终端已就绪"
 vertical_alignment = 1
+autowrap_mode = 0
 
-[node name="AttackButton" type="Button" parent="CanvasLayer/Panel" unique_id=608373823]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 2.1890001
-offset_left = 219.0
-offset_top = 311.0
-offset_right = -1404.0
-offset_bottom = -587.7991
-text = "攻击"
+[node name="PlayerPanel" type="PanelContainer" parent="MainBox" unique_id=1402415971]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_panel")
 
-[node name="ReturnButton" type="Button" parent="CanvasLayer/Panel" unique_id=699281404]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 2.2080002
-offset_left = 1291.0
-offset_top = 311.0
-offset_right = -204.0
-offset_bottom = -592.12805
-text = "返回下潜"
+[node name="PlayerVBox" type="VBoxContainer" parent="MainBox/PlayerPanel" unique_id=841510179]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="PlayerHeader" type="HBoxContainer" parent="MainBox/PlayerPanel/PlayerVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerTitleLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerHeader" unique_id=521061830]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "【 PLAYER STATUS 】"
+
+[node name="PlayerModeLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "COMBAT READY"
+horizontal_alignment = 2
+
+[node name="PlayerContentRow" type="HBoxContainer" parent="MainBox/PlayerPanel/PlayerVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="VitalsPanel" type="PanelContainer" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="VitalsVBox" type="VBoxContainer" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/VitalsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="VitalsTitleLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/VitalsPanel/VitalsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "生命 / 理智"
+
+[node name="PlayerHpLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/VitalsPanel/VitalsVBox" unique_id=1094969162]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "HP: 10 / 10"
+
+[node name="PlayerHpBar" type="ProgressBar" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/VitalsPanel/VitalsVBox" unique_id=1590000001]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+max_value = 10.0
+value = 10.0
+show_percentage = false
+
+[node name="PlayerSanLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/VitalsPanel/VitalsVBox" unique_id=574217621]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "SAN: 10 / 10"
+
+[node name="PlayerSanBar" type="ProgressBar" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/VitalsPanel/VitalsVBox" unique_id=1590000002]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_san_fill")
+max_value = 10.0
+value = 10.0
+show_percentage = false
+
+[node name="ResourcesPanel" type="PanelContainer" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="ResourcesVBox" type="VBoxContainer" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/ResourcesPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ResourcesTitleLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/ResourcesPanel/ResourcesVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "资源 / 负荷"
+
+[node name="PlayerEnergyLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/ResourcesPanel/ResourcesVBox" unique_id=1092175350]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_font_sizes/font_size = 14
+text = "费用: 3 / 3"
+
+[node name="PlayerCognitionLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/ResourcesPanel/ResourcesVBox" unique_id=583246744]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "认知: 0 / 10"
+
+[node name="PlayerBuffsLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/ResourcesPanel/ResourcesVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.94, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "状态稳定"
+autowrap_mode = 0
+
+[node name="ResourceHintLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/ResourcesPanel/ResourcesVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.85, 0.9, 0.88)
+theme_override_font_sizes/font_size = 14
+text = "回合资源决定你的出牌节奏"
+autowrap_mode = 3
+
+[node name="StatusPanel" type="PanelContainer" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_player_section")
+
+[node name="StatusVBox" type="VBoxContainer" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/StatusPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusTitleLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/StatusPanel/StatusVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "战斗监控"
+
+[node name="PlayerStatusLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/StatusPanel/StatusVBox" unique_id=135832166]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "状态：正常"
+autowrap_mode = 0
+
+[node name="PlayerDirectiveLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/StatusPanel/StatusVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.94, 1, 0.95)
+theme_override_font_sizes/font_size = 11
+text = "优先压制敌方输出"
+autowrap_mode = 0
+
+[node name="StatusHintLabel" type="Label" parent="MainBox/PlayerPanel/PlayerVBox/PlayerContentRow/StatusPanel/StatusVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.85, 0.9, 0.88)
+theme_override_font_sizes/font_size = 14
+text = "拖拽手牌到敌人即可出牌；结束回合可重置行动费用。"
+autowrap_mode = 3
+
+[node name="HistoryButton" type="Button" parent="HudLayer"]
+anchors_left = 0.91
+anchors_top = 0.02
+anchors_right = 0.965
+anchors_bottom = 0.085
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+custom_minimum_size = Vector2(46, 46)
+theme_override_font_sizes/font_size = 22
+text = "📖"

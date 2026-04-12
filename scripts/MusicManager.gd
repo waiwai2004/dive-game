@@ -53,7 +53,7 @@ func get_bgm_volume() -> float:
 	return bgm_volume * 100.0  # 转换为0-100范围
 
 # 每帧检查游戏暂停状态，确保音乐继续播放
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if bgm_enabled and get_tree().paused and not bgm_player.playing:
 		# 强制播放音乐，即使游戏暂停
 		bgm_player.play()

@@ -1,0 +1,122 @@
+{
+	"strike": {
+		"id": "strike",
+		"name": "斩击",
+		"type": "攻击",
+		"cost": 1,
+		"cognition": 1,
+		"desc": "对一名敌人造成2点伤害。"
+	},
+	"slash": {
+		"id": "slash",
+		"name": "挥砍",
+		"type": "攻击",
+		"cost": 2,
+		"cognition": 2,
+		"desc": "对一名敌人造成4点伤害。"
+	},
+	"thrust": {
+		"id": "thrust",
+		"name": "突刺",
+		"type": "攻击",
+		"cost": 1,
+		"cognition": 1,
+		"desc": "对一名敌人造成3点伤害。"
+	},
+	"cleave": {
+		"id": "cleave",
+		"name": "劈砍",
+		"type": "攻击",
+		"cost": 3,
+		"cognition": 3,
+		"desc": "对一名敌人造成6点伤害。"
+	},
+	"resonance": {
+		"id": "resonance",
+		"name": "认知共振",
+		"type": "攻击",
+		"cost": 2,
+		"cognition": 3,
+		"desc": "造成等同当前认知负荷值的伤害。"
+	},
+	"bless": {
+		"id": "bless",
+		"name": "祝福",
+		"type": "增益",
+		"cost": 2,
+		"cognition": 3,
+		"desc": "恢复5点存在值。"
+	},
+	"heal": {
+		"id": "heal",
+		"name": "治疗",
+		"type": "增益",
+		"cost": 1,
+		"cognition": 2,
+		"desc": "恢复3点存在值。"
+	},
+	"shield": {
+		"id": "shield",
+		"name": "护盾",
+		"type": "增益",
+		"cost": 2,
+		"cognition": 2,
+		"desc": "获得2点护盾。"
+	},
+	"break": {
+		"id": "break",
+		"name": "瓦解",
+		"type": "减益",
+		"cost": 2,
+		"cognition": 2,
+		"desc": "使敌人获得1层虚弱。"
+	},
+	"slow": {
+		"id": "slow",
+		"name": "减速",
+		"type": "减益",
+		"cost": 1,
+		"cognition": 1,
+		"desc": "使敌人获得1层虚弱。"
+	},
+	"weaken": {
+		"id": "weaken",
+		"name": "弱化",
+		"type": "减益",
+		"cost": 2,
+		"cognition": 2,
+		"desc": "使敌人获得2层虚弱。"
+	},
+	"relief": {
+		"id": "relief",
+		"name": "释怀",
+		"type": "运营",
+		"cost": 0,
+		"cognition": 3,
+		"desc": "恢复1点费用。"
+	},
+	"energy_boost": {
+		"id": "energy_boost",
+		"name": "能量提升",
+		"type": "运营",
+		"cost": 0,
+		"cognition": 2,
+		"desc": "本回合获得1点额外费用。"
+	},
+	"draw": {
+		"id": "draw",
+		"name": "抽牌",
+		"type": "运营",
+		"cost": 1,
+		"cognition": 2,
+		"desc": "抽取2张牌。"
+	},
+	"cognition_reset": {
+		"id": "cognition_reset",
+		"name": "认知重置",
+		"type": "运营",
+		"cost": 1,
+		"cognition": 0,
+		"desc": "重置认知负荷为0。"
+	}
+}
