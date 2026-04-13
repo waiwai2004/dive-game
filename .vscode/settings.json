@@ -1,3 +1,4 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "godotTools.editorPath.godot4": "d:\\AppStores\\Godot_v4.6.1-stable_win64.exe\\Godot_v4.6.1-stable_win64.exe"
 }

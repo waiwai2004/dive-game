@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "GDScript: Launch Project",
+            "type": "godot",
+            "request": "launch",
+            "project": "${workspaceFolder}",
+            // 下面两个让插件自己设置
+            // "address": "127.0.0.1",
+            // "port": 6008,
+            //表示运行哪个场景，main表示主场景，current表示当前场景，pinned表示固定场景，<path>表示指定路径的场景
+            "scene": "current",
+            // 这个也可以让插件自己设置
+            // "editor_path": "D:/AppStores/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64.exe",
+            // engine command line flags
+            //是否开启性能分析
+            "profiling": false,
+            //是否使用单线程场景运行，开启后所有场景都在主线程运行，可能会降低性能，但可以避免一些多线程相关的问题
+            "single_threaded_scene": false,
+            //在游戏里显示所有物体的碰撞形状
+            "debug_collisions": false,
+            //显示 Path2D/3D 节点的路线
+            "debug_paths": false,
+            //显示寻路网格
+            "debug_navigation": false,
+            //显示避免网格
+            "debug_avoidance": false,
+            //排查引擎内部字符串引用，一般false
+            "debug_stringnames": false,
+            //每一帧之间的延迟
+            "frame_delay": 0,
+            //时间缩放这里是正常速度，调小速度变慢
+            "time_scale": 1.0,
+            //禁止使用垂直同步，如果true帧率将不受显示器刷新率的限制，可能会导致画面撕裂，但可以提高性能
+            "disable_vsync": false,
+            //固定帧率
+            "fixed_fps": 60,
+            // anything else
+            "additional_options": ""
+        }
+    ]
+}

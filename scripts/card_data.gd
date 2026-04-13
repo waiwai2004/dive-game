@@ -1,9 +1,19 @@
 # 卡牌数据类
 # 管理卡牌的定义和实例化
+class_name CardData
 extends RefCounted
+
+static var dynamic_cards: Dictionary = {}
+
+static func register_ai_card(card_id: String, card_data: Dictionary) -> void:
+	dynamic_cards[card_id] = card_data
 
 # 获取卡牌数据
 static func get_card_data(card_id: String) -> Dictionary:
+	# 首先检查是否是动态生成的AI卡牌
+	if dynamic_cards.has(card_id):
+		return dynamic_cards[card_id].duplicate(true)
+
 	# 定义所有卡牌数据
 	var cards := {
 		# 攻击类卡牌
