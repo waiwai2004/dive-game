@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://co7efpd54bipb"
+
+[deps]
+
+files=["res://data/cards/cards.card.translation", "res://data/cards/cards.card.translation", "res://data/cards/cards.rarity.translation", "res://data/cards/cards.energy.translation", "res://data/cards/cards.target.translation", "res://data/cards/cards.description.translation", "res://data/cards/cards.effect.translation", "res://data/cards/cards.effect.translation", "res://data/cards/cards.effect.translation", "res://data/cards/cards.status.translation", "res://data/cards/cards.art.translation", "res://data/cards/cards.art.translation", "res://data/cards/cards.card.translation", "res://data/cards/cards.note.translation"]
+
+source_file="res://data/cards/cards.csv"
+dest_files=["res://data/cards/cards.card.translation", "res://data/cards/cards.card.translation", "res://data/cards/cards.rarity.translation", "res://data/cards/cards.energy.translation", "res://data/cards/cards.target.translation", "res://data/cards/cards.description.translation", "res://data/cards/cards.effect.translation", "res://data/cards/cards.effect.translation", "res://data/cards/cards.effect.translation", "res://data/cards/cards.status.translation", "res://data/cards/cards.art.translation", "res://data/cards/cards.art.translation", "res://data/cards/cards.card.translation", "res://data/cards/cards.note.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

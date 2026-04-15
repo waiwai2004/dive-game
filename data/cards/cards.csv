@@ -1,0 +1,7 @@
+card_id,card_name,card_type,rarity,energy_cost,target_type,description,effect_key,effect_value,effect_value_2,status,art_frame_path,art_illustration_path,card_output_name,note
+cut,切断,攻击,普通,1,enemy,造成2点伤害。,damage,2,0,启用,res://assets/art/cards/frame.PNG,res://assets/art/cards/attack.png,card_cut,基础攻击
+guard,整理,防御,普通,1,self,获得3点护盾。,block,3,0,启用,res://assets/art/cards/frame.PNG,res://assets/art/cards/relief.png,card_guard,基础防御
+calm,安抚,治疗,普通,1,self,恢复2点SAN。,san_heal,2,0,启用,res://assets/art/cards/frame.PNG,res://assets/art/cards/resonance.png,card_calm,基础理智恢复
+break,瓦解,减益,普通,1,enemy,使敌人获得1层虚弱。,apply_weak,1,0,启用,res://assets/art/cards/frame.PNG,res://assets/art/backgrounds/debuff.png,card_break,基础减益
+pursue,追问,攻击,剧情,2,enemy,造成5点伤害并失去1点SAN。,damage_and_san_loss,5,1,启用,res://assets/art/cards/frame.PNG,res://assets/art/cards/43944f6b22669d538130d73293568073.jpg,card_pursue,剧情奖励卡
+seal,封存,防御,剧情,1,self,获得5点护盾。,block,5,0,启用,res://assets/art/cards/frame.PNG,res://assets/art/cards/bless.png,card_seal,剧情奖励卡

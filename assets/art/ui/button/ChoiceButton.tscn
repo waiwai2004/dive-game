@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://bsmu1uhhmcykr"]
+
+[ext_resource type="Script" uid="uid://eqwdiaun5m21" path="res://assets/art/ui/button/ChoiceButton.gd" id="1_2rpoo"]
+[ext_resource type="Texture2D" uid="uid://bbhhiyy5cau0y" path="res://assets/art/ui/choice.PNG" id="2_uyiql"]
+[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="3_uyiql"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u6jio"]
+
+[node name="ChoiceButton" type="Control" unique_id=1899426100]
+custom_minimum_size = Vector2(300, 120)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -264.0
+offset_top = -107.0
+offset_right = 264.0
+offset_bottom = 107.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+script = ExtResource("1_2rpoo")
+
+[node name="VisualRoot" type="Control" parent="." unique_id=1539294571]
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="NinePatchRect" parent="VisualRoot" unique_id=290351294]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_uyiql")
+region_rect = Rect2(95.88556, 262.772, 1627.7991, 491.68735)
+
+[node name="HoverFx" type="NinePatchRect" parent="VisualRoot" unique_id=1436862595]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_uyiql")
+region_rect = Rect2(100.07013, 266.95657, 1623.6145, 495.87192)
+
+[node name="Label" type="Label" parent="VisualRoot" unique_id=1401156151]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.97
+anchor_bottom = 0.96700007
+offset_left = -16.0
+offset_top = 86.0
+offset_right = -96.160034
+offset_bottom = -47.93802
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_uyiql")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ClickButton" type="Button" parent="." unique_id=936416685]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_u6jio")

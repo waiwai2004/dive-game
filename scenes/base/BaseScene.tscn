@@ -1,0 +1,464 @@
+[gd_scene format=3 uid="uid://behqrrx8up60n"]
+
+[ext_resource type="Script" uid="uid://dglfxpjjlyggw" path="res://scenes/base/base_scene.gd" id="1_bv2u3"]
+[ext_resource type="Texture2D" uid="uid://c0k48onohlmch" path="res://assets/art/backgrounds/base_bg01.png" id="2_3dx0d"]
+[ext_resource type="Script" uid="uid://coxh6daw41sb5" path="res://scripts/actors/player.gd" id="3_0jghn"]
+[ext_resource type="Script" uid="uid://jr166dv4yuvo" path="res://scripts/actors/interactable.gd" id="4_fsbds"]
+[ext_resource type="Texture2D" uid="uid://cyamnjdrh1jy4" path="res://assets/art/backgrounds/base_dive01.png" id="5_8sw60"]
+[ext_resource type="Texture2D" uid="uid://bsn1cepdwmi4c" path="res://assets/art/backgrounds/base_dive02.PNG" id="6_7sdsr"]
+[ext_resource type="Texture2D" uid="uid://wkppnq6fhlex" path="res://assets/art/characters/NPC/NPC01_normal.PNG" id="6_misur"]
+[ext_resource type="Texture2D" uid="uid://26pirw3vu226" path="res://assets/art/characters/NPC/NPC01_highlight.PNG" id="8_2kcpl"]
+[ext_resource type="Texture2D" uid="uid://dbtqo4ue7i5d6" path="res://assets/art/characters/player/run/IMG_3436.PNG" id="10_p5iw5"]
+[ext_resource type="Texture2D" uid="uid://d2kb0mb401wt7" path="res://assets/art/characters/player/run/IMG_3437.PNG" id="11_y3bet"]
+[ext_resource type="Texture2D" uid="uid://dnivjh3snhck4" path="res://assets/art/characters/player/run/IMG_3438.PNG" id="12_dv2b3"]
+[ext_resource type="Texture2D" uid="uid://d0q8trid5776f" path="res://assets/art/characters/player/run/IMG_3439.PNG" id="13_gfput"]
+[ext_resource type="Texture2D" uid="uid://ygyagylsi6tt" path="res://assets/art/characters/player/run/IMG_3440.PNG" id="14_mudpc"]
+[ext_resource type="Texture2D" uid="uid://d11u06fhxhwvs" path="res://assets/art/characters/player/run/IMG_3441.PNG" id="15_42501"]
+[ext_resource type="Script" uid="uid://chaatwl7a160p" path="res://scripts/ui/dialogue_ui.gd" id="16_42501"]
+[ext_resource type="Texture2D" uid="uid://3fq77afqsnts" path="res://assets/art/characters/player/run/IMG_3442.PNG" id="16_ggro8"]
+[ext_resource type="Texture2D" uid="uid://cbkcvoww7cssn" path="res://assets/art/characters/player/run/IMG_3443.PNG" id="17_4dui0"]
+[ext_resource type="Texture2D" uid="uid://bxkwbtjoarkw" path="res://assets/art/characters/player/run/IMG_3444.PNG" id="18_e4nau"]
+[ext_resource type="Texture2D" uid="uid://dtor2jdaa7lop" path="res://assets/art/characters/NPC/base_npc.PNG" id="18_misur"]
+[ext_resource type="Texture2D" uid="uid://hgmo1ssw7qt2" path="res://assets/art/ui/button/base_dialogue.PNG" id="19_2kcpl"]
+[ext_resource type="Texture2D" uid="uid://b2s0u47p1fso5" path="res://assets/art/characters/player/run/IMG_3445.PNG" id="19_yr6nv"]
+[ext_resource type="Texture2D" uid="uid://cqjpifchv0ojc" path="res://assets/art/characters/player/base_player.PNG" id="20_2iegp"]
+[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="20_2kcpl"]
+[ext_resource type="Texture2D" uid="uid://b5ou0gjqyyirg" path="res://assets/art/characters/player/IMG_3421.PNG" id="20_xrneb"]
+[ext_resource type="Texture2D" uid="uid://dx4gqejeupdct" path="res://assets/art/ui/button/base_choice.PNG" id="21_jnb81"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q4qdp"]
+size = Vector2(1917.5, 192)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e7gme"]
+size = Vector2(739, 765.9999)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ccvfj"]
+size = Vector2(222, 444)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fsbds"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_p5iw5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_y3bet")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_dv2b3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_gfput")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_mudpc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_42501")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_ggro8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_4dui0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_e4nau")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_yr6nv")
+}],
+"loop": true,
+"name": &"run",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sn4v1"]
+size = Vector2(288, 400)
+
+[sub_resource type="FontVariation" id="FontVariation_2iegp"]
+variation_embolden = 1.5
+variation_transform = Transform2D(1, 0.25, 0, 1, 0, 0)
+
+[sub_resource type="FontVariation" id="FontVariation_jnb81"]
+variation_embolden = -0.25
+variation_transform = Transform2D(1, 0.25, 0, 1, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ivdgq"]
+bg_color = Color(0.11119685, 0.11119685, 0.11119678, 0.49411765)
+corner_detail = 16
+
+[node name="BaseScene" type="Node2D" unique_id=1849399638 groups=["base_scene", "player"]]
+script = ExtResource("1_bv2u3")
+metadata/_edit_vertical_guides_ = [-46.0, 1920.0]
+metadata/_edit_horizontal_guides_ = [-20.0, 1080.0]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1208252698]
+position = Vector2(960, 565.5)
+scale = Vector2(1, 1.0472223)
+texture = ExtResource("2_3dx0d")
+
+[node name="Ground" type="StaticBody2D" parent="." unique_id=856126915]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=1728528606]
+position = Vector2(961.25, 1006)
+shape = SubResource("RectangleShape2D_q4qdp")
+
+[node name="Sprite2D" type="Sprite2D" parent="Ground" unique_id=2061615237]
+
+[node name="World" type="Node2D" parent="." unique_id=840256459]
+
+[node name="DiveZone" type="Area2D" parent="World" unique_id=1216581019]
+script = ExtResource("4_fsbds")
+interact_type = "door"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/DiveZone" unique_id=701578386]
+position = Vector2(1529.5, 505.99994)
+shape = SubResource("RectangleShape2D_e7gme")
+
+[node name="Dive" type="Sprite2D" parent="World/DiveZone" unique_id=2056152866]
+position = Vector2(1543, 544.50006)
+scale = Vector2(0.6894409, 0.7659388)
+texture = ExtResource("5_8sw60")
+
+[node name="Highlight" type="Sprite2D" parent="World/DiveZone" unique_id=568191220]
+position = Vector2(1542.7, 544.5)
+scale = Vector2(0.6900622, 0.7659388)
+texture = ExtResource("6_7sdsr")
+
+[node name="NPCZone" type="Area2D" parent="World" unique_id=2023920333]
+script = ExtResource("4_fsbds")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCZone" unique_id=1760577703]
+position = Vector2(559, 654)
+shape = SubResource("RectangleShape2D_ccvfj")
+
+[node name="NPC" type="Sprite2D" parent="World/NPCZone" unique_id=279109156]
+position = Vector2(560, 672.00006)
+scale = Vector2(1.1537226, 1.1348541)
+texture = ExtResource("6_misur")
+
+[node name="NPCNameLabel" type="Label" parent="World/NPCZone" unique_id=978120501]
+offset_left = 456.0
+offset_top = 360.0
+offset_right = 662.0
+offset_bottom = 428.0
+theme_override_fonts/font = ExtResource("20_2kcpl")
+theme_override_font_sizes/font_size = 32
+text = "管理员"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Highlight" type="Sprite2D" parent="World/NPCZone" unique_id=1451904768]
+position = Vector2(564, 672)
+scale = Vector2(1.1983806, 1.1327015)
+texture = ExtResource("8_2kcpl")
+
+[node name="Player" type="CharacterBody2D" parent="World" unique_id=1206919318 groups=["base_scene", "player"]]
+script = ExtResource("3_0jghn")
+
+[node name="Shadow" type="Sprite2D" parent="World/Player" unique_id=1623062870]
+position = Vector2(909, 884)
+scale = Vector2(0.13427734, 0.08300781)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="World/Player" unique_id=1644034781]
+visible = false
+position = Vector2(872, 670)
+scale = Vector2(1.1295679, 1.010989)
+sprite_frames = SubResource("SpriteFrames_fsbds")
+animation = &"run"
+autoplay = "run"
+frame_progress = 0.9666673
+
+[node name="IdleSprite" type="Sprite2D" parent="World/Player" unique_id=1283158814]
+position = Vector2(892, 666.3024)
+scale = Vector2(0.9833886, 0.98338884)
+texture = ExtResource("20_xrneb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=1823838575]
+position = Vector2(888, 656)
+shape = SubResource("RectangleShape2D_sn4v1")
+
+[node name="Camera2D" type="Camera2D" parent="World/Player" unique_id=419409869]
+position = Vector2(909, 692)
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 1080
+limit_smoothed = true
+position_smoothing_enabled = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1897367094]
+
+[node name="DialogueUI" type="Control" parent="CanvasLayer" unique_id=1235901624]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("16_42501")
+
+[node name="Dim" type="ColorRect" parent="CanvasLayer/DialogueUI" unique_id=1049385935]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7058824)
+
+[node name="PortraitLeft" type="TextureRect" parent="CanvasLayer/DialogueUI" unique_id=668979660]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("18_misur")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DialoguePanel" type="NinePatchRect" parent="CanvasLayer/DialogueUI" unique_id=1518496280]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 384.0
+offset_top = 152.0
+offset_right = -128.0
+offset_bottom = -607.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("19_2kcpl")
+region_rect = Rect2(418.09772, 181.17284, 1286.7563, 271.99725)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DialogueUI/DialoguePanel" unique_id=678575465]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.5
+anchor_top = -0.37500003
+anchor_right = 1.2570001
+anchor_bottom = 2.3960001
+offset_left = 752.0
+offset_top = 200.375
+offset_right = -417.85608
+offset_bottom = -569.116
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 20
+
+[node name="DialogueText" type="RichTextLabel" parent="CanvasLayer/DialogueUI/DialoguePanel/MarginContainer" unique_id=1284604566]
+clip_contents = false
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.19999999, 0.19999999, 0.19999999, 1)
+theme_override_fonts/bold_font = ExtResource("20_2kcpl")
+theme_override_fonts/bold_italics_font = SubResource("FontVariation_2iegp")
+theme_override_fonts/italics_font = SubResource("FontVariation_jnb81")
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/italics_font_size = 24
+theme_override_font_sizes/mono_font_size = 24
+bbcode_enabled = true
+fit_content = true
+vertical_alignment = 1
+
+[node name="NameLabel" type="Label" parent="CanvasLayer/DialogueUI" unique_id=868816326]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = 200.0
+offset_right = -1441.0
+offset_bottom = -774.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("20_2kcpl")
+theme_override_font_sizes/font_size = 48
+text = "管理员"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PortraitRight" type="TextureRect" parent="CanvasLayer/DialogueUI" unique_id=949217552]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("20_2iegp")
+expand_mode = 1
+
+[node name="ChoiceArea" type="Control" parent="CanvasLayer/DialogueUI" unique_id=730799115]
+layout_mode = 1
+anchor_right = 0.99600005
+anchor_bottom = 1.0
+offset_left = 608.0
+offset_top = 563.0
+offset_right = -616.32007
+offset_bottom = -197.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Choice1Root" type="Control" parent="CanvasLayer/DialogueUI/ChoiceArea" unique_id=1899426100]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 128.0
+grow_horizontal = 2
+
+[node name="Choice1Bg" type="NinePatchRect" parent="CanvasLayer/DialogueUI/ChoiceArea/Choice1Root" unique_id=492116781]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -56.0
+offset_right = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("21_jnb81")
+region_rect = Rect2(613.1886, 468.9027, 735.46643, 268.41846)
+patch_margin_left = 356
+patch_margin_right = 201
+axis_stretch_horizontal = 1
+
+[node name="Choice1Label" type="Label" parent="CanvasLayer/DialogueUI/ChoiceArea/Choice1Root" unique_id=167446901]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 72.0
+offset_right = -24.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("20_2kcpl")
+theme_override_font_sizes/font_size = 24
+text = "选项1"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Choice1Button" type="Button" parent="CanvasLayer/DialogueUI/ChoiceArea/Choice1Root" unique_id=1783502134]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.123
+anchor_top = -0.437
+anchor_right = 1.075
+anchor_bottom = 0.87500006
+offset_left = 8.304001
+offset_top = -0.063999176
+offset_right = 8.399963
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Choice2Root" type="Control" parent="CanvasLayer/DialogueUI/ChoiceArea" unique_id=1486203350]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -128.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Choice2Bg" type="NinePatchRect" parent="CanvasLayer/DialogueUI/ChoiceArea/Choice2Root" unique_id=115726604]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -56.0
+offset_right = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("21_jnb81")
+region_rect = Rect2(616.9239, 480.69934, 731.06464, 262.19116)
+patch_margin_left = 344
+patch_margin_right = 175
+axis_stretch_horizontal = 2
+
+[node name="Choice2Label" type="Label" parent="CanvasLayer/DialogueUI/ChoiceArea/Choice2Root" unique_id=996215340]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 104.0
+offset_top = -16.0
+offset_right = -56.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("20_2kcpl")
+theme_override_font_sizes/font_size = 24
+text = "选项2"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Choice2Button" type="Button" parent="CanvasLayer/DialogueUI/ChoiceArea/Choice2Root" unique_id=170619829]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.123
+anchor_top = -0.37500003
+anchor_right = 1.075
+anchor_bottom = 1.0
+offset_left = 0.30400085
+offset_right = 0.39996338
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="InteractTip" type="Control" parent="CanvasLayer" unique_id=1441853649]
+light_mask = 513
+visibility_layer = 513
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 6
+size_flags_vertical = 8
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/InteractTip" unique_id=489830111]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -144.0
+offset_top = -152.0
+offset_right = 144.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ivdgq")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/InteractTip/PanelContainer" unique_id=1517823006]
+layout_mode = 2
+
+[node name="TipLabel" type="Label" parent="CanvasLayer/InteractTip/PanelContainer/MarginContainer" unique_id=541621008]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "[E] 交互"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="body_entered" from="World/DiveZone" to="." method="_on_dive_zone_body_entered"]
+[connection signal="body_exited" from="World/DiveZone" to="." method="_on_dive_zone_body_exited"]
+[connection signal="body_entered" from="World/NPCZone" to="." method="_on_npc_zone_body_entered"]
+[connection signal="body_exited" from="World/NPCZone" to="." method="_on_npc_zone_body_exited"]

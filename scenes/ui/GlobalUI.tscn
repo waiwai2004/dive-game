@@ -1,0 +1,207 @@
+[gd_scene format=3 uid="uid://dop82w6hp8utr"]
+
+[ext_resource type="Script" uid="uid://bm3d6khoa06k1" path="res://scripts/ui/global_ui.gd" id="1_global_ui_script"]
+[ext_resource type="Texture2D" uid="uid://dpxjuufu8wc64" path="res://assets/art/ui/global/Atmosphereframe01.PNG" id="2_a47ik"]
+[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_ui_font"]
+[ext_resource type="Texture2D" uid="uid://brmuhdjnutmow" path="res://assets/art/characters/player/IMG_3401.PNG" id="3_a47ik"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lhbd8"]
+
+[node name="GlobalUI" type="CanvasLayer" unique_id=740690300]
+script = ExtResource("1_global_ui_script")
+
+[node name="AtmosphereFrame" type="TextureRect" parent="." unique_id=175638184]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_a47ik")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TopHUD" type="Control" parent="." unique_id=1202878365]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -248.0
+offset_top = 24.0
+offset_right = 208.0
+offset_bottom = 224.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="AvatarFrame" type="Control" parent="TopHUD" unique_id=1505588234]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -76.0
+offset_right = 96.0
+offset_bottom = 152.0
+grow_horizontal = 2
+
+[node name="AvatarImage" type="TextureRect" parent="TopHUD/AvatarFrame" unique_id=1706780914]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.271
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_right = -32.032013
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_a47ik")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SanBarRoot" type="Control" parent="TopHUD" unique_id=1678996401]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 88.0
+offset_top = -97.0
+offset_right = -264.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SanLabel" type="Label" parent="TopHUD/SanBarRoot" unique_id=1052261905]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_ui_font")
+theme_override_font_sizes/font_size = 24
+text = "SAN 0 / 0"
+horizontal_alignment = 1
+
+[node name="SanBarBg" type="ColorRect" parent="TopHUD/SanBarRoot" unique_id=1915823763]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -22.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0, 0, 0, 0.45)
+
+[node name="SanBarFill" type="TextureProgressBar" parent="TopHUD/SanBarRoot" unique_id=862576704]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -22.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+max_value = 10.0
+value = 10.0
+tint_progress = Color(0.32, 0.72, 1, 0.95)
+
+[node name="HpBarRoot" type="Control" parent="TopHUD" unique_id=23290367]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -152.0
+offset_top = -97.0
+offset_right = -48.0
+offset_bottom = -44.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="HpLabel" type="Label" parent="TopHUD/HpBarRoot" unique_id=10855226]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_ui_font")
+theme_override_font_sizes/font_size = 24
+text = "HP 0 / 0"
+horizontal_alignment = 1
+
+[node name="HpBarBg" type="ColorRect" parent="TopHUD/HpBarRoot" unique_id=1551368881]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -22.0
+offset_bottom = -2.0
+color = Color(0, 0, 0, 0.45)
+
+[node name="HpBarFill" type="TextureProgressBar" parent="TopHUD/HpBarRoot" unique_id=757625742]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -22.0
+offset_bottom = -2.0
+mouse_filter = 2
+max_value = 12.0
+value = 12.0
+tint_progress = Color(0.9, 0.25, 0.25, 0.95)
+
+[node name="EnergyLabel" type="Label" parent="TopHUD" unique_id=312441950]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -116.0
+offset_top = -14.0
+offset_right = 140.0
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_ui_font")
+theme_override_font_sizes/font_size = 26
+text = "能量 0 / 3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomHintRoot" type="Control" parent="." unique_id=763883771]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -138.0
+offset_right = 128.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="HintBg" type="PanelContainer" parent="BottomHintRoot" unique_id=1552528064]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_lhbd8")
+
+[node name="HintLabel" type="Label" parent="BottomHintRoot/HintBg" unique_id=359623964]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ui_font")
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
