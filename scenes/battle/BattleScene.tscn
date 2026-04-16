@@ -147,11 +147,10 @@ text = "意图：下回合攻击 4"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HandUI" type="CanvasLayer" parent="."]
+[node name="HandUI" type="CanvasLayer" parent="." unique_id=764113946]
 layer = 200
 
 [node name="LeftHandArea" type="HBoxContainer" parent="HandUI" unique_id=2005395823]
-layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.5
 anchor_bottom = 1.0
@@ -165,7 +164,6 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="RightHandArea" type="HBoxContainer" parent="HandUI" unique_id=410019562]
-layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
 anchor_right = 1.0

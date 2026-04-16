@@ -1,4 +1,4 @@
-﻿extends Resource
+extends Resource
 class_name CardData
 
 @export var card_id: String = ""
@@ -60,7 +60,7 @@ func normalized_type() -> String:
 			return "utility"
 		"减益", "debuff":
 			return "debuff"
-		"特殊", "utility", "special":
+		"运营", "特殊", "utility", "special":
 			return "utility"
 		_:
 			return t if not t.is_empty() else "utility"
@@ -115,6 +115,15 @@ func to_battle_dict() -> Dictionary:
 		"damage_and_san_loss":
 			out["damage"] = int(round(effect_value))
 			out["san_cost"] = int(round(effect_value_2))
+		"san_heal_and_draw":
+			out["san_heal"] = int(round(effect_value))
+			out["draw"] = int(round(effect_value_2))
+		"gain_energy_and_draw":
+			out["gain_energy"] = int(round(effect_value))
+			out["draw"] = int(round(effect_value_2))
+		"block_and_reduce_cognition":
+			out["block"] = int(round(effect_value))
+			out["reduce_cognition"] = int(round(effect_value_2))
 		_:
 			pass
 

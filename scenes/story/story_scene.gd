@@ -133,7 +133,15 @@ func _go_to_base_with_fade() -> void:
 
 	_is_transitioning = true
 	await _fade_to_alpha(1.0, 0.35)
-	get_tree().change_scene_to_file(BASE_SCENE_PATH)
+	
+	# 尝试加载场景，添加错误处理
+	var scene = load(BASE_SCENE_PATH)
+	if scene:
+		get_tree().change_scene_to_packed(scene)
+	else:
+		print("Error: Failed to load BaseScene.tscn")
+		# 如果加载失败，尝试使用备用方法
+		get_tree().change_scene_to_file(BASE_SCENE_PATH)
 
 
 func _fade_to_alpha(target_alpha: float, duration: float) -> void:

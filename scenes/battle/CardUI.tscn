@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://brgu43j5nkcti" path="res://scenes/battle/card_ui.gd" id="1_card_ui_script"]
 [ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_font"]
-[ext_resource type="Script" path="res://ui/cards/card_view.gd" id="3_card_view_script"]
+[ext_resource type="Script" path="res://scripts/ui/card_view.gd" id="3_card_view_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_bg"]
 bg_color = Color(0.08, 0.09, 0.12, 0.92)

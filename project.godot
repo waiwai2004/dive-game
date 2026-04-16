@@ -13,7 +13,7 @@ config_version=5
 config/name="深海残响"
 run/main_scene="uid://cxr3nvwgve4uj"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://assets/art/ui/icon.svg"
 
 [autoload]
 

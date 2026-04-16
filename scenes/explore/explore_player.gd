@@ -11,7 +11,12 @@ extends CharacterBody2D
 @onready var idle_sprite: Sprite2D = get_node_or_null("VisualRoot/IdleSprite") as Sprite2D
 @onready var head_point: Marker2D = get_node_or_null("VisualRoot/HeadPoint") as Marker2D
 
-var facing_direction: Vector2 = Vector2.RIGHT
+var character_state = {
+	"facing_direction": Vector2.RIGHT,
+	"is_moving": false,
+	"head_position": Vector2.ZERO
+}
+
 var _visual_base_scale: Vector2 = Vector2.ONE
 
 
@@ -28,6 +33,7 @@ func _ready() -> void:
 		head_point = get_node_or_null("HeadPoint") as Marker2D
 
 	_visual_base_scale = visual_root.scale
+	_update_head_position()
 
 	if keep_swim_when_idle:
 		if idle_sprite:
@@ -46,52 +52,61 @@ func _physics_process(_delta: float) -> void:
 	if Game.in_dialogue:
 		velocity = Vector2.ZERO
 		move_and_slide()
-		_update_visual(false)
+		character_state["is_moving"] = false
+		_update_visual()
+		_update_head_position()
 		return
 
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = input_dir * move_speed
 
 	if input_dir.length_squared() > 0.0001:
-		facing_direction = input_dir.normalized()
+		character_state["facing_direction"] = input_dir.normalized()
+		character_state["is_moving"] = true
+	else:
+		character_state["is_moving"] = false
 
 	move_and_slide()
-	_update_visual(input_dir.length_squared() > 0.0001)
+	_update_visual()
+	_update_head_position()
+
+
+func get_character_state() -> Dictionary:
+	return character_state
 
 
 func get_head_world_position() -> Vector2:
-	if head_point:
-		return head_point.global_position + head_offset
-	return global_position + head_offset
+	var value: Variant = character_state.get("head_position", global_position)
+	if value is Vector2:
+		return value
+	return global_position
 
 
 func get_facing_direction() -> Vector2:
-	if facing_direction.length_squared() <= 0.0001:
-		return Vector2.RIGHT
-	return facing_direction.normalized()
+	var value: Variant = character_state.get("facing_direction", Vector2.RIGHT)
+	if value is Vector2 and value.length_squared() > 0.0001:
+		return value.normalized()
+	return Vector2.RIGHT
 
 
-func _update_visual(is_moving: bool) -> void:
-	if is_moving:
+func _update_visual() -> void:
+	var is_moving = character_state["is_moving"]
+	var facing_direction = character_state["facing_direction"]
+
+	if is_moving or keep_swim_when_idle:
 		if idle_sprite:
 			idle_sprite.visible = false
 		if animated_sprite:
 			animated_sprite.visible = true
-		if animated_sprite and animated_sprite.animation != move_animation:
-			_play_animation_safe(move_animation)
+
+		var target_animation = move_animation if is_moving else idle_animation
+		if animated_sprite and animated_sprite.animation != target_animation:
+			_play_animation_safe(target_animation)
 	else:
-		if keep_swim_when_idle:
-			if idle_sprite:
-				idle_sprite.visible = false
-			if animated_sprite:
-				animated_sprite.visible = true
-			if animated_sprite and animated_sprite.animation != idle_animation:
-				_play_animation_safe(idle_animation)
-		else:
-			if idle_sprite:
-				idle_sprite.visible = true
-			if animated_sprite:
-				animated_sprite.visible = false
+		if idle_sprite:
+			idle_sprite.visible = true
+		if animated_sprite:
+			animated_sprite.visible = false
 
 	if absf(facing_direction.x) > 0.01:
 		var facing_left: bool = facing_direction.x < 0.0
@@ -100,19 +115,20 @@ func _update_visual(is_moving: bool) -> void:
 		visual_root.scale = Vector2(-sx if facing_left else sx, sy)
 
 
+func _update_head_position() -> void:
+	if head_point:
+		character_state["head_position"] = head_point.global_position + head_offset
+	else:
+		character_state["head_position"] = global_position + head_offset
+
+
 func _play_animation_safe(anim_name: StringName) -> void:
-	if not animated_sprite:
-		return
-	if not animated_sprite.sprite_frames:
+	if not animated_sprite or not animated_sprite.sprite_frames:
 		return
 
 	if animated_sprite.sprite_frames.has_animation(anim_name):
 		animated_sprite.play(anim_name)
-		return
-
-	if animated_sprite.sprite_frames.has_animation(&"swim"):
+	elif animated_sprite.sprite_frames.has_animation(&"swim"):
 		animated_sprite.play(&"swim")
-		return
-
-	if animated_sprite.sprite_frames.has_animation(&"run"):
+	elif animated_sprite.sprite_frames.has_animation(&"run"):
 		animated_sprite.play(&"run")

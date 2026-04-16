@@ -11,7 +11,7 @@ const DEFAULT_EXPLORE_SCENE := "res://scenes/explore/ExploreScene.tscn"
 @export var final_fade_duration: float = 0.35
 @export var narration_fade_alpha: float = 0.78
 
-@export_multiline var description_text: String = "先前往浅海中继点，确认讯号，回收记录。"
+@export_multiline var description_text: String = "任务目标：前往浅海中继点，确认异常讯号，回收记录。"
 @export_multiline var narration_line_1: String = "于是，你接受了这份不该开始的下潜任务。"
 @export_multiline var narration_line_2: String = "海面之下，是旧文明沉没后的遗骸。"
 @export_multiline var narration_line_3: String = "而你，正要前往它们之间的第一层边界。"
@@ -29,6 +29,7 @@ func _ready() -> void:
 	if has_node("/root/AudioManager"):
 		AudioManager.play_bgm_segment("explore")
 
+	Game.set_chapter_one_state("dive_briefing")
 	_apply_global_ui()
 	_setup_initial_content()
 
@@ -58,7 +59,7 @@ func _setup_initial_content() -> void:
 	narration_label.text = ""
 
 	if has_node("/root/GlobalUI"):
-		GlobalUI.set_hint(hint_text, true)
+		GlobalUI.set_hint("任务：确认浅海中继点的异常讯号。", true)
 
 
 func _apply_global_ui() -> void:
@@ -72,6 +73,8 @@ func _on_dive_pressed() -> void:
 		return
 
 	_is_transitioning = true
+	Game.set_chapter_one_state("explore_intro")
+
 	dive_button.visible = false
 	hint_label.visible = false
 	description_label.visible = false

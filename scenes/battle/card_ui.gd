@@ -14,7 +14,6 @@ var _base_scale: Vector2 = Vector2.ONE
 var _base_z_index: int = 0
 var _hover_tween: Tween = null
 
-# 拖拽相关变量
 var is_dragging: bool = false
 var drag_start_pos: Vector2 = Vector2.ZERO
 var drag_offset: Vector2 = Vector2.ZERO
@@ -51,11 +50,8 @@ func _ready() -> void:
 		gui_input.connect(_on_gui_input)
 
 	set_process(true)
-	
-	# 初始化敌人区域
 	enemy_area = get_tree().get_root().find_child("BossArea", true, false) as Control
 
-	# setup() might run before add_child(). Refresh once when tree is ready.
 	if not card_data.is_empty():
 		_refresh_text()
 
@@ -64,8 +60,6 @@ func setup(data: Dictionary, index: int, owner_scene: Node) -> void:
 	card_data = data
 	card_index = index
 	battle_scene = owner_scene
-	if card_data.is_empty():
-		push_warning("[CardUI] setup got empty card_data at hand index %d" % card_index)
 	if is_node_ready():
 		_refresh_text()
 	else:
@@ -73,126 +67,104 @@ func setup(data: Dictionary, index: int, owner_scene: Node) -> void:
 
 
 func _refresh_text() -> void:
-	print("[CardUI] id=%s name=%s frame=%s illustration=%s card_view_ready=%s" % [
-		str(card_data.get("id", "")),
-		str(card_data.get("name", card_data.get("card_name", ""))),
-		str(card_data.get("art_frame_path", "")),
-		str(card_data.get("art_illustration_path", "")),
-		str(card_view != null)
-	])
-
 	if card_view and card_view.has_method("setup_from_dictionary"):
 		card_view.call("setup_from_dictionary", card_data)
 		text = ""
 		return
 
-	var name_text: String = str(card_data.get("name", "鏈煡鍗＄墝"))
+	var name_text: String = str(card_data.get("name", "未知卡牌"))
 	var type_text: String = CardDatabase.get_type_text(str(card_data.get("type", "")))
 	var cost: int = int(card_data.get("cost", 0))
 	var cognition: int = int(card_data.get("cognition", 0))
 	var desc: String = str(card_data.get("description", card_data.get("desc", "")))
-	text = "%s  [%s]\n%d璐?璁ょ煡%d\n%s" % [name_text, type_text, cost, cognition, desc]
+	text = "%s  [%s]\n%d费  认知%d\n%s" % [name_text, type_text, cost, cognition, desc]
 
 
 func _pressed() -> void:
 	if not is_dragging and battle_scene != null:
+		_play_battle_sfx("card_play")
 		_play_click_feedback()
 		battle_scene.call("play_card", card_index)
 		card_pressed.emit(card_index)
+
 
 func _on_gui_input(event: InputEvent) -> void:
 	if disabled:
 		return
 
-	# 处理鼠标按下
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		# 开始拖拽
 		is_dragging = true
 		drag_start_pos = get_global_mouse_position()
 		drag_offset = global_position - drag_start_pos
 		original_parent = get_parent()
 		original_position = position
 		original_global_position = global_position
-		
-		# 提升卡牌层级
+
 		top_level = true
 		z_index = 100
 		scale = Vector2(1.05, 1.05)
 		self_modulate = Color(1, 1, 1, 0.9)
-		
-		# 阻止事件冒泡
 		accept_event()
-		
-	# 处理鼠标释放
+
 	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if is_dragging:
 			is_dragging = false
-			
-			# 检查是否释放到敌人区域
+
 			var dropped_on_enemy = false
 			if enemy_area and is_instance_valid(enemy_area):
 				dropped_on_enemy = enemy_area.get_global_rect().has_point(get_global_mouse_position())
-			
-			# 恢复卡牌状态
+
 			top_level = false
 			z_index = 0
 			scale = Vector2.ONE
 			self_modulate = Color(1, 1, 1, 1)
-			
-			# 确保卡牌回到原始父节点和位置
+
 			if original_parent and is_instance_valid(original_parent):
 				if get_parent() != original_parent:
 					original_parent.add_child(self)
-				# 恢复原始位置
 				global_position = original_global_position
-			
-			# 如果释放到敌人区域，使用卡牌
+
 			if dropped_on_enemy and battle_scene != null:
+				_play_battle_sfx("card_play")
 				card_dragged_to_enemy.emit(card_index, global_position)
 				battle_scene.call("play_card", card_index)
-			
-			# 阻止事件冒泡，避免触发_pressed()
+
 			accept_event()
+
 
 func _process(_delta: float) -> void:
 	if is_dragging:
-		# 更新卡牌位置
 		var target_pos = get_global_mouse_position() + drag_offset
 		global_position = target_pos
-		
-		# 检查是否悬停在敌人区域
+
 		var hovering_enemy = false
 		if enemy_area and is_instance_valid(enemy_area):
 			hovering_enemy = enemy_area.get_global_rect().has_point(get_global_mouse_position())
-			
-		# 悬停效果
+
 		if hovering_enemy:
 			self_modulate = Color(1.0, 0.95, 0.9, 0.95)
-			# 敌人图标高亮效果
 			_apply_enemy_highlight(true)
 		else:
 			self_modulate = Color(1, 1, 1, 0.9)
-			# 取消敌人图标高亮效果
 			_apply_enemy_highlight(false)
+
 
 func _apply_enemy_highlight(active: bool) -> void:
 	if enemy_area and is_instance_valid(enemy_area):
-		# 获取敌人图标节点
 		var boss_portrait = enemy_area.get_node_or_null("BossPortrait")
 		if boss_portrait and is_instance_valid(boss_portrait):
 			var tween = create_tween()
 			tween.set_trans(Tween.TRANS_CUBIC)
 			tween.set_ease(Tween.EASE_OUT)
-			
+
 			if active:
-				# 增强白光效果，使高光更加明显
 				tween.tween_property(boss_portrait, "modulate", Color(1.2, 1.2, 1.2, 1.0), 0.1)
 			else:
-				# 恢复敌人图标原始状态
 				tween.tween_property(boss_portrait, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
 
 
 func _on_mouse_entered() -> void:
+	_play_battle_sfx("card_hover")
 	_play_hover_animation(true)
 
 
@@ -221,6 +193,11 @@ func _play_click_feedback() -> void:
 	click_tween.tween_property(self, "scale", _base_scale, CLICK_DURATION)
 
 
+func _play_battle_sfx(key: String) -> void:
+	if battle_scene != null and battle_scene.has_method("play_ui_sfx"):
+		battle_scene.call("play_ui_sfx", key)
+
+
 func _kill_hover_tween() -> void:
 	if _hover_tween and is_instance_valid(_hover_tween):
 		_hover_tween.kill()
@@ -228,6 +205,4 @@ func _kill_hover_tween() -> void:
 
 
 func _apply_legacy_frame_visibility() -> void:
-	# Legacy conflicting layer is this Button's StyleBox background.
-	# Keep style resources, only toggle via `flat` so it's reversible in Inspector.
 	flat = not show_legacy_frame
