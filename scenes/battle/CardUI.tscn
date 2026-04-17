@@ -1,11 +1,11 @@
-[gd_scene format=3 uid="uid://d2gtpt7g55yee"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://brgu43j5nkcti" path="res://scenes/battle/card_ui.gd" id="1_card_ui_script"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_font"]
+[ext_resource type="Script" path="res://scenes/battle/card_ui.gd" id="1_card_ui_script"]
+[ext_resource type="FontFile" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_font"]
 [ext_resource type="Script" path="res://scripts/ui/card_view.gd" id="3_card_view_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_bg"]
-bg_color = Color(0.08, 0.09, 0.12, 0.92)
+bg_color = Color(0.08, 0.09, 0.12, 0.94)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
@@ -16,8 +16,8 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="CardUi" type="Button" unique_id=2047351996]
-custom_minimum_size = Vector2(220, 300)
+[node name="CardUi" type="Button"]
+custom_minimum_size = Vector2(170, 250)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -30,7 +30,7 @@ text = ""
 flat = false
 script = ExtResource("1_card_ui_script")
 
-[node name="CardView" type="Control" parent="." unique_id=1838370131]
+[node name="CardView" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,7 +44,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_card_view_script")
 
-[node name="FrameSprite" type="TextureRect" parent="CardView" unique_id=932654155]
+[node name="FrameSprite" type="TextureRect" parent="CardView"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -55,57 +55,57 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="IllustrationSprite" type="TextureRect" parent="CardView" unique_id=83516990]
+[node name="IllustrationSprite" type="TextureRect" parent="CardView"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 32.0
-offset_bottom = 164.0
+offset_top = 28.0
+offset_bottom = 146.0
 grow_horizontal = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="NameLabel" type="Label" parent="CardView" unique_id=1766043487]
+[node name="NameLabel" type="Label" parent="CardView"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 4.0
-offset_bottom = 30.0
+offset_top = 2.0
+offset_bottom = 28.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "CardName"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CostLabel" type="Label" parent="CardView" unique_id=1840906210]
+[node name="CostLabel" type="Label" parent="CardView"]
 layout_mode = 1
 anchors_preset = 0
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 52.0
-offset_bottom = 30.0
+offset_right = 42.0
+offset_bottom = 28.0
 mouse_filter = 2
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DescriptionLabel" type="Label" parent="CardView" unique_id=1429183416]
+[node name="DescriptionLabel" type="Label" parent="CardView"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -118.0
-offset_bottom = -8.0
+offset_top = -94.0
+offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 text = "Description"
 autowrap_mode = 3

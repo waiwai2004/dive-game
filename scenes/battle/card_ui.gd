@@ -15,18 +15,18 @@ var _base_z_index: int = 0
 var _hover_tween: Tween = null
 
 var is_dragging: bool = false
+var _press_started: bool = false
 var drag_start_pos: Vector2 = Vector2.ZERO
 var drag_offset: Vector2 = Vector2.ZERO
 var original_parent: Node
-var original_position: Vector2
 var original_global_position: Vector2
 var enemy_area: Control
 
-const HOVER_SCALE: Vector2 = Vector2(1.12, 1.12)
-const HOVER_DURATION: float = 0.12
+const HOVER_SCALE: Vector2 = Vector2(1.08, 1.08)
+const HOVER_DURATION: float = 0.10
 const CLICK_DURATION: float = 0.05
-const CLICK_SCALE: Vector2 = Vector2(1.04, 1.04)
-const DRAG_THRESHOLD: float = 5.0
+const CLICK_SCALE: Vector2 = Vector2(1.03, 1.03)
+const DRAG_THRESHOLD: float = 10.0
 
 
 func _enter_tree() -> void:
@@ -50,7 +50,7 @@ func _ready() -> void:
 		gui_input.connect(_on_gui_input)
 
 	set_process(true)
-	enemy_area = get_tree().get_root().find_child("BossArea", true, false) as Control
+	enemy_area = get_tree().get_root().find_child("ArenaRoot", true, false) as Control
 
 	if not card_data.is_empty():
 		_refresh_text()
@@ -80,12 +80,24 @@ func _refresh_text() -> void:
 	text = "%s  [%s]\n%d费  认知%d\n%s" % [name_text, type_text, cost, cognition, desc]
 
 
+# 通过卡牌数据判定是否目标敌人
+# 目前规则：造成伤害或施加虚弱 -> 目标敌人；其他（加盾、回SAN、抽牌等）-> 自身/全体
+func _targets_enemy() -> bool:
+	if card_data.has("target"):
+		var t: String = str(card_data["target"]).to_lower()
+		if t in ["enemy", "single_enemy", "foe", "target"]:
+			return true
+		if t in ["self", "all", "ally", "none"]:
+			return false
+	var damage: int = int(card_data.get("damage", 0))
+	var apply_weak: int = int(card_data.get("apply_weak", 0))
+	return damage > 0 or apply_weak > 0
+
+
+# 保留 _pressed 但简化：仅作为保险，避免某些纯键盘/触屏事件的情况。
 func _pressed() -> void:
-	if not is_dragging and battle_scene != null:
-		_play_battle_sfx("card_play")
-		_play_click_feedback()
-		battle_scene.call("play_card", card_index)
-		card_pressed.emit(card_index)
+	# 实际触发由 _on_gui_input 完成，这里留空避免双触发。
+	pass
 
 
 func _on_gui_input(event: InputEvent) -> void:
@@ -93,83 +105,95 @@ func _on_gui_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		is_dragging = true
+		_press_started = true
+		is_dragging = false
 		drag_start_pos = get_global_mouse_position()
 		drag_offset = global_position - drag_start_pos
 		original_parent = get_parent()
-		original_position = position
 		original_global_position = global_position
-
-		top_level = true
-		z_index = 100
-		scale = Vector2(1.05, 1.05)
-		self_modulate = Color(1, 1, 1, 0.9)
 		accept_event()
+		return
 
-	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if is_dragging:
-			is_dragging = false
+	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not _press_started:
+			return
+		_press_started = false
 
-			var dropped_on_enemy = false
-			if enemy_area and is_instance_valid(enemy_area):
-				dropped_on_enemy = enemy_area.get_global_rect().has_point(get_global_mouse_position())
+		var moved_distance: float = get_global_mouse_position().distance_to(drag_start_pos)
+		var was_click: bool = not is_dragging or moved_distance < DRAG_THRESHOLD
 
-			top_level = false
-			z_index = 0
-			scale = Vector2.ONE
-			self_modulate = Color(1, 1, 1, 1)
+		var dropped_on_enemy: bool = false
+		if enemy_area and is_instance_valid(enemy_area):
+			dropped_on_enemy = enemy_area.get_global_rect().has_point(get_global_mouse_position())
 
-			if original_parent and is_instance_valid(original_parent):
-				if get_parent() != original_parent:
-					original_parent.add_child(self)
-				global_position = original_global_position
+		# 决定是否打出
+		var should_play: bool = false
+		if was_click:
+			should_play = true
+		elif _targets_enemy():
+			should_play = dropped_on_enemy
+		else:
+			# 自身 / 全体目标：松手即打出
+			should_play = true
 
-			if dropped_on_enemy and battle_scene != null:
-				_play_battle_sfx("card_play")
-				card_dragged_to_enemy.emit(card_index, global_position)
-				battle_scene.call("play_card", card_index)
+		# 还原外观
+		is_dragging = false
+		top_level = false
+		z_index = _base_z_index
+		scale = Vector2.ONE
+		self_modulate = Color(1, 1, 1, 1)
 
-			accept_event()
+		if original_parent and is_instance_valid(original_parent):
+			if get_parent() != original_parent:
+				original_parent.add_child(self)
+			global_position = original_global_position
+
+		if should_play and battle_scene != null:
+			_play_click_feedback()
+			if dropped_on_enemy and _targets_enemy():
+				card_dragged_to_enemy.emit(card_index, get_global_mouse_position())
+			card_pressed.emit(card_index)
+			battle_scene.call("play_card", card_index)
+
+		accept_event()
 
 
 func _process(_delta: float) -> void:
-	if is_dragging:
-		var target_pos = get_global_mouse_position() + drag_offset
-		global_position = target_pos
+	if not _press_started:
+		return
 
-		var hovering_enemy = false
-		if enemy_area and is_instance_valid(enemy_area):
+	# 超过阈值后正式进入拖拽状态
+	if not is_dragging:
+		if get_global_mouse_position().distance_to(drag_start_pos) >= DRAG_THRESHOLD:
+			is_dragging = true
+			top_level = true
+			z_index = 100
+			scale = Vector2(1.05, 1.05)
+			self_modulate = Color(1, 1, 1, 0.92)
+
+	if is_dragging:
+		global_position = get_global_mouse_position() + drag_offset
+
+		var hovering_enemy: bool = false
+		if _targets_enemy() and enemy_area and is_instance_valid(enemy_area):
 			hovering_enemy = enemy_area.get_global_rect().has_point(get_global_mouse_position())
 
 		if hovering_enemy:
 			self_modulate = Color(1.0, 0.95, 0.9, 0.95)
-			_apply_enemy_highlight(true)
 		else:
 			self_modulate = Color(1, 1, 1, 0.9)
-			_apply_enemy_highlight(false)
-
-
-func _apply_enemy_highlight(active: bool) -> void:
-	if enemy_area and is_instance_valid(enemy_area):
-		var boss_portrait = enemy_area.get_node_or_null("BossPortrait")
-		if boss_portrait and is_instance_valid(boss_portrait):
-			var tween = create_tween()
-			tween.set_trans(Tween.TRANS_CUBIC)
-			tween.set_ease(Tween.EASE_OUT)
-
-			if active:
-				tween.tween_property(boss_portrait, "modulate", Color(1.2, 1.2, 1.2, 1.0), 0.1)
-			else:
-				tween.tween_property(boss_portrait, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
 
 
 func _on_mouse_entered() -> void:
-	_play_battle_sfx("card_hover")
 	_play_hover_animation(true)
+	if battle_scene and battle_scene.has_method("show_card_tooltip"):
+		battle_scene.call("show_card_tooltip", card_data)
 
 
 func _on_mouse_exited() -> void:
 	_play_hover_animation(false)
+	if battle_scene and battle_scene.has_method("hide_card_tooltip"):
+		battle_scene.call("hide_card_tooltip")
 
 
 func _play_hover_animation(hovered: bool) -> void:
@@ -191,11 +215,6 @@ func _play_click_feedback() -> void:
 	var click_tween: Tween = create_tween()
 	click_tween.tween_property(self, "scale", CLICK_SCALE, CLICK_DURATION)
 	click_tween.tween_property(self, "scale", _base_scale, CLICK_DURATION)
-
-
-func _play_battle_sfx(key: String) -> void:
-	if battle_scene != null and battle_scene.has_method("play_ui_sfx"):
-		battle_scene.call("play_ui_sfx", key)
 
 
 func _kill_hover_tween() -> void:
