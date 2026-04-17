@@ -2,6 +2,21 @@ extends Node2D
 
 const BATTLE_SCENE_PATH := "res://scenes/battle/BattleScene.tscn"
 
+# --- 地图与生成常量 ---
+const MAP_WIDTH := 5760.0
+const MAP_HEIGHT := 4320.0
+const GROUND_Y := 4140.0
+const SPAWN_MARGIN := 300.0
+const MIN_ENTITY_DISTANCE := 400.0
+const PLAYER_SAFE_RADIUS := 600.0
+const PLAYER_START := Vector2(260, 720)
+const EXTRA_MEMORY_COUNT := 5
+const EXTRA_BATTLE_COUNT := 6
+
+const MEMORY_ECHO_SCRIPT := preload("res://scenes/explore/memory_echo.gd")
+const GLASS_SHARDS_TEX := preload("res://assets/art/GlassShards.png")
+const ENEMY_TEX := preload("res://assets/art/enemy/enemy01.png")
+
 enum ExplorePhase {
 	TO_MEMORY,
 	MEMORY_EVENT,
@@ -11,26 +26,32 @@ enum ExplorePhase {
 }
 
 @onready var player: CharacterBody2D = $World/Player
-@onready var memory_zone: Area2D = $World/MemoryEchoZone
-@onready var memory_highlight: CanvasItem = get_node_or_null("World/MemoryEchoZone/Highlight")
-@onready var battle_zone: Area2D = $World/BattleZone
-@onready var battle_highlight: CanvasItem = $World/BattleZone/Highlight
 @onready var hint_label: Label = $CanvasLayer/HintLabel
 @onready var memory_event_ui: Control = $CanvasLayer/MemoryEventUI
 
 var current_target: String = ""
 var memory_event_open: bool = false
-var _player_in_memory_zone: bool = false
-var _player_in_battle_zone: bool = false
 var _phase: int = ExplorePhase.TO_MEMORY
 var _event_context: String = ""
 var _transitioning: bool = false
+
+var _memory_zones: Array = []
+var _battle_zones: Array = []
+var _player_in_memory_zones: Array = []
+var _player_in_battle_zones: Array = []
+var _active_memory_zone: Area2D = null
+var _active_battle_zone: Area2D = null
+var _occupied_positions: Array = []
 
 
 func _ready() -> void:
 	if has_node("/root/AudioManager"):
 		AudioManager.play_bgm_segment("explore")
 
+	_register_existing_zones()
+	_create_boundary_walls()
+	_spawn_memory_echoes(EXTRA_MEMORY_COUNT)
+	_spawn_battle_zones(EXTRA_BATTLE_COUNT)
 	_connect_signals()
 	_apply_global_ui_mode()
 	_update_global_stats()
@@ -50,30 +71,27 @@ func _process(_delta: float) -> void:
 
 
 func _connect_signals() -> void:
-	var on_memory_choice: Callable = Callable(self, "_on_memory_choice_selected")
-	var on_memory_closed: Callable = Callable(self, "_on_memory_event_closed")
+	if memory_event_ui.has_signal("choice_selected"):
+		memory_event_ui.choice_selected.connect(_on_memory_choice_selected)
+	if memory_event_ui.has_signal("closed"):
+		memory_event_ui.closed.connect(_on_memory_event_closed)
 
-	if not memory_zone.body_entered.is_connected(_on_memory_zone_body_entered):
-		memory_zone.body_entered.connect(_on_memory_zone_body_entered)
-	if not memory_zone.body_exited.is_connected(_on_memory_zone_body_exited):
-		memory_zone.body_exited.connect(_on_memory_zone_body_exited)
+	for zone in _memory_zones:
+		zone.body_entered.connect(_on_memory_zone_entered.bind(zone))
+		zone.body_exited.connect(_on_memory_zone_exited.bind(zone))
 
-	if not battle_zone.body_entered.is_connected(_on_battle_zone_body_entered):
-		battle_zone.body_entered.connect(_on_battle_zone_body_entered)
-	if not battle_zone.body_exited.is_connected(_on_battle_zone_body_exited):
-		battle_zone.body_exited.connect(_on_battle_zone_body_exited)
-
-	if memory_event_ui.has_signal("choice_selected") and not memory_event_ui.is_connected("choice_selected", on_memory_choice):
-		memory_event_ui.connect("choice_selected", on_memory_choice)
-	if memory_event_ui.has_signal("closed") and not memory_event_ui.is_connected("closed", on_memory_closed):
-		memory_event_ui.connect("closed", on_memory_closed)
+	for zone in _battle_zones:
+		zone.body_entered.connect(_on_battle_zone_entered.bind(zone))
+		zone.body_exited.connect(_on_battle_zone_exited.bind(zone))
 
 
 func _reset_scene_state() -> void:
 	current_target = ""
 	memory_event_open = false
-	_player_in_memory_zone = false
-	_player_in_battle_zone = false
+	_player_in_memory_zones.clear()
+	_player_in_battle_zones.clear()
+	_active_memory_zone = null
+	_active_battle_zone = null
 	_event_context = ""
 	_transitioning = false
 	Game.in_dialogue = false
@@ -113,7 +131,7 @@ func _open_memory_event() -> void:
 	if Game.memory_event_done:
 		_set_hint("这段残响已经调查过。", true)
 		return
-	if not _can_interact_memory():
+	if _active_memory_zone == null:
 		_set_hint("你还无法锁定这段残响。", true)
 		return
 
@@ -216,31 +234,33 @@ func _goto_end_scene() -> void:
 	Game.goto_end()
 
 
-func _on_memory_zone_body_entered(body: Node) -> void:
+func _on_memory_zone_entered(body: Node, zone: Area2D) -> void:
 	if body != player or memory_event_open:
 		return
-	_player_in_memory_zone = true
+	if zone not in _player_in_memory_zones:
+		_player_in_memory_zones.append(zone)
 	_update_interaction_target()
 
 
-func _on_memory_zone_body_exited(body: Node) -> void:
+func _on_memory_zone_exited(body: Node, zone: Area2D) -> void:
 	if body != player:
 		return
-	_player_in_memory_zone = false
+	_player_in_memory_zones.erase(zone)
 	_update_interaction_target()
 
 
-func _on_battle_zone_body_entered(body: Node) -> void:
+func _on_battle_zone_entered(body: Node, zone: Area2D) -> void:
 	if body != player or memory_event_open:
 		return
-	_player_in_battle_zone = true
+	if zone not in _player_in_battle_zones:
+		_player_in_battle_zones.append(zone)
 	_update_interaction_target()
 
 
-func _on_battle_zone_body_exited(body: Node) -> void:
+func _on_battle_zone_exited(body: Node, zone: Area2D) -> void:
 	if body != player:
 		return
-	_player_in_battle_zone = false
+	_player_in_battle_zones.erase(zone)
 	_update_interaction_target()
 
 
@@ -257,16 +277,24 @@ func _update_interaction_target() -> void:
 		return
 
 	var next_target: String = ""
+	_active_memory_zone = null
+	_active_battle_zone = null
 
 	match _phase:
 		ExplorePhase.TO_MEMORY:
-			if _can_interact_memory():
-				next_target = "memory"
+			if not Game.memory_event_done:
+				for zone in _player_in_memory_zones:
+					if _is_zone_discovered(zone):
+						_active_memory_zone = zone
+						next_target = "memory"
+						break
 		ExplorePhase.TO_BATTLE:
-			if _player_in_battle_zone:
+			if _player_in_battle_zones.size() > 0:
+				_active_battle_zone = _player_in_battle_zones[0]
 				next_target = "battle"
 		ExplorePhase.TO_RELAY:
-			if _player_in_battle_zone:
+			if _player_in_battle_zones.size() > 0:
+				_active_battle_zone = _player_in_battle_zones[0]
 				next_target = "battle"
 
 	current_target = next_target
@@ -274,32 +302,24 @@ func _update_interaction_target() -> void:
 	_update_hint_text()
 
 
-func _can_interact_memory() -> bool:
-	if Game.memory_event_done:
-		return false
-	if not _player_in_memory_zone:
-		return false
-	return _is_memory_discovered()
-
-
-func _is_memory_discovered() -> bool:
-	if memory_zone.has_method("is_discovered_by_player"):
-		var result: Variant = memory_zone.call("is_discovered_by_player", player)
+func _is_zone_discovered(zone: Area2D) -> bool:
+	if zone.has_method("is_discovered_by_player"):
+		var result: Variant = zone.call("is_discovered_by_player", player)
 		if result is bool:
 			return bool(result)
-	return _player_in_memory_zone
+	return true
 
 
 func _update_target_highlight() -> void:
-	if memory_highlight:
-		memory_highlight.visible = (_phase == ExplorePhase.TO_MEMORY and _can_interact_memory() and not memory_event_open)
+	for zone in _memory_zones:
+		var hl: CanvasItem = zone.get_node_or_null("Highlight")
+		if hl:
+			hl.visible = (zone == _active_memory_zone and not memory_event_open)
 
-	if battle_highlight:
-		battle_highlight.visible = (
-			(_phase == ExplorePhase.TO_BATTLE or _phase == ExplorePhase.TO_RELAY)
-			and _player_in_battle_zone
-			and not memory_event_open
-		)
+	for zone in _battle_zones:
+		var hl: CanvasItem = zone.get_node_or_null("Highlight")
+		if hl:
+			hl.visible = (zone == _active_battle_zone and not memory_event_open)
 
 
 func _update_hint_text() -> void:
@@ -309,22 +329,27 @@ func _update_hint_text() -> void:
 				_set_hint("目标：按 E 调查记忆残响。", true)
 				return
 
-			if _player_in_memory_zone and not Game.memory_event_done:
-				if _is_memory_discovered():
+			if _player_in_memory_zones.size() > 0 and not Game.memory_event_done:
+				var any_discovered := false
+				for zone in _player_in_memory_zones:
+					if _is_zone_discovered(zone):
+						any_discovered = true
+						break
+				if any_discovered:
 					_set_hint("你锁定了残响位置，按 E 调查。", true)
 				else:
 					_set_hint("调整朝向，锁定前方残响。", true)
 				return
 
-			_set_hint("目标：先调查前方的记忆残响。", true)
+			_set_hint("目标：探索深海，寻找记忆残响。", true)
 			return
 
 		ExplorePhase.TO_BATTLE:
 			if current_target == "battle":
-				_set_hint("目标：按 E 接近异常聚集点，进入首战。", true)
+				_set_hint("目标：按 E 接近异常聚集点，进入战斗。", true)
 				return
 
-			_set_hint("目标：前往异常聚集点。", true)
+			_set_hint("目标：寻找异常聚集点。", true)
 			return
 
 		ExplorePhase.TO_RELAY:
@@ -332,7 +357,7 @@ func _update_hint_text() -> void:
 				_set_hint("目标：按 E 调查中继点残骸，完成本章。", true)
 				return
 
-			_set_hint("目标：返回中继点残骸，调查记录。", true)
+			_set_hint("目标：寻找中继点残骸。", true)
 			return
 
 		ExplorePhase.MEMORY_EVENT:
@@ -380,3 +405,146 @@ func _update_global_stats() -> void:
 	var ui := _get_global_ui()
 	if ui and ui.has_method("refresh_stats"):
 		ui.refresh_stats()
+
+
+# --- 区域注册与边界 ---
+
+func _register_existing_zones() -> void:
+	var mem_zone: Area2D = get_node_or_null("World/MemoryEchoZone")
+	if mem_zone:
+		_memory_zones.append(mem_zone)
+		_occupied_positions.append(mem_zone.position)
+
+	var bat_zone: Area2D = get_node_or_null("World/BattleZone")
+	if bat_zone:
+		_battle_zones.append(bat_zone)
+		_occupied_positions.append(bat_zone.position)
+
+
+func _create_boundary_walls() -> void:
+	var world := $World
+	# 左墙
+	_add_wall(world, Vector2(-10, MAP_HEIGHT / 2.0), Vector2(20, MAP_HEIGHT))
+	# 右墙
+	_add_wall(world, Vector2(MAP_WIDTH + 10, MAP_HEIGHT / 2.0), Vector2(20, MAP_HEIGHT))
+	# 上墙
+	_add_wall(world, Vector2(MAP_WIDTH / 2.0, -10), Vector2(MAP_WIDTH, 20))
+
+
+func _add_wall(parent: Node, pos: Vector2, wall_size: Vector2) -> void:
+	var body := StaticBody2D.new()
+	body.position = pos
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = wall_size
+	col.shape = shape
+	body.add_child(col)
+	parent.add_child(body)
+
+
+# --- 随机生成 ---
+
+func _spawn_memory_echoes(count: int) -> void:
+	var positions := _generate_spawn_positions(count)
+	for pos in positions:
+		var echo := _create_memory_echo(pos)
+		$World.add_child(echo)
+		_memory_zones.append(echo)
+
+
+func _spawn_battle_zones(count: int) -> void:
+	var positions := _generate_spawn_positions(count)
+	for pos in positions:
+		var zone := _create_battle_zone(pos)
+		$World.add_child(zone)
+		_battle_zones.append(zone)
+
+
+func _generate_spawn_positions(count: int) -> Array:
+	var positions: Array = []
+	var max_attempts := count * 100
+	var attempts := 0
+
+	while positions.size() < count and attempts < max_attempts:
+		attempts += 1
+		var pos := Vector2(
+			randf_range(SPAWN_MARGIN, MAP_WIDTH - SPAWN_MARGIN),
+			randf_range(SPAWN_MARGIN, GROUND_Y - 200)
+		)
+
+		if pos.distance_to(PLAYER_START) < PLAYER_SAFE_RADIUS:
+			continue
+
+		var too_close := false
+		for occ_pos in _occupied_positions:
+			if pos.distance_to(occ_pos) < MIN_ENTITY_DISTANCE:
+				too_close = true
+				break
+
+		if not too_close:
+			for p in positions:
+				if pos.distance_to(p) < MIN_ENTITY_DISTANCE:
+					too_close = true
+					break
+
+		if not too_close:
+			positions.append(pos)
+			_occupied_positions.append(pos)
+
+	return positions
+
+
+func _create_memory_echo(pos: Vector2) -> Area2D:
+	var echo := Area2D.new()
+	echo.position = pos
+	echo.set_script(MEMORY_ECHO_SCRIPT)
+
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(320, 520)
+	col.shape = shape
+	echo.add_child(col)
+
+	var sprite := Sprite2D.new()
+	sprite.name = "Sprite2D"
+	sprite.texture = GLASS_SHARDS_TEX
+	sprite.scale = Vector2(0.9, 0.9)
+	echo.add_child(sprite)
+
+	var highlight := Sprite2D.new()
+	highlight.name = "Highlight"
+	highlight.texture = GLASS_SHARDS_TEX
+	highlight.scale = Vector2(0.9, 0.9)
+	highlight.self_modulate = Color(0.8, 1.0, 1.0, 0.65)
+	highlight.visible = false
+	echo.add_child(highlight)
+
+	return echo
+
+
+func _create_battle_zone(pos: Vector2) -> Area2D:
+	var zone := Area2D.new()
+	zone.position = pos
+
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(336, 312)
+	col.shape = shape
+	zone.add_child(col)
+
+	var sprite := Sprite2D.new()
+	sprite.name = "Sprite2D"
+	sprite.texture = ENEMY_TEX
+	sprite.self_modulate = Color(1.0, 0.75, 0.75, 1.0)
+	sprite.scale = Vector2(0.077, 0.069)
+	zone.add_child(sprite)
+
+	var highlight := Sprite2D.new()
+	highlight.name = "Highlight"
+	highlight.texture = ENEMY_TEX
+	highlight.self_modulate = Color(1.0, 0.65, 0.65, 1.0)
+	highlight.scale = Vector2(0.084, 0.086)
+	highlight.visible = false
+	zone.add_child(highlight)
+
+	return zone
