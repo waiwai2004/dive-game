@@ -127,6 +127,30 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nabc4"]
+bg_color = Color(0.04, 0.05, 0.09, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.66, 1, 0.7)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q8wks"]
+bg_color = Color(0.1, 0.16, 0.3, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.75, 1, 0.78)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
 [node name="BattleScene" type="Control" unique_id=782462466]
 layout_mode = 3
 anchors_preset = 15
@@ -353,20 +377,19 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_circle_btn")
 text = "战斗
 记录"
 
-[node name="DiscardPileButton" type="Button" parent="." unique_id=2037331887]
+[node name="DeckButton" type="Button" parent="." unique_id=2037331887]
 layout_mode = 1
-offset_left = 1768.0
-offset_top = 300.0
-offset_right = 1878.0
-offset_bottom = 410.0
+offset_left = 1769.0
+offset_top = 426.0
+offset_right = 1879.0
+offset_bottom = 536.0
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_circle_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_circle_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_circle_btn_hover")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_circle_btn")
-text = "弃牌
-堆"
+text = "卡组"
 
 [node name="EndTurnButton" type="Button" parent="." unique_id=2096853022]
 layout_mode = 1
@@ -381,6 +404,21 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_end_turn")
 theme_override_styles/hover = SubResource("StyleBoxFlat_end_turn")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_end_turn")
 text = "回合结束"
+
+[node name="DiscardPileButton" type="Button" parent="." unique_id=1807945990]
+layout_mode = 0
+offset_left = 1768.0
+offset_top = 300.0
+offset_right = 1878.0
+offset_bottom = 410.0
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_circle_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_circle_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_circle_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_circle_btn")
+text = "弃牌
+堆"
 
 [node name="HandHintLabel" type="Label" parent="." unique_id=583805770]
 layout_mode = 1
@@ -748,3 +786,61 @@ theme_override_font_sizes/bold_font_size = 20
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
+
+[node name="DeckPanel" type="PanelContainer" parent="." unique_id=169079593]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -230.0
+offset_right = 360.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_nabc4")
+
+[node name="MarginContainer" type="MarginContainer" parent="DeckPanel" unique_id=1632786028]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="ContentVBox" type="VBoxContainer" parent="DeckPanel/MarginContainer" unique_id=363874680]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="DeckPanel/MarginContainer/ContentVBox" unique_id=1207181264]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="DeckPanel/MarginContainer/ContentVBox/HeaderRow" unique_id=1757418401]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 28
+text = "当前牌库"
+
+[node name="CloseButton" type="Button" parent="DeckPanel/MarginContainer/ContentVBox/HeaderRow" unique_id=710413518]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_q8wks")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_q8wks")
+theme_override_styles/hover = SubResource("StyleBoxFlat_q8wks")
+text = "关闭"
+
+[node name="DeckText" type="RichTextLabel" parent="DeckPanel/MarginContainer/ContentVBox" unique_id=1751472329]
+custom_minimum_size = Vector2(0, 360)
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("4_font")
+theme_override_fonts/bold_font = ExtResource("4_font")
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 24
+bbcode_enabled = true
+
+[connection signal="pressed" from="DeckButton" to="." method="_on_deck_button_pressed"]
+[connection signal="pressed" from="DeckPanel/MarginContainer/ContentVBox/HeaderRow/CloseButton" to="." method="hide_deck_panel"]
