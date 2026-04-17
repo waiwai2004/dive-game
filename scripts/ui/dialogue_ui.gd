@@ -7,7 +7,7 @@ signal choice_selected(result: String)
 @onready var portrait_left: TextureRect = $PortraitLeft
 @onready var portrait_right: TextureRect = $PortraitRight
 @onready var dialogue_panel: CanvasItem = $DialoguePanel
-@onready var dialogue_text: RichTextLabel = $DialoguePanel/MarginContainer/DialogueText
+@onready var dialogue_text = $DialoguePanel/MarginContainer/DialogueText
 @onready var name_label: Label = $NameLabel
 @onready var next_hint: Label = get_node_or_null("Label")
 
@@ -85,7 +85,7 @@ func show_current_entry() -> void:
 		name_label.text = String(entry.get("name", ""))
 
 	if dialogue_text:
-		dialogue_text.text = String(entry.get("text", ""))
+		dialogue_text.set("bbcode", String(entry.get("text", "")))
 
 	_update_left_portrait(entry)
 	_update_right_portrait(entry)

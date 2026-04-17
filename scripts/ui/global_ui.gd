@@ -303,41 +303,27 @@ func _build_card_preview(card_id: String, count: int) -> Control:
 	var card: Dictionary = {}
 	if db and db.has_method("get_card"):
 		card = db.get_card(card_id)
-
-	var name_text := str(card.get("name", card_id))
-	var desc_text := str(card.get("description", card.get("desc", "")))
-	var cost_text := str(card.get("cost", card.get("energy_cost", 0)))
-	var cognition_text := str(card.get("cognition", 0))
-
-	var type_text := str(card.get("type", card.get("card_type", "")))
-	if db and db.has_method("get_type_text"):
-		type_text = db.get_type_text(type_text)
-
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(180, 280)
-
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 10)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_right", 10)
-	margin.add_theme_constant_override("margin_bottom", 10)
-	panel.add_child(margin)
-
-	var vbox := VBoxContainer.new()
-	margin.add_child(vbox)
-
-	var title := Label.new()
-	title.text = "%s  x%d" % [name_text, count]
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title)
-
-	var stats := Label.new()
-	stats.text = "%s费  认知%s  [%s]" % [cost_text, cognition_text, type_text]
-	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(stats)
-
-	var desc := Label.new()
-	desc.text = desc_text
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(desc)
-	return panel
+	
+	# 直接实例化 CardUI
+	var card_scene = preload("res://scenes/battle/CardUI.tscn")
+	var card_ui = card_scene.instantiate()
+	
+	# 调用 setup 来初始化卡牌，但不设置 battle_scene
+	if card_ui.has_method("setup"):
+		card_ui.call("setup", card, -1, null)
+	
+	# 完全禁用交互
+	card_ui.disabled = true
+	card_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# 添加数量标签
+	var vbox = VBoxContainer.new()
+	vbox.add_child(card_ui)
+	
+	if count > 1:
+		var count_label = Label.new()
+		count_label.text = "x%d" % count
+		count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(count_label)
+	
+	return vbox

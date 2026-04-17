@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bqwqm1pt42tjc" path="res://scenes/story/story_scene.gd" id="1_story_script"]
 [ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_story_font"]
-[ext_resource type="Script" uid="uid://bg35omrn2je6b" path="res://scenes/story/red_text_anomaly_effect.gd" id="3_red_fx"]
 
 [node name="StoryScene" type="Control" unique_id=1916164226]
 layout_mode = 3
@@ -83,7 +82,6 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 2
 horizontal_alignment = 1
-script = ExtResource("3_red_fx")
 
 [node name="PageHint" type="Label" parent="." unique_id=248556053]
 layout_mode = 1

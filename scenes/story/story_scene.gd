@@ -2,8 +2,6 @@ extends Control
 
 const BASE_SCENE_PATH := "res://scenes/base/BaseScene.tscn"
 const STORY_DATA := preload("res://data/story_data.gd")
-const RED_TEXT_COLOR := Color(0.85, 0.15, 0.15, 1.0)
-const WHITE_TEXT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 
 @onready var background: ColorRect = $Background
 @onready var illustration: TextureRect = $Illustration
@@ -19,6 +17,10 @@ var _is_transitioning := false
 
 
 func _ready() -> void:
+	# 确保开启 BBCode 解析
+	story_text.bbcode_enabled = true
+	center_text.bbcode_enabled = true
+	  
 	if has_node("/root/AudioManager"):
 		AudioManager.play_bgm_segment("story")
 	if has_node("/root/GlobalUI"):
@@ -81,20 +83,16 @@ func _show_page(index: int) -> void:
 		return
 
 	var page: Dictionary = _pages[index]
-	var page_type := String(page.get("type", "credit"))
-	_set_red_text_effect_enabled(page_type == "black_text_red")
 
 	background.color = Color.BLACK
-	center_text.clear()
-	story_text.clear()
+	center_text.text = "" 
+	story_text.text = ""
 
-	match page_type:
-		"story":
-			_show_story_page(page)
-		"black_text_red":
-			_show_center_text_page(page, RED_TEXT_COLOR)
-		_:
-			_show_center_text_page(page, WHITE_TEXT_COLOR)
+	# 有图就按剧情页显示，没图就按居中文字显示
+	if page.has("image"):
+		_show_story_page(page)
+	else:
+		_show_center_text_page(page)
 
 
 func _show_story_page(page: Dictionary) -> void:
@@ -103,8 +101,8 @@ func _show_story_page(page: Dictionary) -> void:
 	center_text.visible = false
 
 	var image_path := String(page.get("image", ""))
-	var text_value := String(page.get("text", ""))
-	story_text.text = text_value
+	# 改为直接赋值，颜色和特效全靠文字内的 BBCode 解析
+	story_text.text = String(page.get("text", ""))
 
 	if image_path.is_empty():
 		illustration.texture = null
@@ -118,13 +116,13 @@ func _show_story_page(page: Dictionary) -> void:
 		push_warning("Story image load failed: %s" % image_path)
 
 
-func _show_center_text_page(page: Dictionary, color: Color) -> void:
+func _show_center_text_page(page: Dictionary) -> void:
 	illustration.visible = false
 	dialogue_panel.visible = false
 	center_text.visible = true
 
+	# 改为直接赋值，颜色和特效全靠文字内的 BBCode 解析
 	center_text.text = String(page.get("text", ""))
-	center_text.add_theme_color_override("default_color", color)
 
 
 func _go_to_base_with_fade() -> void:
@@ -148,8 +146,3 @@ func _fade_to_alpha(target_alpha: float, duration: float) -> void:
 	var tween := create_tween()
 	tween.tween_property(fade_rect, "color:a", target_alpha, duration)
 	await tween.finished
-
-
-func _set_red_text_effect_enabled(enabled: bool) -> void:
-	if center_text.has_method("set_effect_enabled"):
-		center_text.call("set_effect_enabled", enabled)

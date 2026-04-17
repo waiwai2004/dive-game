@@ -25,6 +25,7 @@
 [ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="20_2kcpl"]
 [ext_resource type="Texture2D" uid="uid://b5ou0gjqyyirg" path="res://assets/art/characters/player/IMG_3421.PNG" id="20_xrneb"]
 [ext_resource type="Texture2D" uid="uid://dx4gqejeupdct" path="res://assets/art/ui/button/base_choice.PNG" id="21_jnb81"]
+[ext_resource type="Script" uid="uid://2f4fi75scxes" path="res://addons/richtext2/richer_text_label.gd" id="24_y3bet"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q4qdp"]
 size = Vector2(1917.5, 192)
@@ -269,6 +270,9 @@ theme_override_font_sizes/mono_font_size = 24
 bbcode_enabled = true
 fit_content = true
 vertical_alignment = 1
+script = ExtResource("24_y3bet")
+text_speed = null
+auto_hide_on_finish = null
 
 [node name="NameLabel" type="Label" parent="CanvasLayer/DialogueUI" unique_id=868816326]
 layout_mode = 1
