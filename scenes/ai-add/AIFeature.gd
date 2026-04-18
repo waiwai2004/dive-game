@@ -1,23 +1,49 @@
-extends Node
+﻿extends Node
 
 @onready var http_request: HTTPRequest = $HTTPRequest
+@onready var rich_text_label: RichTextLabel = $CanvasLayer/RichTextLabel
+@onready var card_container: Control = $CanvasLayer/CardContainer
+@onready var input_panel: Control = $CanvasLayer/InputPanel
+@onready var action_input: LineEdit = $CanvasLayer/InputPanel/ActionInput
+@onready var submit_btn: Button = $CanvasLayer/InputPanel/SubmitBtn
 
 var zhipu_api_key: String = ""
 
 func _ready() -> void:
+    if typeof(GlobalUI) == TYPE_OBJECT:
+        GlobalUI.visible = false
+        
+    rich_text_label.add_theme_font_size_override("normal_font_size", 24)
     zhipu_api_key = OS.get_environment("ZHIPU_API_KEY")
     if zhipu_api_key.is_empty():
         push_error("环境变量 ZHIPU_API_KEY 未设置！")
+        rich_text_label.text = "[color=red]环境变量 ZHIPU_API_KEY 未设置！[/color]"
         return
         
     http_request.request_completed.connect(_on_request_completed)
     
-    # 测试用例：传入一个测试用户的行为
-    var player_action = "我看到路上有一只受伤的猫，我决定立刻冲上去用尽全力保护它并把它带回家。"
+    submit_btn.pressed.connect(_on_submit_pressed)
+    
+    # 设置前置深海剧情
+    var initial_story = """[color=cyan]====== 事件：深海的异响 ======[/color]
+你独自驾驶探海舱在漆黑的万米深海中航行。外面的水压令人窒息。
+突然，探照灯扫过一个巨大的、类似鱼头人身的不明生物阴影。它并没有直接攻击你，而是用苍白的手指在潜艇外部的玻璃上缓慢地划着圈，发出令人毛骨悚然的惨叫声，无线电中同时还传来了已故队友断断续续的哭泣求救......
+
+这超自然的恐惧让你呼吸急促。
+[color=yellow]请在下方输入你的行动来做出应对：[/color]"""
+    rich_text_label.text = initial_story
+
+func _on_submit_pressed() -> void:
+    var player_action = action_input.text.strip_edges()
+    if player_action.is_empty():
+        return
+        
+    input_panel.hide()
     evaluate_action(player_action)
 
 func evaluate_action(action_text: String) -> void:
     print("开始评估玩家行为：", action_text)
+    rich_text_label.text = "[color=orange]你的行动: [/color]" + action_text + "\n\n[color=yellow]AI KP 正在判定剧情走势与掷骰...[/color]"
     
     var url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
     var headers = [
@@ -25,20 +51,22 @@ func evaluate_action(action_text: String) -> void:
         "Authorization: Bearer " + zhipu_api_key
     ]
     
-    var system_prompt = """
-你是一个游戏中的AI助手，并且扮演故事中的判定系统。
-你需要根据玩家在一件事情中的行为描述给予三个维度的属性标签。
+    var system_prompt = """你是一个跑团游戏中的AI守秘人（KP），负责驱动故事并判定玩家的心智。
+游戏背景：玩家是一名潜航员，身处极深的海底进行探索，周围是令人窒息的幽闭深海。他们之前收到了已故同伴的求救信号，深海中似乎还有古老、低沉的未知低语在引诱他们。
+1. 首先，结合【深海、未知恐惧、幽闭潜航】的背景框架，根据玩家的行为，进行一到两段精彩且沉浸式的剧情演绎描述，讲述玩家行动后在深海潜艇内或黑暗海水中发生的故事结果（纯客观或第二人称叙述，强调深海氛围）。
+2. 在剧情文本之后，务必使用```json包围并输出你的系统判定。
+
+你需要根据玩家行为，给出三个维度的属性标签。
 维度1：【偏善】或【偏恶】
 维度2：【激进】或【保守】
 维度3：【守序】或【混乱】
 
-你还要为系统即将生成的一张卡牌设定其费用和具体数值。
-卡牌数值属性包括：
+你还要为系统即将生成的一张技能卡牌设定其精神和认知负荷以及具体数值：
 - 精神负荷：0~10（推荐：低费0~2，中费3~5，高费6~10）
 - 认知负荷：1~10（推荐：低费1~3，中费4~6，高费7~10）
-- X值：这是卡牌效果中的具体数值变量（比如造成X点伤害，恢复X点属性，叠加X层buff），通常是 1 到 20 的整数。
+- X值：这是卡牌效果中的核心数值变量，1到20的整数。
 
-请直接以严格的JSON格式进行输出，不要包含任何多余的话语和Markdown语法（比如不要包在```json里）：
+```json
 {
   "维度1": "偏善",
   "维度2": "激进",
@@ -46,9 +74,9 @@ func evaluate_action(action_text: String) -> void:
   "精神负荷": 3,
   "认知负荷": 4,
   "X值": 5,
-  "理由": "简短的一句话解释原因"
+  "理由": "一句话解释你的判定逻辑"
 }
-"""
+```"""
     
     var body = {
         "model": "glm-4-flash",
@@ -56,91 +84,183 @@ func evaluate_action(action_text: String) -> void:
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": action_text}
         ],
-        "temperature": 0.5
+        "temperature": 0.6
     }
     
-    var json_string = JSON.stringify(body)
-    var err = http_request.request(url, headers, HTTPClient.METHOD_POST, json_string)
+    var err = http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(body))
     if err != OK:
-        push_error("发送HTTP请求失败: " + str(err))
+        rich_text_label.text += "\n[color=red]网络请求错误[/color]"
 
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
     if response_code != 200:
-        push_error("请求失败, 状态码: " + str(response_code))
-        print("Body: ", body.get_string_from_utf8())
+        rich_text_label.text = "请求错误\n" + body.get_string_from_utf8()
         return
         
     var json = JSON.new()
-    var err = json.parse(body.get_string_from_utf8())
-    if err != OK:
-        push_error("JSON解析失败: " + json.get_error_message())
+    if json.parse(body.get_string_from_utf8()) != OK:
         return
         
     var data = json.get_data()
     if data.has("choices") and data["choices"].size() > 0:
-        var content: String = data["choices"][0]["message"]["content"]
-        content = content.replace("```json", "").replace("```", "").strip_edges()
+        var raw_content: String = data["choices"][0]["message"]["content"]
+        
+        var text_part = raw_content
+        var json_str = ""
+        
+        var json_start = raw_content.find("```json")
+        if json_start != -1:
+            var json_end = raw_content.find("```", json_start + 7)
+            if json_end != -1:
+                json_str = raw_content.substr(json_start + 7, json_end - (json_start + 7)).strip_edges()
+                text_part = raw_content.substr(0, json_start).strip_edges()
+        else:
+            var fb_start = raw_content.find('{')
+            var fb_end = raw_content.rfind('}')
+            if (fb_start != -1) and (fb_end != -1):
+                json_str = raw_content.substr(fb_start, (fb_end - fb_start) + 1).strip_edges()
+                text_part = raw_content.substr(0, fb_start).strip_edges()
+                
+        rich_text_label.text += "\n\n[color=cyan]====== 场景故事 ======[/color]\n" + text_part + "\n\n"
+        
         var ai_json = JSON.new()
-        if ai_json.parse(content) == OK:
+        if ai_json.parse(json_str) == OK:
             var result_data = ai_json.get_data()
-            print("AI返回结果: ", result_data)
+            rich_text_label.text += "[color=green]判定: " + result_data.get("理由", "") + "[/color]"
             generate_card(result_data)
         else:
-            push_error("无法解析AI返回的内容为JSON: " + content)
+            rich_text_label.text += "\n[color=red]JSON解析失败！[/color]\n" + json_str
+            generate_card({"维度1":"偏善", "维度2":"激进", "维度3":"守序", "精神负荷":1, "认知负荷":1, "X值":1})
     else:
-        push_error("AI返回数据格式不正确")
+        rich_text_label.text = "AI 返回格式不对！"
 
 func generate_card(ai_data: Dictionary) -> void:
     var tag1 = ai_data.get("维度1", "偏善")
     var tag2 = ai_data.get("维度2", "激进")
     var tag3 = ai_data.get("维度3", "守序")
     
-    # 基础概率
-    var prob_a = 0.33
-    var prob_b = 0.34
-    var prob_c = 0.33
+    if typeof(Game) == TYPE_OBJECT and Game.has_method("add_card"):
+        if "player_tags" in Game:
+            Game.player_tags.append(tag1)
+            Game.player_tags.append(tag2)
+            Game.player_tags.append(tag3)
+            print("记录玩家标签: ", Game.player_tags)
     
-    # 计算概率修正
-    # 偏善: A-20%, B+10%, C+10%   |   偏恶: A+20%, B-10%, C-10%
+    var prob_a = 0.33 # A类：直白攻击伤害类
+    var prob_b = 0.34 # B类：自身防御回复类
+    var prob_c = 0.33 # C类：状态控制异常类
+    
+    # 根据玩家性格对不同种类卡牌的抽取概率进行修正
     if tag1 == "偏善":
-        prob_a -= 0.20; prob_b += 0.10; prob_c += 0.10
+        prob_a -= 0.15; prob_b += 0.10; prob_c += 0.05
     elif tag1 == "偏恶":
-        prob_a += 0.20; prob_b -= 0.10; prob_c -= 0.10
+        prob_a += 0.15; prob_b -= 0.10; prob_c -= 0.05
         
-    # 激进: A+5%, B+5%, C-10%    |   保守: A+5%, C-5%
     if tag2 == "激进":
-        prob_a += 0.05; prob_b += 0.05; prob_c -= 0.10
+        prob_a += 0.15; prob_b -= 0.10; prob_c -= 0.05
     elif tag2 == "保守":
-        prob_a += 0.05; prob_c -= 0.05
+        prob_a -= 0.15; prob_b += 0.15
         
-    # 守序: B+10%, C-10%         |   混乱: 不变
     if tag3 == "守序":
-        prob_b += 0.10; prob_c -= 0.10
+        prob_c += 0.15; prob_a -= 0.15
+    elif tag3 == "混乱":
+        prob_c += 0.15; prob_b -= 0.15
         
-    print("最终概率 -> A类(伤害):%.0f%% B类(属性):%.0f%% C类(buff):%.0f%%" % [prob_a*100, prob_b*100, prob_c*100])
-    
     var r = randf()
-    var template_type = ""
-    var category = ""
-    if r < prob_a:
-        template_type = "A类"
-        category = "理解卡（攻击）"
-    elif r < prob_a + prob_b:
-        template_type = "B类"
-        category = "重构卡（改变属性）"
-    else:
-        template_type = "C类"
-        category = "共情卡（增益/减益）"
-        
-    print("抽中模板类型: ", template_type, " (", category, ")")
+    var t_type = ""
+    var effect = ""
+    var x = int(ai_data.get("X值", 1))
     
-    var card_data = {
-        "名字": "AI融合卡牌",
-        "类别": category,
-        "精神负荷": ai_data.get("精神负荷", 1),
-        "认知负荷": ai_data.get("认知负荷", 1),
-        "效果模板": template_type,
-        "X值": ai_data.get("X值", 1)
+    # 根据需求表创建对应的模板分类组（A类/B类/C类）以及对应标签的独有选项
+    var a_pool = ["对敌方单体造成 %d 点伤害。" % x]
+    var b_pool = ["回复自身 %d 点生命值。" % x, "增加自身 %d 点防御护盾。" % x]
+    var c_pool = ["对目标施加 %d 层『深海凝视』（减速）。" % x]
+    
+    if "偏恶" == tag1:
+        a_pool.append("冷酷地撕裂目标，造成 %d 点穿透伤害。" % x)
+    if "偏善" == tag1:
+        b_pool.append("牺牲认知，为自身提供 %d 点精神庇护。" % x)
+        
+    if "激进" == tag2:
+        a_pool.append("不顾一切地爆发，对所有敌人造成 %d 点伤害。" % x)
+    if "保守" == tag2:
+        b_pool.append("闭锁心智，获得 %d 点防御并抵御下一次深海侵蚀。" % x)
+        
+    if "守序" == tag3:
+        c_pool.append("制定规则，使自身获得 %d 层『理智锚点』。" % x)
+    if "混乱" == tag3:
+        c_pool.append("让不可名状充斥脑海，随机给全场施加 %d 层『异变』。" % x)
+        
+    if r < prob_a:
+        t_type = "理解卡(A类)"
+        effect = a_pool[randi() % a_pool.size()]
+    elif r < prob_a + prob_b:
+        t_type = "重构卡(B类)"
+        effect = b_pool[randi() % b_pool.size()]
+    else:
+        t_type = "共情卡(C类)"
+        effect = c_pool[randi() % c_pool.size()]
+        
+    var ai_card_id = "ai_card_" + str(Time.get_ticks_msec())
+    
+    var available_arts = [
+        "res://assets/art/cards/43944f6b22669d538130d73293568073.jpg",
+        "res://assets/art/cards/94263a1e9c156ddc5c7d1e2ab78a7b53.jpg",
+        "res://assets/art/cards/aa6cf5bc1cce7edc9d5d5d795ca8cf3d.jpg",
+        "res://assets/art/cards/attack.png",
+        "res://assets/art/cards/bless.png",
+        "res://assets/art/cards/ca2994c8126823498642732e30308f81.jpg",
+        "res://assets/art/cards/d5437c59e130fbe526170a63d575a5e0.png",
+        "res://assets/art/cards/ea6fbd55192c28382eec7c62e36bb91c.png",
+        "res://assets/art/cards/relief.png",
+        "res://assets/art/cards/resonance.png"
+    ]
+    var random_art = available_arts[randi() % available_arts.size()]
+        
+    var card_dict = {
+        "id": ai_card_id,
+        "name": "意念干涉",
+        "type": t_type,
+        "cost": ai_data.get("精神负荷", 1),
+        "cognition": ai_data.get("认知负荷", 1),
+        "description": effect,
+        "target": "enemy" if "A类" in t_type else "self",
+        "art_illustration_path": random_art
     }
     
-    print("生成的新卡牌数据：\n", card_data)
+    var cd = CardData.new()
+    cd.card_id = card_dict["id"]
+    cd.card_name = card_dict["name"]
+    cd.card_type = card_dict["type"]
+    cd.energy_cost = int(card_dict["cost"])
+    cd.cognition = int(card_dict["cognition"])
+    cd.description = card_dict["description"]
+    cd.target_type = card_dict["target"]
+    if "art_illustration_path" in cd:
+        cd.art_illustration_path = card_dict["art_illustration_path"]
+    
+    if typeof(CardDatabase) == TYPE_OBJECT:
+        if CardDatabase.has_method("get_all_cards"):
+            CardDatabase._repo._cards_by_id[cd.card_id] = cd
+    
+    if typeof(Game) == TYPE_OBJECT and Game.has_method("add_card"):
+        Game.add_card(cd.card_id)
+        print("卡牌已存入Game.deck：", Game.deck)
+        
+    show_card_in_ui(card_dict)
+
+func show_card_in_ui(card_dict: Dictionary) -> void:
+    for child in card_container.get_children():
+        child.queue_free()
+        
+    var card_scene = load("res://scenes/battle/CardUI.tscn") as PackedScene
+    if card_scene:
+        var card_ui = card_scene.instantiate()
+        card_container.add_child(card_ui)
+        card_ui.custom_minimum_size = Vector2(250, 350)
+        card_ui.anchors_preset = Control.PRESET_CENTER
+        card_ui.position = Vector2(0, 0)
+        
+        if card_ui.has_method("setup"):
+            card_ui.setup(card_dict, 0, self)
+            if card_ui.has_method("_refresh_text"):
+                card_ui.call("_refresh_text")

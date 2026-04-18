@@ -1,8 +1,69 @@
-[gd_scene format=3 uid="uid://ca7er8wdi7eis"]
+[gd_scene format=3 uid="uid://bw30ptjye8gwu"]
 
-[ext_resource type="Script" uid="uid://qwfslq2ipf0p" path="res://scenes/ai-add/AIFeature.gd" id="1_aixy8"]
+[ext_resource type="Script" uid="uid://255h7vsrxugo" path="res://scenes/ai-add/AIFeature.gd" id="1_xxx8a"]
 
-[node name="AIFeature" type="Node" unique_id=157643997]
-script = ExtResource("1_aixy8")
+[node name="AIFeature" type="Node" unique_id=1778987935]
+script = ExtResource("1_xxx8a")
 
-[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=981934137]
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1710550196]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=706605280]
+layer = 100
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=2049759825]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12549, 0.12549, 0.12549, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer" unique_id=2015563498]
+anchors_preset = -1
+anchor_right = 0.65
+anchor_bottom = 0.9
+offset_left = 60.0
+offset_top = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "Waiting for AI..."
+
+[node name="InputPanel" type="HBoxContainer" parent="CanvasLayer" unique_id=777984335]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = -100.0
+offset_right = -60.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="ActionInput" type="LineEdit" parent="CanvasLayer/InputPanel" unique_id=1226894304]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+placeholder_text = "在此输入你的应对行动..."
+
+[node name="SubmitBtn" type="Button" parent="CanvasLayer/InputPanel" unique_id=935228767]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = " 潜 入 "
+
+[node name="CardContainer" type="Control" parent="CanvasLayer" unique_id=2066489141]
+layout_mode = 3
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -175.0
+offset_right = -130.0
+offset_bottom = 175.0
+grow_horizontal = 0
+grow_vertical = 2
