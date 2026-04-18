@@ -20,6 +20,8 @@ var cognition_max: int:
 
 var deck: Array[String] = []
 
+var player_tags: Array[String] = []
+
 var tag_aggressive: int = 0
 var tag_orderly: int = 0
 
