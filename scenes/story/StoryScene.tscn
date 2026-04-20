@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c8bgtyv2idxdt"]
 
 [ext_resource type="Script" uid="uid://bqwqm1pt42tjc" path="res://scenes/story/story_scene.gd" id="1_story_script"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_story_font"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="2_story_font"]
 
 [node name="StoryScene" type="Control" unique_id=1916164226]
 layout_mode = 3

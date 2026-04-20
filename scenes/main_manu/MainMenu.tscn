@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://broxp3v1pxcnh" path="res://scenes/main_manu/main_menu.gd" id="1_g316v"]
 [ext_resource type="Texture2D" uid="uid://dty202k7yyftm" path="res://assets/art/backgrounds/mainmenu_bg.PNG" id="2_6xxem"]
 [ext_resource type="Texture2D" uid="uid://dub88ew8dk35g" path="res://assets/art/backgrounds/Logo.PNG" id="3_vwd7k"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="4_akniq"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_akniq"]
 
 [node name="MsinMenu" type="Control" unique_id=1678201818]
 layout_mode = 3

@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/battle/card_ui.gd" id="1_card_ui_script"]
-[ext_resource type="FontFile" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_font"]
+[ext_resource type="FontFile" path="res://assets/art/霞鹜漫黑.ttf" id="2_font"]
 [ext_resource type="Script" path="res://scripts/ui/card_view.gd" id="3_card_view_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_bg"]

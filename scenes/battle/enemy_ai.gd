@@ -78,12 +78,13 @@ func is_dead() -> bool:
 
 
 ## 执行当前意图。返回：
-##   { "block_consumed": int, "damage_to_player": int, "weak_applied_to_player": int }
+##   { "block_consumed": int, "damage_to_player": int, "raw_attack_value": int, "weak_applied_to_player": int }
 func execute_turn(player_block: int) -> Dictionary:
 	var intent := get_current_intent()
 	var result := {
 		"block_consumed": 0,
 		"damage_to_player": 0,
+		"raw_attack_value": 0,
 		"weak_applied_to_player": 0,
 	}
 
@@ -93,6 +94,7 @@ func execute_turn(player_block: int) -> Dictionary:
 			var damage_to_hp := maxi(0, attack_value - player_block)
 			result.block_consumed = mini(attack_value, player_block)
 			result.damage_to_player = damage_to_hp
+			result.raw_attack_value = attack_value
 			log_emitted.emit("敌人发动【%s】，造成%d点伤害。" % [str(intent.get("text", "攻击")), damage_to_hp])
 		"apply_weak":
 			var weak_value := int(intent.get("value", 0))

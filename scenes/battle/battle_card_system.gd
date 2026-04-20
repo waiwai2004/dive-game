@@ -25,11 +25,17 @@ var player_weak: int = 0
 
 var _enemy_ai: BattleEnemyAI
 var _visual_effects: BattleVisualEffects
+var _status_manager: StatusManager
+var _player_buff_manager: BuffManager
+var _enemy_buff_manager: BuffManager
 
 
-func setup(enemy_ai: BattleEnemyAI, visual_effects: BattleVisualEffects) -> void:
+func setup(enemy_ai: BattleEnemyAI, visual_effects: BattleVisualEffects, status_manager: StatusManager = null, player_buff_manager: BuffManager = null, enemy_buff_manager: BuffManager = null) -> void:
 	_enemy_ai = enemy_ai
 	_visual_effects = visual_effects
+	_status_manager = status_manager
+	_player_buff_manager = player_buff_manager
+	_enemy_buff_manager = enemy_buff_manager
 
 
 # ====== 对外 API ======
@@ -49,10 +55,28 @@ func start_battle() -> void:
 	energy = 0
 	Game.clear_cognition()
 
+	_draw_all_cards_to_hand()
+
+
+func _draw_all_cards_to_hand() -> void:
+	while not draw_pile.is_empty():
+		hand.append(draw_pile.pop_back())
+	if not discard_pile.is_empty():
+		draw_pile = discard_pile.duplicate()
+		discard_pile.clear()
+		draw_pile.shuffle()
+		while not draw_pile.is_empty():
+			hand.append(draw_pile.pop_back())
+	log_emitted.emit("获得全部手牌。")
+
 
 func start_turn() -> void:
 	energy = mini(energy + ENERGY_GAIN_PER_TURN, ENERGY_MAX)
-	draw_cards(HAND_DRAW_COUNT)
+	if hand.is_empty():
+		if Game.player_cognition > 0:
+			Game.clear_cognition()
+			log_emitted.emit("手牌打完，认知负荷已清零。")
+		_draw_all_cards_to_hand()
 
 
 func draw_cards(count: int) -> void:
@@ -83,6 +107,8 @@ func get_effective_cost(card: Dictionary) -> int:
 	var cost: int = int(card.get("cost", 0))
 	if Game.is_distorted():
 		cost += 1
+	if _status_manager and _status_manager.is_status_active("癫狂"):
+		cost = _status_manager.modify_card_value(cost, "cost")
 	return maxi(cost, 0)
 
 
@@ -106,6 +132,7 @@ func play_card(card_index: int) -> bool:
 
 	discard_pile.append(card_id)
 	hand.remove_at(card_index)
+
 	return true
 
 
@@ -117,6 +144,10 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 	var damage: int = int(card.get("damage", 0))
 	if damage > 0:
+		if _status_manager and _status_manager.is_status_active("癫狂"):
+			damage = _status_manager.modify_card_value(damage, "damage")
+		if _enemy_buff_manager:
+			damage = _enemy_buff_manager.modify_damage_taken(damage)
 		var final_damage := apply_weak_to_damage(damage, player_weak)
 		_enemy_ai.take_damage(final_damage)
 		_visual_effects.play_enemy_hit_feedback()
@@ -124,6 +155,8 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 	var block_gain: int = int(card.get("block", 0))
 	if block_gain > 0:
+		if _status_manager and _status_manager.is_status_active("癫狂"):
+			block_gain = _status_manager.modify_card_value(block_gain, "block")
 		player_block += block_gain
 		fragments.append("获得%d点护盾" % block_gain)
 
@@ -135,6 +168,10 @@ func _apply_card_effect(card: Dictionary) -> void:
 	var weak_on_enemy: int = int(card.get("apply_weak", 0))
 	if weak_on_enemy > 0:
 		_enemy_ai.apply_weak(weak_on_enemy)
+		if _enemy_buff_manager:
+			var weakness_debuff = WeaknessDebuff.new()
+			weakness_debuff.set_stacks(weak_on_enemy)
+			_enemy_buff_manager.add_buff(weakness_debuff)
 		fragments.append("施加%d层虚弱" % weak_on_enemy)
 
 	var san_cost: int = int(card.get("san_cost", 0))

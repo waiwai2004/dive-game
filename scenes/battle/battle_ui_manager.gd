@@ -26,9 +26,6 @@ var _boss_intent_label: Label
 
 # ====== 敌人区 ======
 var _boss_portrait: TextureRect
-var _enemy_info_popup: PanelContainer
-var _enemy_info_title: Label
-var _enemy_info_body: RichTextLabel
 
 # ====== 左侧玩家状态 ======
 var _pie_chart: Control
@@ -84,8 +81,6 @@ func setup(scene: Node, card_system: BattleCardSystem, enemy_ai: BattleEnemyAI, 
 func _process(_delta: float) -> void:
 	if _tooltip_panel and _tooltip_panel.visible:
 		_reposition_tooltip()
-	if _enemy_info_popup and _enemy_info_popup.visible:
-		_reposition_enemy_info_popup()
 
 
 # ====== 节点缓存 ======
@@ -96,9 +91,6 @@ func _cache_node_refs() -> void:
 	_boss_intent_label = _scene.get_node("TopBossBar/MarginContainer/HBoxContainer/BossIntentLabel")
 
 	_boss_portrait = _scene.get_node("ArenaRoot/BossPortrait")
-	_enemy_info_popup = _scene.get_node("EnemyInfoPopup")
-	_enemy_info_title = _scene.get_node("EnemyInfoPopup/MarginContainer/VBoxContainer/TitleLabel")
-	_enemy_info_body = _scene.get_node("EnemyInfoPopup/MarginContainer/VBoxContainer/BodyLabel")
 
 	var left := "LeftPanel/MarginContainer/VBoxContainer"
 	_pie_chart = _scene.get_node(left + "/PieChartStat")
@@ -153,15 +145,13 @@ func _connect_button_signals() -> void:
 	_register_tooltip_area(_energy_section, Callable(self, "_build_energy_tooltip"))
 	_register_tooltip_area(_cognition_section, Callable(self, "_build_cognition_tooltip"))
 
-	# BOSS 肖像点击
-	_boss_portrait.gui_input.connect(_on_boss_portrait_gui_input)
-	_boss_portrait.mouse_filter = Control.MOUSE_FILTER_STOP
+	# BOSS 肖像悬停 tooltip
+	_register_tooltip_area(_boss_portrait, Callable(self, "_build_enemy_tooltip"))
 
 
 func close_all_popups() -> void:
 	_discard_panel.visible = false
 	_battle_log_panel.visible = false
-	_enemy_info_popup.visible = false
 	_tooltip_panel.visible = false
 
 
@@ -174,8 +164,6 @@ func refresh_all(battle_log_lines: Array[String]) -> void:
 		_refresh_discard_view()
 	if _battle_log_panel.visible:
 		refresh_battle_log(battle_log_lines)
-	if _enemy_info_popup.visible:
-		_refresh_enemy_info_popup_content()
 
 
 func refresh_enemy_ui() -> void:
@@ -311,19 +299,9 @@ func refresh_battle_log(lines: Array[String]) -> void:
 	_battle_log_text.text = "\n".join(lines)
 
 
-# ====== 敌人信息弹窗（点击 BossPortrait 切换） ======
-func _on_boss_portrait_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_enemy_info_popup.visible = not _enemy_info_popup.visible
-		if _enemy_info_popup.visible:
-			_refresh_enemy_info_popup_content()
-			_reposition_enemy_info_popup()
-
-
-func _refresh_enemy_info_popup_content() -> void:
-	_enemy_info_title.text = "敌人类型：%s" % _enemy_ai.enemy_name
+# ====== 敌人信息 Tooltip ======
+func _build_enemy_tooltip() -> String:
 	var intent := _enemy_ai.get_current_intent()
-
 	var preview_text := (", ".join(_enemy_ai.hand_preview)
 		if not _enemy_ai.hand_preview.is_empty() else "—")
 	var buffs: Array[String] = []
@@ -331,24 +309,13 @@ func _refresh_enemy_info_popup_content() -> void:
 		buffs.append("虚弱 %d" % _enemy_ai.weak)
 	var buff_text := "，".join(buffs) if not buffs.is_empty() else "无"
 
-	_enemy_info_body.text = "\n".join([
-		"存在值：%d / %d" % [_enemy_ai.hp, _enemy_ai.max_hp],
-		"现有手牌：%s" % preview_text,
-		"状态栏：下一回合意图 → %s" % str(intent.get("text", "攻击")),
-		"Buff栏：%s" % buff_text,
-	])
-
-
-func _reposition_enemy_info_popup() -> void:
-	if not is_instance_valid(_boss_portrait):
-		return
-	var boss_rect: Rect2 = _boss_portrait.get_global_rect()
-	var popup_size: Vector2 = _enemy_info_popup.size
-	var target_x: float = boss_rect.position.x + (boss_rect.size.x - popup_size.x) * 0.5
-	var target_y: float = maxf(boss_rect.position.y - popup_size.y - 16.0, 12.0)
-	var viewport_size: Vector2 = _scene.get_viewport_rect().size
-	target_x = clampf(target_x, 8.0, viewport_size.x - popup_size.x - 8.0)
-	_enemy_info_popup.global_position = Vector2(target_x, target_y)
+	return "[b]%s[/b]\n存在值：%d / %d\n现有手牌：%s\n下一回合意图 → %s\n状态：%s" % [
+		_enemy_ai.enemy_name,
+		_enemy_ai.hp, _enemy_ai.max_hp,
+		preview_text,
+		str(intent.get("text", "攻击")),
+		buff_text,
+	]
 
 
 # ====== Tooltip 系统 ======

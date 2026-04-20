@@ -1,0 +1,167 @@
+[gd_scene load_steps=8 format=3 uid="uid://bvbudresult01"]
+
+[ext_resource type="Script" path="res://scenes/reward/RewardResultScene.gd" id="1_script"]
+
+[sub_resource type="Gradient" id="Gradient_dimbg"]
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0.18, 0.19, 0.24, 1, 0.09, 0.1, 0.14, 1, 0.03, 0.04, 0.07, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dimbg"]
+gradient = SubResource("Gradient_dimbg")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_outer"]
+bg_color = Color(0.12, 0.14, 0.18, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.08, 0.09, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_inner"]
+bg_color = Color(0.96, 0.94, 0.87, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.18, 0.16, 0.14, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_btn_normal"]
+bg_color = Color(0.24, 0.21, 0.17, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.38, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 32.0
+content_margin_top = 10.0
+content_margin_right = 32.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_btn_hover"]
+bg_color = Color(0.34, 0.28, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72, 0.55, 0.28, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 32.0
+content_margin_top = 10.0
+content_margin_right = 32.0
+content_margin_bottom = 10.0
+
+[node name="RewardResultScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="DimBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_dimbg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Popup" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -240.0
+offset_right = 400.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_outer")
+
+[node name="OuterMargin" type="MarginContainer" parent="Popup"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="InnerFrame" type="PanelContainer" parent="Popup/OuterMargin"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_inner")
+
+[node name="InnerMargin" type="MarginContainer" parent="Popup/OuterMargin/InnerFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 22
+
+[node name="VBox" type="VBoxContainer" parent="Popup/OuterMargin/InnerFrame/InnerMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Header" type="Label" parent="Popup/OuterMargin/InnerFrame/InnerMargin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.08, 0.06, 1)
+theme_override_font_sizes/font_size = 36
+text = "你感受到了："
+
+[node name="RewardList" type="VBoxContainer" parent="Popup/OuterMargin/InnerFrame/InnerMargin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ButtonRow" type="HBoxContainer" parent="Popup/OuterMargin/InnerFrame/InnerMargin/VBox"]
+layout_mode = 2
+alignment = 2
+
+[node name="ContinueButton" type="Button" parent="Popup/OuterMargin/InnerFrame/InnerMargin/VBox/ButtonRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.97, 0.93, 0.82, 1)
+theme_override_colors/font_hover_color = Color(1, 0.97, 0.86, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBox_btn_normal")
+theme_override_styles/hover = SubResource("StyleBox_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBox_btn_hover")
+theme_override_styles/focus = SubResource("StyleBox_btn_hover")
+text = "继续"
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.98, 0.9, 1)

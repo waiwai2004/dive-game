@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/dive/dive_scene.gd" id="1_rp5x8"]
 [ext_resource type="Texture2D" uid="uid://ba5tkd21pifcc" path="res://assets/art/backgrounds/bg_adventure01.PNG" id="2_0s4u6"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="3_vylg6"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="3_vylg6"]
 
 [node name="DiveScene" type="Control" unique_id=1108143304]
 layout_mode = 3
