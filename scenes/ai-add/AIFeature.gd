@@ -313,6 +313,26 @@ func generate_card(ai_data: Dictionary) -> void:
         "target": "enemy" if "A类" in t_type else "self",
         "art_illustration_path": available_arts[randi() % available_arts.size()]
     }
+    
+    # 将卡牌实例化并存入数据库与玩家牌库
+    var cd = CardData.new()
+    cd.card_id = card_dict["id"]
+    cd.card_name = card_dict["name"]
+    cd.card_type = card_dict["type"]
+    cd.energy_cost = int(card_dict["cost"])
+    cd.cognition = int(card_dict["cognition"])
+    cd.description = card_dict["description"]
+    cd.target_type = card_dict["target"]
+    if "art_illustration_path" in cd:
+        cd.art_illustration_path = card_dict["art_illustration_path"]
+        
+    if typeof(CardDatabase) == TYPE_OBJECT and CardDatabase.has_method("get_all_cards"):
+        CardDatabase._repo._cards_by_id[cd.card_id] = cd
+        
+    if typeof(Game) == TYPE_OBJECT and Game.has_method("add_card"):
+        Game.add_card(cd.card_id)
+        print("已成功将生成的AI卡牌加入玩家牌组：", cd.card_id)
+        
     show_card_in_ui(card_dict)
 
 func show_card_in_ui(card_dict: Dictionary) -> void:
