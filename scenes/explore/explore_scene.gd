@@ -12,10 +12,17 @@ const PLAYER_SAFE_RADIUS := 600.0
 const PLAYER_START := Vector2(260, 720)
 const EXTRA_MEMORY_COUNT := 5
 const EXTRA_BATTLE_COUNT := 6
+const WOUND_COUNT := 1
+const BUD_COUNT := 3
+const RUINS_COUNT := 2
 
 const MEMORY_ECHO_SCRIPT := preload("res://scenes/explore/memory_echo.gd")
 const GLASS_SHARDS_TEX := preload("res://assets/art/GlassShards.png")
 const ENEMY_TEX := preload("res://assets/art/enemy/enemy01.png")
+const WOUND_NODE_SCRIPT := preload("res://scenes/explore/wound_node.gd")
+const WOUND_GLOW_SCRIPT := preload("res://scenes/explore/wound_glow_effect.gd")
+const BUD_NODE_SCRIPT := preload("res://scenes/explore/consciousness_bud_node.gd")
+const RUINS_NODE_SCRIPT := preload("res://scenes/explore/cognitive_ruins_node.gd")
 
 enum ExplorePhase {
 	TO_MEMORY,
@@ -42,6 +49,7 @@ var _player_in_battle_zones: Array = []
 var _active_memory_zone: Area2D = null
 var _active_battle_zone: Area2D = null
 var _occupied_positions: Array = []
+var _wound_glow_layer: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -52,6 +60,9 @@ func _ready() -> void:
 	_create_boundary_walls()
 	_spawn_memory_echoes(EXTRA_MEMORY_COUNT)
 	_spawn_battle_zones(EXTRA_BATTLE_COUNT)
+	_spawn_wound_boss()
+	_spawn_consciousness_buds(BUD_COUNT)
+	_spawn_cognitive_ruins(RUINS_COUNT)
 	_connect_signals()
 	_apply_global_ui_mode()
 	_update_global_stats()
@@ -548,3 +559,138 @@ func _create_battle_zone(pos: Vector2) -> Area2D:
 	zone.add_child(highlight)
 
 	return zone
+
+
+# --- 伤口 / 意识花苞 / 认知废墟 ---
+
+func _spawn_wound_boss() -> void:
+	# 创建光效图层（在暗幕之上）
+	_wound_glow_layer = CanvasLayer.new()
+	_wound_glow_layer.layer = 6
+	add_child(_wound_glow_layer)
+
+	var pos := _generate_wound_position()
+	var wound := _create_wound_node(pos)
+	$World.add_child(wound)
+	_battle_zones.append(wound)
+
+	# 猩红光效（穿透暗幕）
+	var glow := Node2D.new()
+	glow.set_script(WOUND_GLOW_SCRIPT)
+	glow.wound_node = wound
+	_wound_glow_layer.add_child(glow)
+
+
+func _generate_wound_position() -> Vector2:
+	# Boss 固定在地图最下面三行区域
+	var bottom_top := GROUND_Y - 600.0
+	var bottom_bottom := GROUND_Y - 100.0
+	var max_attempts := 100
+
+	for i in range(max_attempts):
+		var pos := Vector2(
+			randf_range(SPAWN_MARGIN + 300.0, MAP_WIDTH - SPAWN_MARGIN - 300.0),
+			randf_range(bottom_top, bottom_bottom)
+		)
+		var too_close := false
+		for occ_pos in _occupied_positions:
+			if pos.distance_to(occ_pos) < MIN_ENTITY_DISTANCE * 1.5:
+				too_close = true
+				break
+		if not too_close:
+			_occupied_positions.append(pos)
+			return pos
+
+	var fallback := Vector2(MAP_WIDTH * 0.5, bottom_top + 250.0)
+	_occupied_positions.append(fallback)
+	return fallback
+
+
+func _create_wound_node(pos: Vector2) -> Area2D:
+	var wound := Area2D.new()
+	wound.name = "WoundBoss"
+	wound.position = pos
+	wound.set_script(WOUND_NODE_SCRIPT)
+	wound.monitoring = true
+	wound.monitorable = true
+	wound.collision_layer = 1
+	wound.collision_mask = 1
+
+	# 判定区域（远小于视觉表现）
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(350.0, 350.0)
+	col.shape = shape
+	wound.add_child(col)
+
+	# Highlight（高亮提示）
+	var highlight := Node2D.new()
+	highlight.name = "Highlight"
+	highlight.visible = false
+	wound.add_child(highlight)
+
+	return wound
+
+
+func _spawn_consciousness_buds(count: int) -> void:
+	var positions := _generate_spawn_positions(count)
+	for i in range(positions.size()):
+		var bud := _create_consciousness_bud(positions[i])
+		bud.name = "ConsciousnessBud_%d" % i
+		$World.add_child(bud)
+		_battle_zones.append(bud)
+
+
+func _create_consciousness_bud(pos: Vector2) -> Area2D:
+	var bud := Area2D.new()
+	bud.position = pos
+	bud.set_script(BUD_NODE_SCRIPT)
+	bud.monitoring = true
+	bud.monitorable = true
+	bud.collision_layer = 1
+	bud.collision_mask = 1
+
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(250.0, 300.0)
+	col.shape = shape
+	bud.add_child(col)
+
+	var highlight := Node2D.new()
+	highlight.name = "Highlight"
+	highlight.visible = false
+	bud.add_child(highlight)
+
+	return bud
+
+
+func _spawn_cognitive_ruins(count: int) -> void:
+	var positions := _generate_spawn_positions(count)
+	for i in range(positions.size()):
+		var ruins := _create_cognitive_ruins(positions[i])
+		ruins.name = "CognitiveRuins_%d" % i
+		$World.add_child(ruins)
+		_battle_zones.append(ruins)
+
+
+func _create_cognitive_ruins(pos: Vector2) -> Area2D:
+	var ruins := Area2D.new()
+	ruins.position = pos
+	ruins.set_script(RUINS_NODE_SCRIPT)
+	ruins.monitoring = true
+	ruins.monitorable = true
+	ruins.collision_layer = 1
+	ruins.collision_mask = 1
+
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(300.0, 300.0)
+	col.shape = shape
+	ruins.add_child(col)
+
+	var highlight := Node2D.new()
+	highlight.name = "Highlight"
+	highlight.visible = false
+	ruins.add_child(highlight)
+
+	return ruins

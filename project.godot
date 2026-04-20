@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="深海残响"
-run/main_scene="uid://cxr3nvwgve4uj"
+run/main_scene="res://scenes/main_manu/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://assets/art/ui/icon.svg"
 
 [autoload]
 
-Game="*uid://jr6asllf24ky"
-CardDatabase="*uid://bo83w201x64bw"
+Game="*res://scripts/core/Game.gd"
+CardDatabase="*res://data/CardDatabase.gd"
 GlobalUI="*res://scenes/ui/GlobalUI.tscn"
 AudioManager="*res://scripts/core/AudioManager.gd"
 
