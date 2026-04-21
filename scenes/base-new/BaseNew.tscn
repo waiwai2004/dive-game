@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://j7ulmvw4qbf7"]
 
 [ext_resource type="Texture2D" uid="uid://be7vlw38fcjdd" path="res://assets/base-assets/base_bg01.PNG" id="1_bg"]
+[ext_resource type="Script" uid="uid://d4cjdxe8cwdg3" path="res://scenes/base-new/base_new.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://cg5r0gvhcv3do" path="res://assets/base-assets/divedoor.PNG" id="2_door"]
 [ext_resource type="Texture2D" uid="uid://bert6tg8vjki2" path="res://assets/base-assets/npc.PNG" id="3_npc"]
 [ext_resource type="Texture2D" uid="uid://jjxoabsr8jrm" path="res://assets/base-assets/player.PNG" id="4_player"]
@@ -13,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://c8hrkwr282dw4" path="res://assets/art/ui/global/player.PNG" id="11_hvcgl"]
 
 [node name="BaseNew" type="Node2D" unique_id=1151361827]
+script = ExtResource("1_script")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=377748320]
 position = Vector2(960, 540)
@@ -41,11 +43,6 @@ expand_mode = 1
 [node name="GlobalUI" type="Sprite2D" parent="UI" unique_id=2128292142]
 position = Vector2(960, 540)
 texture = ExtResource("6_global_ui")
-
-[node name="Player" type="Sprite2D" parent="UI" unique_id=418570054]
-position = Vector2(1120, 541.00006)
-scale = Vector2(0.46527782, 0.46527782)
-texture = ExtResource("4_player")
 
 [node name="TalkButton" type="Button" parent="UI" unique_id=1649334378]
 offset_left = 500.0
@@ -121,3 +118,8 @@ region_enabled = true
 region_rect = Rect2(857.60364, -1.3952827, 202.64612, 137.3095)
 
 [node name="Sprite2D" type="Sprite2D" parent="UI" unique_id=1205706054]
+
+[node name="Player" type="Sprite2D" parent="UI" unique_id=418570054]
+position = Vector2(12, 48)
+scale = Vector2(0.46527782, 0.46527782)
+texture = ExtResource("4_player")
