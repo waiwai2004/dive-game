@@ -1,0 +1,125 @@
+[gd_scene format=3 uid="uid://j7ulmvw4qbf7"]
+
+[ext_resource type="Texture2D" uid="uid://be7vlw38fcjdd" path="res://assets/base-assets/base_bg01.PNG" id="1_bg"]
+[ext_resource type="Script" uid="uid://d4cjdxe8cwdg3" path="res://scenes/base-new/base_new.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cg5r0gvhcv3do" path="res://assets/base-assets/divedoor.PNG" id="2_door"]
+[ext_resource type="Texture2D" uid="uid://bert6tg8vjki2" path="res://assets/base-assets/npc.PNG" id="3_npc"]
+[ext_resource type="Texture2D" uid="uid://jjxoabsr8jrm" path="res://assets/base-assets/player.PNG" id="4_player"]
+[ext_resource type="Texture2D" uid="uid://br088p60w2v2v" path="res://assets/base-assets/base_bg02.PNG" id="5_17l4r"]
+[ext_resource type="Texture2D" uid="uid://dwqhm43fjpgeo" path="res://assets/base-assets/global ui.PNG" id="6_global_ui"]
+[ext_resource type="Texture2D" uid="uid://cnfuisme10ep4" path="res://assets/base-assets/panel.PNG" id="7_17l4r"]
+[ext_resource type="Texture2D" uid="uid://mixitejyi47x" path="res://assets/base-assets/reciprocal object_01.PNG" id="8_p24ad"]
+[ext_resource type="Texture2D" uid="uid://cpmb1di7va57y" path="res://assets/base-assets/reciprocal object_02.PNG" id="9_nylob"]
+[ext_resource type="Texture2D" uid="uid://dp02t0d00qksb" path="res://assets/base-assets/reciprocal object_03.PNG" id="10_tai2r"]
+[ext_resource type="Texture2D" uid="uid://c8hrkwr282dw4" path="res://assets/art/ui/global/player.PNG" id="11_hvcgl"]
+
+[node name="BaseNew" type="Node2D" unique_id=1151361827]
+script = ExtResource("1_script")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=377748320]
+position = Vector2(960, 540)
+texture = ExtResource("1_bg")
+
+[node name="DiveDoor" type="Sprite2D" parent="." unique_id=370296957]
+position = Vector2(1213, 352)
+scale = Vector2(0.5946982, 0.5483797)
+texture = ExtResource("2_door")
+
+[node name="NPC" type="Sprite2D" parent="." unique_id=1998747903]
+position = Vector2(357, 514)
+scale = Vector2(0.4725434, 0.47254327)
+texture = ExtResource("3_npc")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=88673146]
+
+[node name="baseBG02" type="TextureRect" parent="UI" unique_id=9777054]
+offset_left = 23.0
+offset_top = 5.0
+offset_right = 1943.0
+offset_bottom = 1085.0
+texture = ExtResource("5_17l4r")
+expand_mode = 1
+
+[node name="GlobalUI" type="Sprite2D" parent="UI" unique_id=2128292142]
+position = Vector2(960, 540)
+texture = ExtResource("6_global_ui")
+
+[node name="TalkButton" type="Button" parent="UI" unique_id=1649334378]
+offset_left = 500.0
+offset_top = 296.0
+offset_right = 750.75
+offset_bottom = 414.0
+theme_override_font_sizes/font_size = 35
+theme_override_icons/icon = ExtResource("7_17l4r")
+text = "对话"
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="DiveButton" type="Button" parent="UI" unique_id=1990802457]
+offset_left = 1283.0
+offset_top = 197.0
+offset_right = 1518.581
+offset_bottom = 314.0
+theme_override_font_sizes/font_size = 35
+theme_override_icons/icon = ExtResource("7_17l4r")
+text = "下潜"
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="npcLabel" type="Label" parent="UI" unique_id=813400556]
+offset_left = 316.0
+offset_top = 247.0
+offset_right = 379.0
+offset_bottom = 297.0
+theme_override_font_sizes/font_size = 36
+text = "npc"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardLibraryLabel" type="Label" parent="UI" unique_id=1024154288]
+offset_left = 1571.0
+offset_top = 467.0
+offset_right = 1679.0
+offset_bottom = 517.0
+theme_override_font_sizes/font_size = 36
+text = "卡牌库"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="reciprocal01" type="Sprite2D" parent="UI" unique_id=1888420813]
+position = Vector2(378, 528)
+texture = ExtResource("8_p24ad")
+centered = false
+region_enabled = true
+region_rect = Rect2(329.32343, 448.76477, 310.0232, 193.10016)
+
+[node name="reciprocal02" type="Sprite2D" parent="UI" unique_id=1772952786]
+position = Vector2(257.54565, 615.8548)
+scale = Vector2(-1.0830672, 1.0586293)
+texture = ExtResource("9_nylob")
+centered = false
+region_enabled = true
+region_rect = Rect2(247.44049, 486.9206, 83.26337, 109.83679)
+
+[node name="reciprocal03" type="Sprite2D" parent="UI" unique_id=878203565]
+position = Vector2(645, 474)
+texture = ExtResource("10_tai2r")
+centered = false
+region_enabled = true
+region_rect = Rect2(612.7732, 383.21698, 116.923035, 104.522125)
+
+[node name="sun" type="Sprite2D" parent="UI" unique_id=1924407180]
+position = Vector2(862, 2)
+texture = ExtResource("11_hvcgl")
+centered = false
+region_enabled = true
+region_rect = Rect2(857.60364, -1.3952827, 202.64612, 137.3095)
+
+[node name="Sprite2D" type="Sprite2D" parent="UI" unique_id=1205706054]
+
+[node name="Player" type="Sprite2D" parent="UI" unique_id=418570054]
+position = Vector2(12, 48)
+scale = Vector2(0.46527782, 0.46527782)
+texture = ExtResource("4_player")
