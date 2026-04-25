@@ -171,6 +171,38 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_enemy_buff_manager.add_buff(weakness_debuff)
 		fragments.append("施加%d层虚弱" % weak_on_enemy)
 
+	var apply_confusion: int = _apply_card_value_modifiers(int(card.get("apply_confusion", 0)), "apply_confusion")
+	if apply_confusion > 0:
+		if _enemy_buff_manager:
+			var confusion_debuff = ConfusionDebuff.new()
+			confusion_debuff.set_stacks(apply_confusion)
+			_enemy_buff_manager.add_buff(confusion_debuff)
+		fragments.append("施加%d层混乱" % apply_confusion)
+
+	var apply_paralysis: int = _apply_card_value_modifiers(int(card.get("apply_paralysis", 0)), "apply_paralysis")
+	if apply_paralysis > 0:
+		if _enemy_buff_manager:
+			var paralysis_debuff = ParalysisDebuff.new()
+			paralysis_debuff.set_stacks(apply_paralysis)
+			_enemy_buff_manager.add_buff(paralysis_debuff)
+		fragments.append("施加%d层麻痹" % apply_paralysis)
+
+	var apply_resilience: int = _apply_card_value_modifiers(int(card.get("apply_resilience", 0)), "apply_resilience")
+	if apply_resilience > 0:
+		if _player_buff_manager:
+			var resilience_buff = ResilienceBuff.new()
+			resilience_buff.set_stacks(apply_resilience)
+			_player_buff_manager.add_buff(resilience_buff)
+		fragments.append("获得%d层坚韧" % apply_resilience)
+
+	var apply_survival: int = _apply_card_value_modifiers(int(card.get("apply_survival", 0)), "apply_survival")
+	if apply_survival > 0:
+		if _player_buff_manager:
+			var survival_buff = SurvivalBuff.new()
+			survival_buff.set_stacks(apply_survival)
+			_player_buff_manager.add_buff(survival_buff)
+		fragments.append("获得%d层残存" % apply_survival)
+
 	var san_cost: int = _apply_card_value_modifiers(int(card.get("san_cost", 0)), "san_cost")
 	if san_cost > 0:
 		Game.player_san -= san_cost
