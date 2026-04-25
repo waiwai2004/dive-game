@@ -1,12 +1,12 @@
 extends Node
 
-var player_hp: int = 12
-var max_hp: int = 12
+var player_hp: int = 10
+var max_hp: int = 10
 
 var player_san: int = 10
 var max_san: int = 10
 var player_cognition: int = 0
-var max_cognition: int = 6
+var max_cognition: int = 10
 var cognition_current: int:
 	get:
 		return player_cognition
@@ -17,6 +17,20 @@ var cognition_max: int:
 		return max_cognition
 	set(value):
 		max_cognition = maxi(value, 1)
+
+# 精神负荷（新增，用于意识花苞奖励）
+var player_mental_load: int = 0
+var max_mental_load: int = 10
+var mental_load_current: int:
+	get:
+		return player_mental_load
+	set(value):
+		player_mental_load = clampi(value, 0, max_mental_load)
+var mental_load_max: int:
+	get:
+		return max_mental_load
+	set(value):
+		max_mental_load = maxi(value, 1)
 
 var deck: Array[String] = []
 
@@ -37,14 +51,30 @@ var chapter_one_state: String = "base"
 var chapter_one_memory_choice: String = ""
 var chapter_one_end_choice: String = ""
 
+# --- 意识花苞奖励池定义（新增） ---
+const _BUD_POOL := [
+	{"id": "hp_current",    "name": "存在值 +5",       "weight": 40},
+	{"id": "hp_max",        "name": "存在值上限 +2",   "weight": 15},
+	{"id": "san_max",       "name": "SAN 值上限 +2",   "weight": 15},
+	{"id": "cognition_max", "name": "认知负荷上限 +2", "weight": 15},
+	{"id": "mental_max",    "name": "精神负荷上限 +5", "weight": 15},
+]
+const _BUD_MAX_REWARDS: int = 3
+const _BUD_CONTINUE_PROB: float = 0.20
+
+# 最近一次意识花苞抽到的奖励描述（供结算页面显示）
+var last_bud_rewards: Array[String] = []
+
 
 func reset_run():
-	player_hp = 12
-	max_hp = 12
+	max_hp = 10
+	player_hp = 10
 	player_san = 10
 	max_san = 10
 	player_cognition = 0
-	max_cognition = 6
+	max_cognition = 10
+	player_mental_load = 0
+	max_mental_load = 10
 
 	tag_aggressive = 0
 	tag_orderly = 0
@@ -60,11 +90,12 @@ func reset_run():
 	chapter_one_memory_choice = ""
 	chapter_one_end_choice = ""
 
+	last_bud_rewards.clear()
+
 	deck = [
 		"cut",
 		"cut",
-		"guard",
-		"calm",
+		"bless",
 		"break",
 		"release"
 	]
@@ -96,10 +127,8 @@ func add_card(card_id: String):
 	deck.append(card_id)
 
 
-func damage_player(amount: int, san_loss: int = -1):
-	var real_san_loss: int = amount if san_loss < 0 else san_loss
+func damage_player(amount: int, _san_loss: int = -1):
 	player_hp = max(player_hp - amount, 0)
-	player_san = max(player_san - real_san_loss, 0)
 
 
 func heal_player(amount: int):
@@ -108,6 +137,10 @@ func heal_player(amount: int):
 
 func heal_san(amount: int):
 	player_san = min(player_san + amount, max_san)
+
+
+func restore_san_to_max() -> void:
+	player_san = max_san
 
 
 func is_distorted() -> bool:
@@ -124,6 +157,81 @@ func reduce_cognition(amount: int) -> void:
 
 func clear_cognition() -> void:
 	player_cognition = 0
+
+
+# --- 精神负荷相关（新增） ---
+
+func add_mental_load(amount: int) -> void:
+	player_mental_load = clampi(player_mental_load + amount, 0, max_mental_load)
+
+
+func reduce_mental_load(amount: int) -> void:
+	player_mental_load = maxi(player_mental_load - amount, 0)
+
+
+func clear_mental_load() -> void:
+	player_mental_load = 0
+
+
+# --- 意识花苞奖励相关（新增） ---
+
+# 给一个奖励 id 就直接应用到全局状态，返回可读描述
+func apply_bud_reward(reward_id: String) -> String:
+	match reward_id:
+		"hp_current":
+			heal_player(5)
+			return "存在值 +5"
+		"hp_max":
+			max_hp += 2
+			heal_player(2)
+			return "存在值上限 +2"
+		"san_max":
+			max_san += 2
+			heal_san(2)
+			return "SAN 值上限 +2"
+		"cognition_max":
+			max_cognition += 2
+			return "认知负荷上限 +2"
+		"mental_max":
+			max_mental_load += 5
+			return "精神负荷上限 +5"
+		_:
+			return ""
+
+
+# 完整抽奖：首次必抽，之后每次 20% 概率继续，最多 3 项。
+# 抽完后奖励已经应用到全局状态，描述文案存入 last_bud_rewards
+func roll_bud_rewards() -> Array[String]:
+	last_bud_rewards.clear()
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+
+	var first := _roll_one_bud(rng)
+	if not first.is_empty():
+		last_bud_rewards.append(first)
+
+	while last_bud_rewards.size() < _BUD_MAX_REWARDS:
+		if rng.randf() >= _BUD_CONTINUE_PROB:
+			break
+		var next_reward := _roll_one_bud(rng)
+		if next_reward.is_empty():
+			break
+		last_bud_rewards.append(next_reward)
+
+	return last_bud_rewards
+
+
+func _roll_one_bud(rng: RandomNumberGenerator) -> String:
+	var total: int = 0
+	for r in _BUD_POOL:
+		total += int(r.weight)
+	var roll: int = rng.randi_range(1, total)
+	var cumul: int = 0
+	for r in _BUD_POOL:
+		cumul += int(r.weight)
+		if roll <= cumul:
+			return apply_bud_reward(str(r.id))
+	return ""
 
 
 func get_memory_choice_text() -> String:
@@ -202,3 +310,11 @@ func goto_explore():
 
 func goto_end():
 	get_tree().change_scene_to_file("res://scenes/end/EndScene.tscn")
+	
+func goto_ai():
+	get_tree().change_scene_to_file("res://scenes/ai/aiscene.tscn")
+
+
+# 跳转到意识花苞奖励界面（新增）
+func goto_bud_reward() -> void:
+	get_tree().change_scene_to_file("res://scenes/reward/RewardScene.tscn")

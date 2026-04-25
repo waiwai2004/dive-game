@@ -12,10 +12,17 @@ const PLAYER_SAFE_RADIUS := 600.0
 const PLAYER_START := Vector2(260, 720)
 const EXTRA_MEMORY_COUNT := 5
 const EXTRA_BATTLE_COUNT := 6
+const WOUND_COUNT := 1
+const BUD_COUNT := 3
+const RUINS_COUNT := 2
 
 const MEMORY_ECHO_SCRIPT := preload("res://scenes/explore/memory_echo.gd")
 const GLASS_SHARDS_TEX := preload("res://assets/art/GlassShards.png")
 const ENEMY_TEX := preload("res://assets/art/enemy/enemy01.png")
+const WOUND_NODE_SCRIPT := preload("res://scenes/explore/wound_node.gd")
+const WOUND_GLOW_SCRIPT := preload("res://scenes/explore/wound_glow_effect.gd")
+const BUD_NODE_SCRIPT := preload("res://scenes/explore/consciousness_bud_node.gd")
+const RUINS_NODE_SCRIPT := preload("res://scenes/explore/cognitive_ruins_node.gd")
 
 enum ExplorePhase {
 	TO_MEMORY,
@@ -42,6 +49,7 @@ var _player_in_battle_zones: Array = []
 var _active_memory_zone: Area2D = null
 var _active_battle_zone: Area2D = null
 var _occupied_positions: Array = []
+var _wound_glow_layer: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -52,6 +60,9 @@ func _ready() -> void:
 	_create_boundary_walls()
 	_spawn_memory_echoes(EXTRA_MEMORY_COUNT)
 	_spawn_battle_zones(EXTRA_BATTLE_COUNT)
+	_spawn_wound_boss()
+	_spawn_consciousness_buds(BUD_COUNT)
+	_spawn_cognitive_ruins(RUINS_COUNT)
 	_connect_signals()
 	_apply_global_ui_mode()
 	_update_global_stats()
@@ -119,41 +130,25 @@ func _interact_current_target() -> void:
 		"memory":
 			_open_memory_event()
 		"battle":
-			if _phase == ExplorePhase.TO_BATTLE:
-				_enter_tutorial_battle()
-			elif _phase == ExplorePhase.TO_RELAY:
-				_open_relay_report()
-			else:
-				_set_hint("先调查记忆残响。", true)
+			_enter_battle_or_reward()
 
 
 func _open_memory_event() -> void:
-	if Game.memory_event_done:
-		_set_hint("这段残响已经调查过。", true)
-		return
 	if _active_memory_zone == null:
 		_set_hint("你还无法锁定这段残响。", true)
 		return
-
-	memory_event_open = true
-	current_target = ""
-	_event_context = "memory"
-	Game.in_dialogue = true
-	_phase = ExplorePhase.MEMORY_EVENT
-	_update_target_highlight()
+	
+	if _is_zone_triggered(_active_memory_zone):
+		_set_hint("这段残响已经调查过。", true)
+		return
+	
+	if _active_memory_zone:
+		_mark_zone_triggered(_active_memory_zone)
+	
+	_transitioning = true
+	Game.in_dialogue = false
 	_set_hint("", false)
-
-	if "event_text_value" in memory_event_ui:
-		memory_event_ui.event_text_value = "你触碰到一段模糊的记忆残响。\n\n“不要相信报告上的死亡时间。”\n“我还在下面。”\n\n海水之下，有什么东西再一次呼唤了你。"
-	if "choice_a_text" in memory_event_ui:
-		memory_event_ui.choice_a_text = "继续追问那道呼唤。"
-	if "choice_b_text" in memory_event_ui:
-		memory_event_ui.choice_b_text = "先把异常记下并暂时封存。"
-
-	if memory_event_ui.has_method("show_event"):
-		memory_event_ui.show_event()
-	else:
-		memory_event_ui.show()
+	call_deferred("_goto_ai_scene")
 
 
 func _open_relay_report() -> void:
@@ -165,7 +160,7 @@ func _open_relay_report() -> void:
 	_set_hint("", false)
 
 	if "event_text_value" in memory_event_ui:
-		memory_event_ui.event_text_value = "你清除了盘踞在浅海中继点附近的异常体。\n\n残骸终端还能勉强启动，吐出一段残缺记录：\n\n“若再次收到来自海底的呼叫，切勿回应。”\n“门并未关闭。”\n\n你已经完成了这一次浅海任务，该返航了。"
+		memory_event_ui.event_text_value = "你清除了盘踞在浅海中继点附近的异常体。\n\n残骸终端还能勉强启动，吐出一段残缺记录：\n\n\"若再次收到来自海底的呼叫，切勿回应。\"\n\"门并未关闭。\"\n\n你已经完成了这一次浅海任务，该返航了。"
 	if "choice_a_text" in memory_event_ui:
 		memory_event_ui.choice_a_text = "回收记录，立即返航。"
 	if "choice_b_text" in memory_event_ui:
@@ -178,7 +173,10 @@ func _open_relay_report() -> void:
 
 
 func _on_memory_choice_selected(choice_id: String) -> void:
-	if _event_context == "memory":
+	if _event_context == "ruins":
+		if _active_battle_zone:
+			_mark_zone_triggered(_active_battle_zone)
+		
 		if choice_id == "pursue":
 			Game.tag_aggressive += 1
 		elif choice_id == "seal":
@@ -187,13 +185,20 @@ func _on_memory_choice_selected(choice_id: String) -> void:
 		if Game.has_method("set_memory_choice"):
 			Game.set_memory_choice(choice_id)
 
-		# 这里是真正发牌
 		if not Game.reward_card_given:
 			Game.add_card(choice_id)
 			Game.reward_card_given = true
 
 		Game.memory_event_done = true
-		_phase = ExplorePhase.TO_BATTLE
+		
+		memory_event_open = false
+		Game.in_dialogue = false
+		_event_context = ""
+		if memory_event_ui.has_method("hide_ui"):
+			memory_event_ui.hide_ui()
+		else:
+			memory_event_ui.hide()
+		_update_interaction_target()
 		return
 
 	if _event_context == "relay":
@@ -212,7 +217,7 @@ func _on_memory_event_closed() -> void:
 	memory_event_open = false
 	Game.in_dialogue = false
 
-	if _event_context == "memory":
+	if _event_context == "ruins":
 		if Game.memory_event_done:
 			_phase = ExplorePhase.TO_BATTLE
 		else:
@@ -232,6 +237,10 @@ func _on_memory_event_closed() -> void:
 
 func _goto_end_scene() -> void:
 	Game.goto_end()
+
+
+func _goto_ai_scene() -> void:
+	Game.goto_ai()
 
 
 func _on_memory_zone_entered(body: Node, zone: Area2D) -> void:
@@ -264,10 +273,96 @@ func _on_battle_zone_exited(body: Node, zone: Area2D) -> void:
 	_update_interaction_target()
 
 
-func _enter_tutorial_battle() -> void:
+func _enter_battle_or_reward() -> void:
+	if _active_battle_zone == null:
+		return
+	
+	if _is_zone_triggered(_active_battle_zone):
+		_set_hint("这里已经探索过了。", true)
+		return
+	
+	if _active_battle_zone.get_script() == BUD_NODE_SCRIPT:
+		_enter_bud_reward()
+	elif _active_battle_zone.get_script() == RUINS_NODE_SCRIPT:
+		_enter_ruins_event()
+	elif _active_battle_zone.name == "WoundBoss":
+		_enter_wound_boss()
+	else:
+		_enter_enemy_battle()
+
+
+func _enter_ruins_event() -> void:
+	memory_event_open = true
+	current_target = ""
+	_event_context = "ruins"
+	Game.in_dialogue = true
+	_update_target_highlight()
+	_set_hint("", false)
+
+	if "event_text_value" in memory_event_ui:
+		memory_event_ui.event_text_value = "你触碰到一段模糊的记忆残响。\n\n\"不要相信报告上的死亡时间。\"\n\"我还在下面。\"\n\n海水之下，有什么东西再一次呼唤了你。"
+	if "choice_a_text" in memory_event_ui:
+		memory_event_ui.choice_a_text = "继续追问那道呼唤。"
+	if "choice_b_text" in memory_event_ui:
+		memory_event_ui.choice_b_text = "先把异常记下并暂时封存。"
+
+	if memory_event_ui.has_method("show_event"):
+		memory_event_ui.show_event()
+	else:
+		memory_event_ui.show()
+
+
+func _is_zone_triggered(zone: Area2D) -> bool:
+	if zone.has_meta("triggered"):
+		return zone.get_meta("triggered")
+	return false
+
+
+func _mark_zone_triggered(zone: Area2D) -> void:
+	zone.set_meta("triggered", true)
+	_set_zone_grey(zone)
+
+
+func _set_zone_grey(zone: Area2D) -> void:
+	if zone.has_method("set_triggered"):
+		zone.call("set_triggered", true)
+	else:
+		var sprite := zone.get_node_or_null("Sprite2D")
+		if sprite:
+			sprite.self_modulate = Color(0.4, 0.4, 0.4, 0.6)
+		var highlight := zone.get_node_or_null("Highlight")
+		if highlight:
+			highlight.visible = false
+
+
+func _enter_enemy_battle() -> void:
+	if _active_battle_zone:
+		_mark_zone_triggered(_active_battle_zone)
 	_transitioning = true
 	Game.in_dialogue = false
-	Game.battle_index = 1
+	Game.battle_index = int(_active_battle_zone.get_meta("battle_index", 1))
+	_set_hint("", false)
+	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
+
+
+func _enter_bud_reward() -> void:
+	if _active_battle_zone:
+		_mark_zone_triggered(_active_battle_zone)
+	_transitioning = true
+	Game.in_dialogue = false
+	_set_hint("", false)
+	if Game.has_method("goto_bud_reward"):
+		Game.goto_bud_reward()
+	else:
+		get_tree().change_scene_to_file("res://scenes/reward/RewardScene.tscn")
+
+
+func _enter_wound_boss() -> void:
+	if _active_battle_zone:
+		_mark_zone_triggered(_active_battle_zone)
+	_transitioning = true
+	Game.in_dialogue = false
+	Game.battle_index = 3
 	_set_hint("", false)
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
@@ -280,22 +375,18 @@ func _update_interaction_target() -> void:
 	_active_memory_zone = null
 	_active_battle_zone = null
 
-	match _phase:
-		ExplorePhase.TO_MEMORY:
-			if not Game.memory_event_done:
-				for zone in _player_in_memory_zones:
-					if _is_zone_discovered(zone):
-						_active_memory_zone = zone
-						next_target = "memory"
-						break
-		ExplorePhase.TO_BATTLE:
-			if _player_in_battle_zones.size() > 0:
-				_active_battle_zone = _player_in_battle_zones[0]
+	for zone in _player_in_memory_zones:
+		if not _is_zone_triggered(zone) and _is_zone_discovered(zone):
+			_active_memory_zone = zone
+			next_target = "memory"
+			break
+	
+	if next_target.is_empty() and _player_in_battle_zones.size() > 0:
+		for zone in _player_in_battle_zones:
+			if not _is_zone_triggered(zone):
+				_active_battle_zone = zone
 				next_target = "battle"
-		ExplorePhase.TO_RELAY:
-			if _player_in_battle_zones.size() > 0:
-				_active_battle_zone = _player_in_battle_zones[0]
-				next_target = "battle"
+				break
 
 	current_target = next_target
 	_update_target_highlight()
@@ -323,52 +414,34 @@ func _update_target_highlight() -> void:
 
 
 func _update_hint_text() -> void:
-	match _phase:
-		ExplorePhase.TO_MEMORY:
-			if current_target == "memory":
-				_set_hint("目标：按 E 调查记忆残响。", true)
-				return
-
-			if _player_in_memory_zones.size() > 0 and not Game.memory_event_done:
-				var any_discovered := false
-				for zone in _player_in_memory_zones:
-					if _is_zone_discovered(zone):
-						any_discovered = true
-						break
-				if any_discovered:
-					_set_hint("你锁定了残响位置，按 E 调查。", true)
-				else:
-					_set_hint("调整朝向，锁定前方残响。", true)
-				return
-
-			_set_hint("目标：探索深海，寻找记忆残响。", true)
-			return
-
-		ExplorePhase.TO_BATTLE:
-			if current_target == "battle":
-				_set_hint("目标：按 E 接近异常聚集点，进入战斗。", true)
-				return
-
-			_set_hint("目标：寻找异常聚集点。", true)
-			return
-
-		ExplorePhase.TO_RELAY:
-			if current_target == "battle":
-				_set_hint("目标：按 E 调查中继点残骸，完成本章。", true)
-				return
-
-			_set_hint("目标：寻找中继点残骸。", true)
-			return
-
-		ExplorePhase.MEMORY_EVENT:
-			_set_hint("正在读取记忆残响……", true)
-			return
-
-		ExplorePhase.COMPLETE:
-			_set_hint("任务完成。", true)
-			return
-
-	_set_hint("", false)
+	if current_target == "memory":
+		_set_hint("目标：按 E 调查记忆残响。", true)
+		return
+	
+	if current_target == "battle":
+		if _active_battle_zone and _active_battle_zone.get_script() == BUD_NODE_SCRIPT:
+			_set_hint("目标：按 E 接近意识花苞，获取奖励。", true)
+		elif _active_battle_zone and _active_battle_zone.get_script() == RUINS_NODE_SCRIPT:
+			_set_hint("目标：按 E 调查认知废墟。", true)
+		else:
+			_set_hint("目标：按 E 接近异常聚集点，进入战斗。", true)
+		return
+	
+	var has_unexplored := false
+	for zone in _memory_zones:
+		if not _is_zone_triggered(zone):
+			has_unexplored = true
+			break
+	if not has_unexplored:
+		for zone in _battle_zones:
+			if not _is_zone_triggered(zone):
+				has_unexplored = true
+				break
+	
+	if has_unexplored:
+		_set_hint("目标：探索深海，寻找异常点。", true)
+	else:
+		_set_hint("探索完成。", true)
 
 
 func _get_global_ui() -> Node:
@@ -385,8 +458,10 @@ func _get_global_ui() -> Node:
 
 func _apply_global_ui_mode() -> void:
 	var ui := _get_global_ui()
-	if ui and ui.has_method("set_mode"):
-		ui.set_mode(ui.MODE_EXPLORE)
+	if ui:
+		ui.visible = true
+		if ui.has_method("set_mode"):
+			ui.set_mode(ui.MODE_EXPLORE)
 
 
 func _set_hint(text: String, visible: bool) -> void:
@@ -417,6 +492,8 @@ func _register_existing_zones() -> void:
 
 	var bat_zone: Area2D = get_node_or_null("World/BattleZone")
 	if bat_zone:
+		bat_zone.set_meta("battle_index", 1)
+		bat_zone.set_meta("enemy_id", "corpse_shrimp")
 		_battle_zones.append(bat_zone)
 		_occupied_positions.append(bat_zone.position)
 
@@ -456,6 +533,8 @@ func _spawn_battle_zones(count: int) -> void:
 	var positions := _generate_spawn_positions(count)
 	for pos in positions:
 		var zone := _create_battle_zone(pos)
+		zone.set_meta("battle_index", 2)
+		zone.set_meta("enemy_id", "motor_jellyfish")
 		$World.add_child(zone)
 		_battle_zones.append(zone)
 
@@ -548,3 +627,140 @@ func _create_battle_zone(pos: Vector2) -> Area2D:
 	zone.add_child(highlight)
 
 	return zone
+
+
+# --- 伤口 / 意识花苞 / 认知废墟 ---
+
+func _spawn_wound_boss() -> void:
+	# 创建光效图层（在暗幕之上）
+	_wound_glow_layer = CanvasLayer.new()
+	_wound_glow_layer.layer = 6
+	add_child(_wound_glow_layer)
+
+	var pos := _generate_wound_position()
+	var wound := _create_wound_node(pos)
+	$World.add_child(wound)
+	_battle_zones.append(wound)
+
+	# 猩红光效（穿透暗幕）
+	var glow := Node2D.new()
+	glow.set_script(WOUND_GLOW_SCRIPT)
+	glow.wound_node = wound
+	_wound_glow_layer.add_child(glow)
+
+
+func _generate_wound_position() -> Vector2:
+	# Boss 固定在地图最下面三行区域
+	var bottom_top := GROUND_Y - 600.0
+	var bottom_bottom := GROUND_Y - 100.0
+	var max_attempts := 100
+
+	for i in range(max_attempts):
+		var pos := Vector2(
+			randf_range(SPAWN_MARGIN + 300.0, MAP_WIDTH - SPAWN_MARGIN - 300.0),
+			randf_range(bottom_top, bottom_bottom)
+		)
+		var too_close := false
+		for occ_pos in _occupied_positions:
+			if pos.distance_to(occ_pos) < MIN_ENTITY_DISTANCE * 1.5:
+				too_close = true
+				break
+		if not too_close:
+			_occupied_positions.append(pos)
+			return pos
+
+	var fallback := Vector2(MAP_WIDTH * 0.5, bottom_top + 250.0)
+	_occupied_positions.append(fallback)
+	return fallback
+
+
+func _create_wound_node(pos: Vector2) -> Area2D:
+	var wound := Area2D.new()
+	wound.name = "WoundBoss"
+	wound.position = pos
+	wound.set_script(WOUND_NODE_SCRIPT)
+	wound.set_meta("battle_index", 3)
+	wound.set_meta("enemy_id", "black_bubble")
+	wound.monitoring = true
+	wound.monitorable = true
+	wound.collision_layer = 1
+	wound.collision_mask = 1
+
+	# 判定区域（远小于视觉表现）
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(350.0, 350.0)
+	col.shape = shape
+	wound.add_child(col)
+
+	# Highlight（高亮提示）
+	var highlight := Node2D.new()
+	highlight.name = "Highlight"
+	highlight.visible = false
+	wound.add_child(highlight)
+
+	return wound
+
+
+func _spawn_consciousness_buds(count: int) -> void:
+	var positions := _generate_spawn_positions(count)
+	for i in range(positions.size()):
+		var bud := _create_consciousness_bud(positions[i])
+		bud.name = "ConsciousnessBud_%d" % i
+		$World.add_child(bud)
+		_battle_zones.append(bud)
+
+
+func _create_consciousness_bud(pos: Vector2) -> Area2D:
+	var bud := Area2D.new()
+	bud.position = pos
+	bud.set_script(BUD_NODE_SCRIPT)
+	bud.monitoring = true
+	bud.monitorable = true
+	bud.collision_layer = 1
+	bud.collision_mask = 1
+
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(250.0, 300.0)
+	col.shape = shape
+	bud.add_child(col)
+
+	var highlight := Node2D.new()
+	highlight.name = "Highlight"
+	highlight.visible = false
+	bud.add_child(highlight)
+
+	return bud
+
+
+func _spawn_cognitive_ruins(count: int) -> void:
+	var positions := _generate_spawn_positions(count)
+	for i in range(positions.size()):
+		var ruins := _create_cognitive_ruins(positions[i])
+		ruins.name = "CognitiveRuins_%d" % i
+		$World.add_child(ruins)
+		_battle_zones.append(ruins)
+
+
+func _create_cognitive_ruins(pos: Vector2) -> Area2D:
+	var ruins := Area2D.new()
+	ruins.position = pos
+	ruins.set_script(RUINS_NODE_SCRIPT)
+	ruins.monitoring = true
+	ruins.monitorable = true
+	ruins.collision_layer = 1
+	ruins.collision_mask = 1
+
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(300.0, 300.0)
+	col.shape = shape
+	ruins.add_child(col)
+
+	var highlight := Node2D.new()
+	highlight.name = "Highlight"
+	highlight.visible = false
+	ruins.add_child(highlight)
+
+	return ruins

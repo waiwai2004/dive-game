@@ -110,8 +110,12 @@ func to_battle_dict() -> Dictionary:
 			out["block"] = int(round(effect_value))
 		"san_heal", "heal_san", "heal":
 			out["san_heal"] = int(round(effect_value))
+		"heal_hp", "hp_heal":
+			out["heal_hp"] = int(round(effect_value))
 		"apply_weak", "weak":
 			out["apply_weak"] = int(round(effect_value))
+		"gain_energy":
+			out["gain_energy"] = int(round(effect_value))
 		"damage_and_san_loss":
 			out["damage"] = int(round(effect_value))
 			out["san_cost"] = int(round(effect_value_2))

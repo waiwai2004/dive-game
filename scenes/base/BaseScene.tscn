@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://hgmo1ssw7qt2" path="res://assets/art/ui/button/base_dialogue.PNG" id="19_2kcpl"]
 [ext_resource type="Texture2D" uid="uid://b2s0u47p1fso5" path="res://assets/art/characters/player/run/IMG_3445.PNG" id="19_yr6nv"]
 [ext_resource type="Texture2D" uid="uid://cqjpifchv0ojc" path="res://assets/art/characters/player/base_player.PNG" id="20_2iegp"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="20_2kcpl"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="20_2kcpl"]
 [ext_resource type="Texture2D" uid="uid://b5ou0gjqyyirg" path="res://assets/art/characters/player/IMG_3421.PNG" id="20_xrneb"]
 [ext_resource type="Texture2D" uid="uid://dx4gqejeupdct" path="res://assets/art/ui/button/base_choice.PNG" id="21_jnb81"]
 [ext_resource type="Script" uid="uid://2f4fi75scxes" path="res://addons/richtext2/richer_text_label.gd" id="24_y3bet"]

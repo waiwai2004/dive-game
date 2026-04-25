@@ -22,6 +22,8 @@
 [ext_resource type="Script" uid="uid://s6jwmmosjmtt" path="res://scenes/explore/memory_echo.gd" id="15_memory_echo"]
 [ext_resource type="Texture2D" uid="uid://roqyx6vip0br" path="res://assets/art/characters/player/swim/keyframe_6_5.00s.png" id="15_xsd0r"]
 [ext_resource type="Script" uid="uid://o437pabyjjii" path="res://scenes/explore/vision_cone.gd" id="16_vision_cone"]
+[ext_resource type="Script" path="res://scenes/explore/radar_map.gd" id="17_radar_map"]
+[ext_resource type="Script" path="res://scenes/explore/depth_map.gd" id="18_depth_map"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(5760, 180)
@@ -293,3 +295,12 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("13_font")
 theme_override_font_sizes/font_size = 30
 text = "先把异常封存起来。"
+
+[node name="HudOverlay" type="CanvasLayer" parent="."]
+layer = 128
+
+[node name="RadarMap" type="Control" parent="HudOverlay"]
+script = ExtResource("17_radar_map")
+
+[node name="DepthMap" type="Control" parent="HudOverlay"]
+script = ExtResource("18_depth_map")

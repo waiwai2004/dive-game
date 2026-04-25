@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://eqwdiaun5m21" path="res://assets/art/ui/button/ChoiceButton.gd" id="1_2rpoo"]
 [ext_resource type="Texture2D" uid="uid://bbhhiyy5cau0y" path="res://assets/art/ui/choice.PNG" id="2_uyiql"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="3_uyiql"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="3_uyiql"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u6jio"]
 

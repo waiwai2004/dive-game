@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bm3d6khoa06k1" path="res://scripts/ui/global_ui.gd" id="1_global_ui_script"]
 [ext_resource type="Texture2D" uid="uid://dpxjuufu8wc64" path="res://assets/art/ui/global/Atmosphereframe01.PNG" id="2_a47ik"]
-[ext_resource type="FontFile" uid="uid://6rslam0ola2e" path="res://assets/art/BaDingShiWeiTi-16.ttf" id="2_ui_font"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="2_ui_font"]
 [ext_resource type="Texture2D" uid="uid://brmuhdjnutmow" path="res://assets/art/characters/player/IMG_3401.PNG" id="3_a47ik"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deck_button"]

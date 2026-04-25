@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://csxik8gkieukq"]
+
+[ext_resource type="Script" uid="uid://cpwo2mgpc6p7s" path="res://scenes/battle/defeat_settlement_ui.gd" id="1_fujdp"]
+[ext_resource type="Texture2D" uid="uid://bt25lnoc5wcd2" path="res://assets/art/backgrounds/bg_top.PNG" id="2_8xixn"]
+
+[node name="DefeatSettlementUI" type="Control" unique_id=1252509271]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_fujdp")
+
+[node name="AtmosphereBorder" type="TextureRect" parent="." unique_id=2138531303]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_8xixn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1949745674]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 154.0
+offset_top = 78.0
+offset_right = -224.0
+offset_bottom = -384.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1045910419]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=92274563]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+
+[node name="ReturnButton" type="Button" parent="." unique_id=1160448112]
+layout_mode = 1
+offset_left = 672.0
+offset_top = 736.0
+offset_right = 1220.0
+offset_bottom = 882.0
+text = "返回主界面"

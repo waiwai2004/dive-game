@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://cf73v31ilac45"]
+
+[ext_resource type="Script" uid="uid://q0opkml76ii3" path="res://scenes/battle/victory_settlement_ui.gd" id="1_deqra"]
+[ext_resource type="Texture2D" uid="uid://dks33y85dxmh0" path="res://assets/art/ui/dialogue.PNG" id="2_4bdl5"]
+[ext_resource type="Texture2D" uid="uid://bt25lnoc5wcd2" path="res://assets/art/backgrounds/bg_top.PNG" id="2_r6r45"]
+[ext_resource type="Texture2D" uid="uid://cbv1jein1jlcv" path="res://assets/art/ui/icon.svg" id="3_m1fy5"]
+[ext_resource type="Texture2D" uid="uid://l5fe1nsc5g5y" path="res://assets/art/enemy/enemy01.png" id="3_sy0gx"]
+
+[node name="VictorySettlementUI" type="Control" unique_id=365724922]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_deqra")
+normal_reward_icon = ExtResource("2_4bdl5")
+boss_reward_icon = ExtResource("3_sy0gx")
+
+[node name="AtmosphereBorder" type="TextureRect" parent="." unique_id=439392907]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_r6r45")
+
+[node name="RewardTexture" type="TextureRect" parent="." unique_id=246025726]
+layout_mode = 0
+offset_left = 663.0
+offset_top = 487.0
+offset_right = 1239.0
+offset_bottom = 861.0
+texture = ExtResource("3_m1fy5")
+expand_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=928373634]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 199.0
+offset_top = 112.5
+offset_right = -1221.0
+offset_bottom = -567.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=29663488]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 80
+text = "战斗胜利！"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=1640574885]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 80
+text = "花费回合："
+horizontal_alignment = 1
+
+[node name="RewardTitleLabel" type="Label" parent="VBoxContainer" unique_id=1903715130]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 80
+text = "战斗奖励:"
+horizontal_alignment = 1
