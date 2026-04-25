@@ -20,6 +20,7 @@ config/icon="res://assets/art/ui/icon.svg"
 Game="*uid://jr6asllf24ky"
 CardDatabase="*uid://bo83w201x64bw"
 EnemyDatabase="*res://data/EnemyDatabase.gd"
+SettingsManager="*res://scripts/core/SettingsManager.gd"
 GlobalUI="*res://scenes/ui/GlobalUI.tscn"
 AudioManager="*res://scripts/core/AudioManager.gd"
 

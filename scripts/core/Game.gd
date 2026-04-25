@@ -44,6 +44,10 @@ var memory_event_done: bool = false
 var reward_card_given: bool = false
 var in_dialogue: bool = false
 
+var in_adventure: bool:
+	get:
+		return chapter_one_state != "base" and chapter_one_state != ""
+
 # 第一章垂直切片状态
 var chapter_one_state: String = "base"
 var chapter_one_memory_choice: String = ""
@@ -296,6 +300,15 @@ func build_chapter_one_summary() -> String:
 
 func goto_title():
 	get_tree().change_scene_to_file("res://scenes/main_manu/MainMenu.tscn")
+
+
+func goto_base():
+	chapter_one_state = "base"
+	get_tree().change_scene_to_file("res://scenes/base/BaseScene.tscn")
+
+
+func save_and_exit():
+	goto_title()
 
 
 func goto_dive():

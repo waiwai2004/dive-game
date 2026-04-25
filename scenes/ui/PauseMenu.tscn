@@ -101,23 +101,21 @@ func _on_settings_button_pressed() -> void:
 	settings_dialog.settings_cancelled.connect(_on_settings_cancelled)
 
 func _on_settings_saved(settings: Dictionary) -> void:
-	# 处理设置保存
 	print(\"Settings saved:\", settings)
 	if settings_dialog:
 		settings_dialog.queue_free()
 		settings_dialog = null
+	close_menu()
 
 func _on_settings_cancelled() -> void:
-	# 处理设置取消
 	print(\"Settings cancelled\")
 	if settings_dialog:
 		settings_dialog.queue_free()
 		settings_dialog = null
+	close_menu()
 
 func _on_save_quit_button_pressed() -> void:
-	is_open = false
-	get_tree().paused = false
-	# 使用Game的save_and_exit()函数
+	close_menu()
 	var game = get_node_or_null(\"/root/Game\")
 	if game:
 		game.save_and_exit()
@@ -126,9 +124,7 @@ func _on_return_base_button_pressed() -> void:
 	return_base_dialog.popup_centered()
 
 func _on_return_base_dialog_confirmed() -> void:
-	is_open = false
-	get_tree().paused = false
-	# 使用Game的goto_base()函数
+	close_menu()
 	var game = get_node_or_null(\"/root/Game\")
 	if game:
 		game.goto_base()

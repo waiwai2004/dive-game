@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dpxjuufu8wc64" path="res://assets/art/ui/global/Atmosphereframe01.PNG" id="2_a47ik"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="2_ui_font"]
 [ext_resource type="Texture2D" uid="uid://brmuhdjnutmow" path="res://assets/art/characters/player/IMG_3401.PNG" id="3_a47ik"]
+[ext_resource type="PackedScene" uid="uid://dkiay467lga8g" path="res://scenes/ui/PauseMenu.tscn" id="4_pause_menu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deck_button"]
 bg_color = Color(0.1, 0.16, 0.3, 0.95)
@@ -356,3 +357,6 @@ theme_override_fonts/bold_font = ExtResource("2_ui_font")
 theme_override_font_sizes/normal_font_size = 22
 theme_override_font_sizes/bold_font_size = 24
 bbcode_enabled = true
+
+[node name="PauseMenu" parent="." instance=ExtResource("4_pause_menu") unique_id=999888777]
+layer = 200

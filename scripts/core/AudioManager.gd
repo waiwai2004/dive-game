@@ -3,7 +3,13 @@ extends Node
 const BGM_PATH := "res://assets/audio/bgm/Eight.wav"
 const SILENT_DB := -60.0
 
-# Placeholder segment timings. You can tune these values directly.
+const SFX_PATHS := {
+	"card_hover": "res://assets/audio/sfx/sfx_card_hover.wav",
+	"card_play": "res://assets/audio/sfx/sfx_card_play.wav",
+	"end_turn": "res://assets/audio/sfx/sfx_end_turn.wav",
+	"hit": "res://assets/audio/sfx/sfx_hit.wav"
+}
+
 var segments: Dictionary = {
 	"menu": {"start": 0.0, "end": 18.0},
 	"story": {"start": 18.0, "end": 52.0},
@@ -15,11 +21,20 @@ var segments: Dictionary = {
 
 var _player: AudioStreamPlayer
 var _fade_tween: Tween
-var _target_volume_db := -10.0
 var _current_segment := ""
 var _segment_start := 0.0
 var _segment_end := 0.0
 var _request_id := 0
+
+var _bgm_volume_percent := 70
+var _sfx_volume_percent := 75
+var _master_volume_percent := 80
+var _bgm_enabled := true
+var _sfx_enabled := true
+var _master_enabled := true
+
+var _sfx_players: Array[AudioStreamPlayer] = []
+var _sfx_streams: Dictionary = {}
 
 
 func _ready() -> void:
@@ -27,8 +42,15 @@ func _ready() -> void:
 	_player = AudioStreamPlayer.new()
 	_player.name = "BGMPlayer"
 	_player.stream = load(BGM_PATH)
-	_player.volume_db = _target_volume_db
+	_player.volume_db = _percent_to_db(_bgm_volume_percent)
 	add_child(_player)
+	
+	for sfx_name in SFX_PATHS:
+		var path: String = SFX_PATHS[sfx_name]
+		if ResourceLoader.exists(path):
+			_sfx_streams[sfx_name] = load(path)
+	
+	_load_settings()
 
 
 func _process(_delta: float) -> void:
@@ -100,17 +122,96 @@ func fade_out_and_stop(fade_duration := 0.35) -> void:
 			return
 
 	_player.stop()
-	_player.volume_db = _target_volume_db
+	_player.volume_db = _percent_to_db(_bgm_volume_percent)
 	_current_segment = ""
 
 
-func set_volume(db: float) -> void:
-	_target_volume_db = db
-	_player.volume_db = _target_volume_db
+func play_sfx(sfx_name: String) -> void:
+	if not _sfx_enabled or not _master_enabled:
+		return
+	if not _sfx_streams.has(sfx_name):
+		push_warning("AudioManager: unknown sfx '%s'" % sfx_name)
+		return
+	
+	var sfx_player := AudioStreamPlayer.new()
+	sfx_player.stream = _sfx_streams[sfx_name]
+	sfx_player.volume_db = _percent_to_db(_sfx_volume_percent)
+	add_child(sfx_player)
+	sfx_player.play()
+	_sfx_players.append(sfx_player)
+	
+	sfx_player.finished.connect(func():
+		sfx_player.queue_free()
+		_sfx_players.erase(sfx_player)
+	)
+
+
+func set_bgm_volume(percent: int) -> void:
+	_bgm_volume_percent = clampi(percent, 0, 100)
+	var db := _percent_to_db(_bgm_volume_percent) if _bgm_enabled and _master_enabled else SILENT_DB
+	_player.volume_db = db
+
+
+func set_bgm_enabled(enabled: bool) -> void:
+	_bgm_enabled = enabled
+	var db := _percent_to_db(_bgm_volume_percent) if _bgm_enabled and _master_enabled else SILENT_DB
+	_player.volume_db = db
+
+
+func set_sfx_volume(percent: int) -> void:
+	_sfx_volume_percent = clampi(percent, 0, 100)
+
+
+func set_sfx_enabled(enabled: bool) -> void:
+	_sfx_enabled = enabled
+
+
+func set_master_volume(percent: int) -> void:
+	_master_volume_percent = clampi(percent, 0, 100)
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), _percent_to_db(_master_volume_percent))
+
+
+func set_master_enabled(enabled: bool) -> void:
+	_master_enabled = enabled
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), not enabled)
+	var db := _percent_to_db(_bgm_volume_percent) if _bgm_enabled and _master_enabled else SILENT_DB
+	_player.volume_db = db
+
+
+func get_bgm_volume() -> int:
+	return _bgm_volume_percent
+
+
+func get_sfx_volume() -> int:
+	return _sfx_volume_percent
+
+
+func get_master_volume() -> int:
+	return _master_volume_percent
+
+
+func is_bgm_enabled() -> bool:
+	return _bgm_enabled
+
+
+func is_sfx_enabled() -> bool:
+	return _sfx_enabled
+
+
+func is_master_enabled() -> bool:
+	return _master_enabled
+
+
+func _percent_to_db(percent: int) -> float:
+	if percent <= 0:
+		return SILENT_DB
+	return linear_to_db(percent / 100.0)
 
 
 func _switch_segment(start_time: float, fade_duration: float, request_id: int) -> void:
 	_kill_fade_tween()
+
+	var target_db := _percent_to_db(_bgm_volume_percent) if _bgm_enabled and _master_enabled else SILENT_DB
 
 	if _player.playing and fade_duration > 0.0:
 		_fade_tween = create_tween()
@@ -126,12 +227,33 @@ func _switch_segment(start_time: float, fade_duration: float, request_id: int) -
 	if fade_duration > 0.0:
 		_player.volume_db = SILENT_DB
 		_fade_tween = create_tween()
-		_fade_tween.tween_property(_player, "volume_db", _target_volume_db, fade_duration)
+		_fade_tween.tween_property(_player, "volume_db", target_db, fade_duration)
 	else:
-		_player.volume_db = _target_volume_db
+		_player.volume_db = target_db
 
 
 func _kill_fade_tween() -> void:
 	if _fade_tween and is_instance_valid(_fade_tween):
 		_fade_tween.kill()
 		_fade_tween = null
+
+
+func _load_settings() -> void:
+	if not has_node("/root/SettingsManager"):
+		return
+	
+	if SettingsManager.get_setting("system_sound", true) != null:
+		_master_enabled = SettingsManager.get_setting("system_sound", true)
+	if SettingsManager.get_setting("system_volume", 80) != null:
+		_master_volume_percent = SettingsManager.get_setting("system_volume", 80)
+	if SettingsManager.get_setting("sound", true) != null:
+		_sfx_enabled = SettingsManager.get_setting("sound", true)
+	if SettingsManager.get_setting("sound_volume", 75) != null:
+		_sfx_volume_percent = SettingsManager.get_setting("sound_volume", 75)
+	if SettingsManager.get_setting("bgm", true) != null:
+		_bgm_enabled = SettingsManager.get_setting("bgm", true)
+	if SettingsManager.get_setting("bgm_volume", 70) != null:
+		_bgm_volume_percent = SettingsManager.get_setting("bgm_volume", 70)
+	
+	var db := _percent_to_db(_bgm_volume_percent) if _bgm_enabled and _master_enabled else SILENT_DB
+	_player.volume_db = db
