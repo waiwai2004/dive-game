@@ -296,27 +296,30 @@ func generate_card(ai_data: Dictionary) -> void:
 	var effect = ""
 	var x = int(ai_data.get("X值", 1))
 	
-	var a_pool = ["对敌方单体造成 %d 点伤害。" % x]
-	var b_pool = ["回复自身 %d 点生命值。" % x, "增加自身 %d 点防御护盾。" % x]
-	var c_pool = ["对目标施加 %d 层『深海凝视』（减速）。" % x]
+	var a_pool = [{"desc": "对敌方单体造成 %d 点伤害。" % x, "key": "damage", "val": x}]
+	var b_pool = [{"desc": "回复自身 %d 点生命值。" % x, "key": "heal_hp", "val": x}, {"desc": "增加自身 %d 点防御护盾。" % x, "key": "block", "val": x}]
+	var c_pool = [{"desc": "对目标施加 %d 层『深海凝视』（减速）。" % x, "key": "apply_weak", "val": x}]
 	
-	if "偏恶" == tag1: a_pool.append("冷酷地撕裂目标，造成 %d 点穿透伤害。" % x)
-	if "偏善" == tag1: b_pool.append("牺牲认知，为自身提供 %d 点精神庇护。" % x)
-	if "激进" == tag2: a_pool.append("不顾一切地爆发，对所有敌人造成 %d 点伤害。" % x)
-	if "保守" == tag2: b_pool.append("闭锁心智，获得 %d 点防御并抵御下一次深海侵蚀。" % x)
-	if "守序" == tag3: c_pool.append("制定规则，使自身获得 %d 层『理智锚点』。" % x)
-	if "混乱" == tag3: c_pool.append("让不可名状充斥脑海，随机施加 %d 层『异变』。" % x)
+	if "偏恶" == tag1: a_pool.append({"desc": "冷酷地撕裂目标，造成 %d 点穿透伤害。" % x, "key": "damage", "val": x})
+	if "偏善" == tag1: b_pool.append({"desc": "牺牲认知，为自身提供 %d 点精神庇护。" % x, "key": "san_heal", "val": x})
+	if "激进" == tag2: a_pool.append({"desc": "不顾一切地爆发，对所有敌人造成 %d 点伤害。" % x, "key": "damage", "val": x})
+	if "保守" == tag2: b_pool.append({"desc": "闭锁心智，获得 %d 点防御并抵御下一次深海侵蚀。" % x, "key": "block_and_reduce_cognition", "val": x, "val2": 1})
+	if "守序" == tag3: c_pool.append({"desc": "制定规则，使自身获得 %d 层『理智锚点』。" % x, "key": "gain_energy", "val": x})
+	if "混乱" == tag3: c_pool.append({"desc": "让不可名状充斥脑海，随机施加 %d 层『异变』。" % x, "key": "apply_weak", "val": x})
 		
+	var chosen_effect = {}
 	if r < prob_a:
 		t_type = "理解卡(A类)"
-		effect = a_pool[randi() % a_pool.size()]
+		chosen_effect = a_pool[randi() % a_pool.size()]
 	elif r < prob_a + prob_b:
 		t_type = "重构卡(B类)"
-		effect = b_pool[randi() % b_pool.size()]
+		chosen_effect = b_pool[randi() % b_pool.size()]
 	else:
 		t_type = "共情卡(C类)"
-		effect = c_pool[randi() % c_pool.size()]
+		chosen_effect = c_pool[randi() % c_pool.size()]
 		
+	effect = chosen_effect["desc"]
+	
 	var available_arts = [
 		"res://assets/art/cards/43944f6b22669d538130d73293568073.jpg",
 		"res://assets/art/cards/94263a1e9c156ddc5c7d1e2ab78a7b53.jpg",
@@ -330,7 +333,10 @@ func generate_card(ai_data: Dictionary) -> void:
 		"type": t_type,
 		"cost": ai_data.get("精神负荷", 1),
 		"cognition": ai_data.get("认知负荷", 1),
-		"description": effect,
+		"description": chosen_effect.get("desc", ""),
+		"effect_key": chosen_effect.get("key", ""),
+		"effect_value": chosen_effect.get("val", 0),
+		"effect_value_2": chosen_effect.get("val2", 0),
 		"target": "enemy" if "A类" in t_type else "self",
 		"art_illustration_path": available_arts[randi() % available_arts.size()]
 	}
@@ -343,6 +349,9 @@ func generate_card(ai_data: Dictionary) -> void:
 	cd.energy_cost = int(card_dict["cost"])
 	cd.cognition = int(card_dict["cognition"])
 	cd.description = card_dict["description"]
+	cd.effect_key = card_dict["effect_key"]
+	cd.effect_value = card_dict["effect_value"]
+	cd.effect_value_2 = card_dict["effect_value_2"]
 	cd.target_type = card_dict["target"]
 	if "art_illustration_path" in cd:
 		cd.art_illustration_path = card_dict["art_illustration_path"]
