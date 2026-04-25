@@ -13,7 +13,7 @@ extends Node
 @onready var loading_label: Label = $CanvasLayer/LoadingPanel/LoadingLabel
 @onready var card_container: Control = $CanvasLayer/CardContainer
 
-var zhipu_api_key: String = ""
+var zhipu_api_key: String = "a31b007061814e729b74a355965dd4b3.pqErprnEUvMIyjwO"
 
 var max_loops: int = 3
 var current_step: int = 1
@@ -30,7 +30,7 @@ func _ready() -> void:
 	if typeof(GlobalUI) == TYPE_OBJECT:
 		GlobalUI.visible = false
 		
-	zhipu_api_key = OS.get_environment("ZHIPU_API_KEY")
+	#zhipu_api_key = OS.get_environment("ZHIPU_API_KEY")
 	if zhipu_api_key.is_empty():
 		push_error("环境变量 ZHIPU_API_KEY 未设置！")
 		story_text.text = "[color=red]环境变量 ZHIPU_API_KEY 未设置！[/color]"
@@ -298,23 +298,23 @@ func generate_card(ai_data: Dictionary) -> void:
 	
 	var a_pool = [{"desc": "对敌方单体造成 %d 点伤害。" % x, "key": "damage", "val": x}]
 	var b_pool = [{"desc": "回复自身 %d 点生命值。" % x, "key": "heal_hp", "val": x}, {"desc": "增加自身 %d 点防御护盾。" % x, "key": "block", "val": x}]
-	var c_pool = [{"desc": "对目标施加 %d 层『深海凝视』（虚弱）。" % x, "key": "apply_weak", "val": x}]
+	var c_pool = [{"desc": "对目标施加 %d 层虚弱。" % x, "key": "apply_weak", "val": x}]
 	
 	if "偏恶" == tag1: 
-		a_pool.append({"desc": "冷酷地撕裂目标，造成 %d 点穿透伤害。" % x, "key": "damage", "val": x})
+		a_pool.append({"desc": "冷酷地撕裂目标，造成 %d 点伤害。" % x, "key": "damage", "val": x})
 		c_pool.append({"desc": "释放深海神经毒素，施加 %d 层『麻痹』。" % x, "key": "apply_paralysis", "val": x})
 	if "偏善" == tag1: 
-		b_pool.append({"desc": "牺牲认知，为自身提供 %d 点精神庇护。" % x, "key": "san_heal", "val": x})
-		b_pool.append({"desc": "生命之光闪耀，赋予自身 %d 层『残存』（免死机制）。" % x, "key": "apply_survival", "val": x})
+		b_pool.append({"desc": "牺牲认知，为自身提供 %d 点存在值回复。" % x, "key": "san_heal", "val": x})
+		b_pool.append({"desc": "生命之光闪耀，赋予自身 %d 层『残存』。" % x, "key": "apply_survival", "val": x})
 	if "激进" == tag2: 
 		a_pool.append({"desc": "不顾一切地爆发，对所有敌人造成 %d 点伤害。" % x, "key": "damage", "val": x})
 	if "保守" == tag2: 
-		b_pool.append({"desc": "闭锁心智，获得 %d 点防御并抵御下一次深海侵蚀。" % x, "key": "block_and_reduce_cognition", "val": x, "val2": 1})
+		b_pool.append({"desc": "闭锁心智，获得 %d 点防御。" % x, "key": "block", "val": x})
 		b_pool.append({"desc": "使自身变得无坚不摧，获得 %d 层『坚韧』。" % x, "key": "apply_resilience", "val": x})
 	if "守序" == tag3: 
-		c_pool.append({"desc": "制定规则，使自身获得 %d 层『理智锚点』。" % x, "key": "gain_energy", "val": x})
+		c_pool.append({"desc": "制定规则，使自身获得 %d 层精神负荷。" % x, "key": "gain_energy", "val": x})
 	if "混乱" == tag3: 
-		c_pool.append({"desc": "让不可名状充斥脑海，随机施加 %d 层『虚弱』。" % x, "key": "apply_weak", "val": x})
+		c_pool.append({"desc": "让不可名状充斥脑海，对敌人施加 %d 层『虚弱』。" % x, "key": "apply_weak", "val": x})
 		c_pool.append({"desc": "扭曲敌方感知，施加 %d 层『混乱』。" % x, "key": "apply_confusion", "val": x})
 		
 	var chosen_effect = {}
