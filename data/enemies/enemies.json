@@ -1,0 +1,168 @@
+{
+  "battle_order": [
+    "corpse_shrimp",
+    "motor_jellyfish",
+    "black_bubble"
+  ],
+  "enemies": [
+    {
+      "enemy_id": "corpse_shrimp",
+      "enemy_name": "尸虾",
+      "max_hp": 8,
+      "max_san": 8,
+      "energy_max": 10,
+      "energy_gain_per_turn": 3,
+      "portrait_path": "res://assets/art/enemy/enemy01.png",
+      "ai_profile": "corpse_shrimp",
+      "ai_threshold_hp": 4,
+      "notes": "存在值高于阈值时优先理解牌，低于阈值时优先共情牌。",
+      "cards": [
+        {
+          "card_id": "tear",
+          "card_name": "撕裂",
+          "category": "理解",
+          "energy_cost": 3,
+          "copies": 2,
+          "effect_key": "damage",
+          "effect_value": 2,
+          "target": "player"
+        },
+        {
+          "card_id": "solidify",
+          "card_name": "固化",
+          "category": "共情",
+          "energy_cost": 2,
+          "copies": 1,
+          "effect_key": "self_buff_resilience",
+          "effect_value": 2,
+          "target": "self"
+        },
+        {
+          "card_id": "survive",
+          "card_name": "残存",
+          "category": "共情",
+          "energy_cost": 2,
+          "copies": 1,
+          "effect_key": "self_buff_survival",
+          "effect_value": 2,
+          "target": "self"
+        }
+      ]
+    },
+    {
+      "enemy_id": "motor_jellyfish",
+      "enemy_name": "马达水母",
+      "max_hp": 6,
+      "max_san": 6,
+      "energy_max": 10,
+      "energy_gain_per_turn": 3,
+      "portrait_path": "res://assets/art/enemy/enemy01.png",
+      "ai_profile": "motor_jellyfish",
+      "notes": "优先机制牌，其次理解牌。",
+      "cards": [
+        {
+          "card_id": "shock",
+          "card_name": "电击",
+          "category": "理解",
+          "energy_cost": 4,
+          "copies": 1,
+          "effect_key": "damage_all",
+          "effect_value": 3,
+          "target": "player"
+        },
+        {
+          "card_id": "paralyze",
+          "card_name": "麻痹",
+          "category": "共情",
+          "energy_cost": 2,
+          "copies": 1,
+          "effect_key": "apply_player_paralysis",
+          "effect_value": 3,
+          "target": "player"
+        },
+        {
+          "card_id": "inner_drive",
+          "card_name": "内驱力",
+          "category": "机制",
+          "energy_cost": 2,
+          "copies": 1,
+          "effect_key": "self_state_inner_drive",
+          "effect_value": 1,
+          "target": "self"
+        }
+      ]
+    },
+    {
+      "enemy_id": "black_bubble",
+      "enemy_name": "黑泡",
+      "max_hp": 10,
+      "max_san": 10,
+      "energy_max": 10,
+      "energy_gain_per_turn": 3,
+      "portrait_path": "res://assets/art/characters/enemy/boss1.PNG",
+      "ai_profile": "black_bubble",
+      "notes": "优先共情牌，其次重构牌。",
+      "cards": [
+        {
+          "card_id": "three_eye_collapse",
+          "card_name": "三相眼·崩坏",
+          "category": "重构",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "direct_presence_loss",
+          "effect_value": 2,
+          "target": "player",
+          "note": "直接扣除存在值，不算伤害。"
+        },
+        {
+          "card_id": "three_eye_chaos",
+          "card_name": "三相眼·混乱",
+          "category": "共情",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "apply_player_confusion",
+          "effect_value": 4,
+          "target": "player"
+        },
+        {
+          "card_id": "three_eye_distort",
+          "card_name": "三相眼·扭曲",
+          "category": "重构",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "swap_player_hp_san",
+          "effect_value": 1,
+          "target": "player"
+        },
+        {
+          "card_id": "ram",
+          "card_name": "冲撞",
+          "category": "理解",
+          "energy_cost": 2,
+          "copies": 3,
+          "effect_key": "damage",
+          "effect_value": 2,
+          "target": "player"
+        }
+      ],
+      "drop_table": [
+        {
+          "card_name": "三相眼·崩坏",
+          "chance": 10
+        },
+        {
+          "card_name": "三相眼·混乱",
+          "chance": 10
+        },
+        {
+          "card_name": "三相眼·扭曲",
+          "chance": 10
+        },
+        {
+          "card_name": "无",
+          "chance": 70
+        }
+      ]
+    }
+  ]
+}

@@ -35,7 +35,8 @@ func _ready() -> void:
 	_wire_signals()
 
 	_audio.play_battle_bgm()
-	_enemy_ai.setup(_is_normal_battle())
+	_enemy_ai.setup(_get_enemy_id_for_current_battle(), _enemy_buff_manager, _player_buff_manager)
+	_apply_enemy_portrait()
 	_log("敌人逼近：%s。" % _enemy_ai.enemy_name)
 	_card_system.start_battle()
 	_start_player_turn()
@@ -122,35 +123,56 @@ func _on_end_turn_pressed() -> void:
 
 func _enemy_turn() -> void:
 	_state.change_state(BattleStateManager.State.ENEMY_TURN)
-	_enemy_buff_manager.on_turn_start()
+	var continue_enemy_turn := true
 
-	var result := _enemy_ai.execute_turn(_card_system.player_block)
+	while continue_enemy_turn:
+		_enemy_buff_manager.on_turn_start()
+		_enemy_ai.start_turn()
 
-	var raw_attack := int(result.get("raw_attack_value", 0))
-	var dmg_to_player := int(result.get("damage_to_player", 0))
+		var result := _enemy_ai.execute_turn(_card_system.player_block)
+		var raw_attack := int(result.get("raw_attack_value", 0))
+		var dmg_to_player := int(result.get("damage_to_player", 0))
 
-	_card_system.player_block = maxi(
-		_card_system.player_block - int(result.get("block_consumed", 0)),
-		0
-	)
-	if dmg_to_player > 0:
-		dmg_to_player = _player_buff_manager.modify_damage_taken(dmg_to_player)
-		Game.damage_player(dmg_to_player)
-	if raw_attack > 0:
-		Game.player_san -= raw_attack
-		if Game.player_san <= 0:
-			_log("SAN值耗尽！你陷入了癫狂...")
-	var weak_gain := int(result.get("weak_applied_to_player", 0))
-	if weak_gain > 0:
-		_card_system.player_weak += weak_gain
+		_card_system.player_block = maxi(
+			_card_system.player_block - int(result.get("block_consumed", 0)),
+			0
+		)
+		if dmg_to_player > 0:
+			dmg_to_player = _player_buff_manager.modify_damage_taken(dmg_to_player)
+			Game.damage_player(dmg_to_player)
+		if raw_attack > 0:
+			Game.player_san -= raw_attack
+			if Game.player_san <= 0:
+				_log("SAN值耗尽！你陷入了癫狂...")
 
-	_enemy_ai.end_turn_tick()
-	_card_system.tick_player_weak()
-	_enemy_buff_manager.on_turn_end()
+		var direct_hp_loss := int(result.get("direct_hp_loss", 0))
+		if direct_hp_loss > 0:
+			Game.player_hp = maxi(Game.player_hp - direct_hp_loss, 0)
 
-	if Game.player_hp <= 0:
-		await _on_battle_lose()
-		return
+		if bool(result.get("swap_player_hp_san", false)):
+			var old_hp := Game.player_hp
+			var old_san := Game.player_san
+			Game.player_hp = clampi(old_san, 0, Game.max_hp)
+			Game.player_san = mini(old_hp, Game.max_san)
+			_log("你的存在值与 SAN 值被扭曲互换。")
+
+		var weak_gain := int(result.get("weak_applied_to_player", 0))
+		if weak_gain > 0:
+			_card_system.player_weak += weak_gain
+
+		var extra_turn := _enemy_ai.end_turn_tick()
+		_card_system.tick_player_weak()
+		_enemy_buff_manager.on_turn_end()
+
+		if Game.player_hp <= 0:
+			await _on_battle_lose()
+			return
+
+		continue_enemy_turn = extra_turn
+		if continue_enemy_turn:
+			_log("%s 的内驱力被触发，立刻再行动一次！" % _enemy_ai.enemy_name)
+			_ui.refresh_all(_battle_log_lines)
+			await get_tree().create_timer(0.35).timeout
 
 	await get_tree().create_timer(0.35).timeout
 	_start_player_turn()
@@ -193,6 +215,10 @@ func hide_card_tooltip() -> void:
 # UI Manager 打开战斗记录面板时回调
 func _refresh_battle_log_from_scene() -> void:
 	_ui.refresh_battle_log(_battle_log_lines)
+
+
+func get_player_additional_status_info() -> Array[Dictionary]:
+	return _player_buff_manager.get_all_active_buffs_info()
 
 
 # ====== 胜负 / 奖励 ======
@@ -255,7 +281,26 @@ func _log(text: String) -> void:
 
 
 func _is_normal_battle() -> bool:
-	return Game.battle_index <= 1
+	return Game.battle_index < 3
+
+
+func _get_enemy_id_for_current_battle() -> String:
+	var enemy_id := EnemyDatabase.get_enemy_id_for_battle_index(Game.battle_index)
+	if enemy_id.is_empty():
+		return "corpse_shrimp"
+	return enemy_id
+
+
+func _apply_enemy_portrait() -> void:
+	var portrait_path := _enemy_ai.get_portrait_path()
+	if portrait_path.is_empty():
+		return
+	if not ResourceLoader.exists(portrait_path):
+		push_warning("[BattleScene] enemy portrait missing: %s" % portrait_path)
+		return
+	var texture := load(portrait_path)
+	if texture is Texture2D:
+		_boss_portrait.texture = texture
 
 
 func _hide_global_ui_for_battle() -> void:

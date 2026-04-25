@@ -212,6 +212,24 @@ func _refresh_status_icons() -> void:
 			"癫狂状态：所有卡牌费用 +1。"
 		)
 
+	if _scene and _scene.has_method("get_player_additional_status_info"):
+		var extra_statuses: Array = _scene.call("get_player_additional_status_info")
+		for info in extra_statuses:
+			if not (info is Dictionary):
+				continue
+			var buff_name := str(info.get("name", "状态"))
+			var stacks := int(info.get("stacks", 0))
+			var description := str(info.get("description", ""))
+			if buff_name in ["护盾", "虚弱"]:
+				continue
+			_add_status_icon(
+				buff_name.substr(0, 1),
+				stacks,
+				_get_status_color(buff_name),
+				buff_name,
+				description
+			)
+
 
 func _add_status_icon(label_text: String, stack: int, color: Color, display_name: String, tip_text: String) -> void:
 	var btn := Button.new()
@@ -305,13 +323,19 @@ func _build_enemy_tooltip() -> String:
 	var preview_text := (", ".join(_enemy_ai.hand_preview)
 		if not _enemy_ai.hand_preview.is_empty() else "—")
 	var buffs: Array[String] = []
-	if _enemy_ai.weak > 0:
-		buffs.append("虚弱 %d" % _enemy_ai.weak)
+	for info in _enemy_ai.get_active_buffs_info():
+		var buff_name := str(info.get("name", "状态"))
+		var stacks := int(info.get("stacks", 0))
+		if stacks < 0:
+			buffs.append(buff_name)
+		elif stacks > 0:
+			buffs.append("%s %d" % [buff_name, stacks])
 	var buff_text := "，".join(buffs) if not buffs.is_empty() else "无"
 
-	return "[b]%s[/b]\n存在值：%d / %d\n现有手牌：%s\n下一回合意图 → %s\n状态：%s" % [
+	return "[b]%s[/b]\n存在值：%d / %d\n精神负荷：%d / %d（下回合 +%d）\n现有手牌：%s\n下一回合意图 → %s\n状态：%s" % [
 		_enemy_ai.enemy_name,
 		_enemy_ai.hp, _enemy_ai.max_hp,
+		_enemy_ai.energy, _enemy_ai.energy_max, _enemy_ai.energy_gain_per_turn,
 		preview_text,
 		str(intent.get("text", "攻击")),
 		buff_text,
@@ -411,6 +435,20 @@ func _build_cognition_tooltip() -> String:
 	return "[b]认知负荷[/b]\n当前 %d / %d\n超过上限时，存在值减半并清零累积。" % [
 		Game.player_cognition, Game.max_cognition
 	]
+
+
+func _get_status_color(status_name: String) -> Color:
+	match status_name:
+		"麻痹":
+			return Color(0.96, 0.78, 0.28, 1.0)
+		"混乱":
+			return Color(0.92, 0.45, 0.62, 1.0)
+		"坚韧":
+			return Color(0.40, 0.78, 0.54, 1.0)
+		"残存":
+			return Color(0.44, 0.86, 0.88, 1.0)
+		_:
+			return Color(0.68, 0.72, 0.90, 1.0)
 
 
 # ====== 卡牌 Tooltip（由 card_ui 经 battle_scene 转发） ======

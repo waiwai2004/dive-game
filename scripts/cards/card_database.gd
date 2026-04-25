@@ -1,7 +1,6 @@
 ﻿extends Node
 class_name CardRepository
 
-var cards_csv_path: String = "res://data/cards/cards.csv"
 var cards_json_path: String = "res://data/cards/cards.json"
 
 var _cards_by_id: Dictionary = {}
@@ -9,9 +8,9 @@ var _loaded: bool = false
 
 const _DEFAULT_COGNITION: Dictionary = {
 	"cut": 1,
-	"guard": 1,
-	"calm": 1,
-	"break": 1,
+	"bless": 3,
+	"break": 2,
+	"release": 3,
 	"pursue": 2,
 	"seal": 2
 }
@@ -20,16 +19,11 @@ const _DEFAULT_COGNITION: Dictionary = {
 func load_cards() -> bool:
 	_cards_by_id.clear()
 
-	var loaded_ok: bool = false
-	if FileAccess.file_exists(cards_csv_path):
-		loaded_ok = _load_from_csv(cards_csv_path)
-		if not loaded_ok and FileAccess.file_exists(cards_json_path):
-			push_warning("[CardRepository] CSV 读取失败，尝试 JSON: %s" % cards_json_path)
-			loaded_ok = _load_from_json(cards_json_path)
-	elif FileAccess.file_exists(cards_json_path):
+	var loaded_ok := false
+	if FileAccess.file_exists(cards_json_path):
 		loaded_ok = _load_from_json(cards_json_path)
 	else:
-		push_error("[CardRepository] cards file not found. csv=%s json=%s" % [cards_csv_path, cards_json_path])
+		push_error("[CardRepository] cards json not found: %s" % cards_json_path)
 
 	_loaded = loaded_ok
 	if loaded_ok:
@@ -94,58 +88,6 @@ func get_type_text(card_type: String) -> String:
 func _ensure_loaded() -> void:
 	if not _loaded:
 		load_cards()
-
-
-func _load_from_csv(path: String) -> bool:
-	var file := FileAccess.open(path, FileAccess.READ)
-	if file == null:
-		push_error("[CardRepository] open csv failed: %s" % path)
-		return false
-
-	var header: PackedStringArray = file.get_csv_line()
-	if header.is_empty():
-		push_error("[CardRepository] csv header empty: %s" % path)
-		return false
-
-	var header_names: Array[String] = []
-	for i in range(header.size()):
-		var header_name: String = str(header[i]).strip_edges()
-		if i == 0:
-			header_name = header_name.trim_prefix("\ufeff")
-		header_names.append(header_name)
-
-	while not file.eof_reached():
-		var row: PackedStringArray = file.get_csv_line()
-		if row.is_empty():
-			continue
-
-		var is_blank_row: bool = true
-		for cell in row:
-			if not str(cell).strip_edges().is_empty():
-				is_blank_row = false
-				break
-		if is_blank_row:
-			continue
-
-		var row_dict: Dictionary = {}
-		for i in range(header_names.size()):
-			var key: String = header_names[i]
-			var value: String = ""
-			if i < row.size():
-				value = str(row[i]).strip_edges()
-			row_dict[key] = value
-
-		var card: CardData = CardData.from_row(row_dict)
-		_finalize_card(card)
-		if card.card_id.is_empty():
-			push_warning("[CardRepository] skip row with empty card_id")
-			continue
-
-		if _cards_by_id.has(card.card_id):
-			push_warning("[CardRepository] duplicate card_id '%s', overwrite old data" % card.card_id)
-		_cards_by_id[card.card_id] = card
-
-	return _cards_by_id.size() > 0
 
 
 func _load_from_json(path: String) -> bool:

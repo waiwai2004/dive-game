@@ -1,6 +1,6 @@
 ## 残存Buff
 ## 标签：Buff
-## 效果：buff存在时，自己的存在感值为1（优先级最高）
+## 效果：buff存在时，存在值最低为1（优先级最高）
 ## 每轮结束阶段，移除1层残存
 class_name SurvivalBuff
 extends BuffBase
@@ -14,7 +14,7 @@ func _init():
 
 func modify_presence(base_presence: int) -> int:
 	if stacks > 0:
-		return 1
+		return maxi(base_presence, 1)
 	return base_presence
 
 
@@ -24,4 +24,4 @@ func on_turn_end() -> void:
 
 
 func get_description() -> String:
-	return "存在感强制为1（优先级最高）"
+	return "存在值最低为1（优先级最高）"

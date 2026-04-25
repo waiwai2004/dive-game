@@ -288,7 +288,7 @@ func _enter_battle_or_reward() -> void:
 	elif _active_battle_zone.name == "WoundBoss":
 		_enter_wound_boss()
 	else:
-		_enter_tutorial_battle()
+		_enter_enemy_battle()
 
 
 func _enter_ruins_event() -> void:
@@ -335,12 +335,12 @@ func _set_zone_grey(zone: Area2D) -> void:
 			highlight.visible = false
 
 
-func _enter_tutorial_battle() -> void:
+func _enter_enemy_battle() -> void:
 	if _active_battle_zone:
 		_mark_zone_triggered(_active_battle_zone)
 	_transitioning = true
 	Game.in_dialogue = false
-	Game.battle_index = 1
+	Game.battle_index = int(_active_battle_zone.get_meta("battle_index", 1))
 	_set_hint("", false)
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
@@ -362,6 +362,7 @@ func _enter_wound_boss() -> void:
 		_mark_zone_triggered(_active_battle_zone)
 	_transitioning = true
 	Game.in_dialogue = false
+	Game.battle_index = 3
 	_set_hint("", false)
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
@@ -491,6 +492,8 @@ func _register_existing_zones() -> void:
 
 	var bat_zone: Area2D = get_node_or_null("World/BattleZone")
 	if bat_zone:
+		bat_zone.set_meta("battle_index", 1)
+		bat_zone.set_meta("enemy_id", "corpse_shrimp")
 		_battle_zones.append(bat_zone)
 		_occupied_positions.append(bat_zone.position)
 
@@ -530,6 +533,8 @@ func _spawn_battle_zones(count: int) -> void:
 	var positions := _generate_spawn_positions(count)
 	for pos in positions:
 		var zone := _create_battle_zone(pos)
+		zone.set_meta("battle_index", 2)
+		zone.set_meta("enemy_id", "motor_jellyfish")
 		$World.add_child(zone)
 		_battle_zones.append(zone)
 
@@ -674,6 +679,8 @@ func _create_wound_node(pos: Vector2) -> Area2D:
 	wound.name = "WoundBoss"
 	wound.position = pos
 	wound.set_script(WOUND_NODE_SCRIPT)
+	wound.set_meta("battle_index", 3)
+	wound.set_meta("enemy_id", "black_bubble")
 	wound.monitoring = true
 	wound.monitorable = true
 	wound.collision_layer = 1

@@ -13,7 +13,7 @@ signal log_emitted(text: String)
 const ENERGY_GAIN_PER_TURN := 3
 const ENERGY_MAX := 10
 const HAND_DRAW_COUNT := 5
-const STARTER_DECK: Array[String] = ["cut", "cut", "guard", "guard", "calm", "break"]
+const STARTER_DECK: Array[String] = ["cut", "cut", "bless", "break", "release"]
 
 var draw_pile: Array[String] = []
 var hand: Array[String] = []
@@ -104,11 +104,7 @@ func tick_player_weak() -> void:
 
 
 func get_effective_cost(card: Dictionary) -> int:
-	var cost: int = int(card.get("cost", 0))
-	if Game.is_distorted():
-		cost += 1
-	if _status_manager and _status_manager.is_status_active("癫狂"):
-		cost = _status_manager.modify_card_value(cost, "cost")
+	var cost: int = _apply_card_value_modifiers(int(card.get("cost", 0)), "cost")
 	return maxi(cost, 0)
 
 
@@ -142,10 +138,8 @@ func _apply_card_effect(card: Dictionary) -> void:
 	var card_name := str(card.get("name", "未知卡牌"))
 	var fragments: Array[String] = []
 
-	var damage: int = int(card.get("damage", 0))
+	var damage: int = _apply_card_value_modifiers(int(card.get("damage", 0)), "damage")
 	if damage > 0:
-		if _status_manager and _status_manager.is_status_active("癫狂"):
-			damage = _status_manager.modify_card_value(damage, "damage")
 		if _enemy_buff_manager:
 			damage = _enemy_buff_manager.modify_damage_taken(damage)
 		var final_damage := apply_weak_to_damage(damage, player_weak)
@@ -153,19 +147,22 @@ func _apply_card_effect(card: Dictionary) -> void:
 		_visual_effects.play_enemy_hit_feedback()
 		fragments.append("造成%d点伤害" % final_damage)
 
-	var block_gain: int = int(card.get("block", 0))
+	var block_gain: int = _apply_card_value_modifiers(int(card.get("block", 0)), "block")
 	if block_gain > 0:
-		if _status_manager and _status_manager.is_status_active("癫狂"):
-			block_gain = _status_manager.modify_card_value(block_gain, "block")
 		player_block += block_gain
 		fragments.append("获得%d点护盾" % block_gain)
 
-	var san_heal: int = int(card.get("san_heal", 0))
+	var san_heal: int = _apply_card_value_modifiers(int(card.get("san_heal", 0)), "san_heal")
 	if san_heal > 0:
 		Game.heal_san(san_heal)
 		fragments.append("恢复%d点SAN" % san_heal)
 
-	var weak_on_enemy: int = int(card.get("apply_weak", 0))
+	var hp_heal: int = _apply_card_value_modifiers(int(card.get("heal_hp", 0)), "heal_hp")
+	if hp_heal > 0:
+		Game.heal_player(hp_heal)
+		fragments.append("恢复%d点存在值" % hp_heal)
+
+	var weak_on_enemy: int = _apply_card_value_modifiers(int(card.get("apply_weak", 0)), "apply_weak")
 	if weak_on_enemy > 0:
 		_enemy_ai.apply_weak(weak_on_enemy)
 		if _enemy_buff_manager:
@@ -174,22 +171,22 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_enemy_buff_manager.add_buff(weakness_debuff)
 		fragments.append("施加%d层虚弱" % weak_on_enemy)
 
-	var san_cost: int = int(card.get("san_cost", 0))
+	var san_cost: int = _apply_card_value_modifiers(int(card.get("san_cost", 0)), "san_cost")
 	if san_cost > 0:
-		Game.player_san = maxi(Game.player_san - san_cost, 0)
+		Game.player_san -= san_cost
 		fragments.append("失去%d点SAN" % san_cost)
 
-	var draw_count: int = int(card.get("draw", 0))
+	var draw_count: int = _apply_card_value_modifiers(int(card.get("draw", 0)), "draw")
 	if draw_count > 0:
 		draw_cards(draw_count)
 		fragments.append("抽%d张牌" % draw_count)
 
-	var gain_energy: int = int(card.get("gain_energy", 0))
+	var gain_energy: int = _apply_card_value_modifiers(int(card.get("gain_energy", 0)), "gain_energy")
 	if gain_energy > 0:
 		energy = mini(energy + gain_energy, ENERGY_MAX)
 		fragments.append("获得%d点精神负荷" % gain_energy)
 
-	var reduce_cog: int = int(card.get("reduce_cognition", 0))
+	var reduce_cog: int = _apply_card_value_modifiers(int(card.get("reduce_cognition", 0)), "reduce_cognition")
 	if reduce_cog > 0:
 		Game.player_cognition = maxi(Game.player_cognition - reduce_cog, 0)
 		fragments.append("降低%d点认知负荷" % reduce_cog)
@@ -201,7 +198,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 
 func _apply_cognition_cost(card: Dictionary) -> void:
-	var cog_gain: int = int(card.get("cognition", 0))
+	var cog_gain: int = _apply_card_value_modifiers(int(card.get("cognition", 0)), "cognition")
 	if cog_gain <= 0:
 		return
 	Game.add_cognition(cog_gain)
@@ -227,3 +224,10 @@ static func apply_weak_to_damage(base_damage: int, weak_stack: int) -> int:
 	if weak_stack <= 0:
 		return base_damage
 	return maxi(1, base_damage - weak_stack)
+
+
+func _apply_card_value_modifiers(base_value: int, value_type: String) -> int:
+	var value := base_value
+	if _status_manager and _status_manager.is_status_active("癫狂"):
+		value = _status_manager.modify_card_value(value, value_type)
+	return value

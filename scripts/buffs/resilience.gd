@@ -17,5 +17,10 @@ func modify_damage_taken(base_damage: int) -> int:
 	return maxi(1, base_damage - reduction)
 
 
+func on_turn_end() -> void:
+	if stacks > 0:
+		remove_stack(1)
+
+
 func get_description() -> String:
 	return "受到伤害时，伤害值-%d（最少1）" % stacks
