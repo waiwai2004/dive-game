@@ -1,156 +1,244 @@
 [gd_scene format=3 uid="uid://bw30ptjye8gwu"]
 
-[ext_resource type="Script" uid="uid://255h7vsrxugo" path="res://scenes/ai/AIFeature.gd" id="1_xxx8a"]
-[ext_resource type="Texture2D" uid="uid://cyamnjdrh1jy4" path="res://assets/art/backgrounds/base_dive01.png" id="2_bg"]
+[ext_resource type="Script" uid="uid://255h7vsrxugo" path="res://scenes/ai/AIFeature.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="3_font"]
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="4_btn_normal"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="5_btn_pressed"]
+[ext_resource type="Texture2D" uid="uid://266yltqdhbeb" path="res://assets/art/aiscene/bg_memory_story_01.PNG" id="6_book_bg"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_normal"]
+texture = ExtResource("4_btn_normal")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 20.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_pressed"]
+texture = ExtResource("5_btn_pressed")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 20.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hover"]
+texture = ExtResource("4_btn_normal")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 20.0
+modulate_color = Color(1.1, 1.1, 1.1, 1)
 
 [node name="AIFeature" type="Node" unique_id=1778987935]
-script = ExtResource("1_xxx8a")
+script = ExtResource("1_script")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1710550196]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=706605280]
 layer = 100
 
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=1910405101]
+[node name="BgColorRect" type="ColorRect" parent="CanvasLayer" unique_id=2049759825]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_bg")
-expand_mode = 1
-stretch_mode = 6
-
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=2049759825]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+mouse_filter = 2
 color = Color(0.08, 0.08, 0.12, 0.85)
 
-[node name="LeftPanel" type="Control" parent="CanvasLayer" unique_id=11223344]
+[node name="BookRoot" type="Control" parent="CanvasLayer" unique_id=1000000001]
 layout_mode = 3
-anchor_right = 0.55
-anchor_bottom = 1.0
-grow_vertical = 2
-
-[node name="StoryText" type="RichTextLabel" parent="CanvasLayer/LeftPanel" unique_id=22334455]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 60.0
 offset_top = 80.0
-offset_right = -40.0
-offset_bottom = -120.0
+offset_right = -60.0
+offset_bottom = -40.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/line_separation = 12
-theme_override_font_sizes/normal_font_size = 28
-bbcode_enabled = true
-text = "正在初始化深海连接..."
+mouse_filter = 2
 
-[node name="Pagination" type="HBoxContainer" parent="CanvasLayer/LeftPanel" unique_id=33445566]
+[node name="BookBg" type="TextureRect" parent="CanvasLayer/BookRoot" unique_id=1000000002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -74.0
+offset_right = 90.0
+offset_bottom = 46.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_book_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StoryTitle" type="Label" parent="CanvasLayer/BookRoot" unique_id=1000000011]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+offset_left = 80.0
+offset_top = 50.0
+offset_right = -120.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 36
+text = "故事标题"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TopRightSettings" type="HBoxContainer" parent="CanvasLayer/BookRoot" unique_id=1000000040]
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 1.0
+offset_left = 100.0
+offset_top = 25.0
+offset_right = -100.0
+offset_bottom = 75.0
+grow_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="WordCountOption" type="OptionButton" parent="CanvasLayer/BookRoot/TopRightSettings" unique_id=20202020]
+custom_minimum_size = Vector2(120, 45)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 20
+
+[node name="LeftPanel" type="Control" parent="CanvasLayer/BookRoot" unique_id=1000000010]
+anchors_preset = 0
+anchor_right = 0.5
+offset_left = 60.0
+offset_top = 100.0
+offset_right = -40.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StoryText" type="RichTextLabel" parent="CanvasLayer/BookRoot/LeftPanel" unique_id=22334455]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 10.0
+offset_right = -30.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/default_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_constants/line_separation = 10
+theme_override_fonts/normal_font = ExtResource("3_font")
+theme_override_font_sizes/normal_font_size = 26
+bbcode_enabled = true
+text = "故事内容，此处演示为文本占位"
+
+[node name="Pagination" type="HBoxContainer" parent="CanvasLayer/BookRoot/LeftPanel" unique_id=33445566]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 60.0
-offset_top = -100.0
-offset_right = -40.0
-offset_bottom = -40.0
+offset_left = 65.0
+offset_top = 755.0
+offset_right = -56.0
+offset_bottom = 869.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 40
-alignment = 1
+theme_override_constants/separation = 30
 
-[node name="PrevBtn" type="Button" parent="CanvasLayer/LeftPanel/Pagination" unique_id=11111111]
-custom_minimum_size = Vector2(150, 60)
+[node name="PrevBtn" type="Button" parent="CanvasLayer/BookRoot/LeftPanel/Pagination" unique_id=1000000020]
+custom_minimum_size = Vector2(160, 55)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_fonts/font = ExtResource("3_font")
 theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "上一页"
 
-[node name="PageLabel" type="Label" parent="CanvasLayer/LeftPanel/Pagination" unique_id=22222222]
+[node name="PageLabel" type="Label" parent="CanvasLayer/BookRoot/LeftPanel/Pagination" unique_id=22222222]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_fonts/font = ExtResource("3_font")
 theme_override_font_sizes/font_size = 24
 text = "1 / 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NextBtn" type="Button" parent="CanvasLayer/LeftPanel/Pagination" unique_id=33333333]
-custom_minimum_size = Vector2(150, 60)
+[node name="NextBtn" type="Button" parent="CanvasLayer/BookRoot/LeftPanel/Pagination" unique_id=33333333]
+custom_minimum_size = Vector2(160, 55)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_fonts/font = ExtResource("3_font")
 theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "下一页"
 
-[node name="RightPanel" type="Control" parent="CanvasLayer" unique_id=44556677]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 3
-anchor_left = 0.55
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 0
-grow_vertical = 2
-
-[node name="BgShadow" type="ColorRect" parent="CanvasLayer/RightPanel" unique_id=12121212]
+[node name="RightPanel" type="Control" parent="CanvasLayer/BookRoot" unique_id=1000000030]
 layout_mode = 1
-anchors_preset = 15
+anchor_left = 0.5
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.4)
+offset_left = 40.0
+offset_top = 201.0
+offset_right = -150.0
+offset_bottom = -12.0
+mouse_filter = 2
 
-[node name="QuestionText" type="RichTextLabel" parent="CanvasLayer/RightPanel" unique_id=55667788]
+[node name="QuestionBg" type="Panel" parent="CanvasLayer/BookRoot/RightPanel" unique_id=1000000031]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 40.0
-offset_top = 120.0
-offset_right = -60.0
-offset_bottom = 320.0
+offset_bottom = 55.0
 grow_horizontal = 2
-theme_override_colors/default_color = Color(1, 0.9, 0.6, 1)
-theme_override_font_sizes/normal_font_size = 32
-bbcode_enabled = true
-text = "AI 提出的问题"
+mouse_filter = 2
 
-[node name="OptionsContainer" type="VBoxContainer" parent="CanvasLayer/RightPanel" unique_id=66778899]
+[node name="QuestionBgRect" type="ColorRect" parent="CanvasLayer/BookRoot/RightPanel/QuestionBg" unique_id=1000000032]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 40.0
-offset_top = 350.0
-offset_right = -60.0
-offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.15, 0.35, 0.3, 0.9)
+
+[node name="QuestionLabel" type="RichTextLabel" parent="CanvasLayer/BookRoot/RightPanel/QuestionBg" unique_id=1000000033]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 86.0
+offset_top = 133.0
+offset_right = 86.0
+offset_bottom = 133.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_fonts/normal_font = ExtResource("3_font")
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "选项问题"
+fit_content = true
+scroll_following = true
+
+[node name="OptionsContainer" type="VBoxContainer" parent="CanvasLayer/BookRoot/RightPanel" unique_id=66778899]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 70.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
-
-[node name="TopRightSettings" type="HBoxContainer" parent="CanvasLayer" unique_id=77889900]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -300.0
-offset_top = 20.0
-offset_right = -30.0
-offset_bottom = 70.0
-grow_horizontal = 0
-theme_override_constants/separation = 10
-alignment = 2
-
-[node name="Label" type="Label" parent="CanvasLayer/TopRightSettings" unique_id=10101010]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "设置: "
-
-[node name="WordCountOption" type="OptionButton" parent="CanvasLayer/TopRightSettings" unique_id=20202020]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
 
 [node name="LoadingPanel" type="ColorRect" parent="CanvasLayer" unique_id=88990011]
 visible = false
@@ -159,6 +247,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0, 0, 0, 0.7)
 
 [node name="LoadingLabel" type="Label" parent="CanvasLayer/LoadingPanel" unique_id=30303030]
@@ -194,3 +283,6 @@ offset_right = 125.0
 offset_bottom = 175.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[connection signal="pressed" from="CanvasLayer/BookRoot/LeftPanel/Pagination/PrevBtn" to="." method="_on_prev_pressed"]
+[connection signal="pressed" from="CanvasLayer/BookRoot/LeftPanel/Pagination/NextBtn" to="." method="_on_next_pressed"]

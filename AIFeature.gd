@@ -1,14 +1,14 @@
 extends Node
 
 @onready var http_request: HTTPRequest = $HTTPRequest
-@onready var story_text: RichTextLabel = $CanvasLayer/BookRoot/LeftPanel/StoryText
-@onready var right_panel: Control = $CanvasLayer/BookRoot/RightPanel
-@onready var question_text: RichTextLabel = $CanvasLayer/BookRoot/RightPanel/QuestionBg/QuestionLabel
-@onready var options_container: VBoxContainer = $CanvasLayer/BookRoot/RightPanel/OptionsContainer
-@onready var prev_btn: Button = $CanvasLayer/BookRoot/LeftPanel/Pagination/PrevBtn
-@onready var next_btn: Button = $CanvasLayer/BookRoot/LeftPanel/Pagination/NextBtn
-@onready var page_label: Label = $CanvasLayer/BookRoot/LeftPanel/Pagination/PageLabel
-@onready var word_count_option: OptionButton = $CanvasLayer/BookRoot/TopRightSettings/WordCountOption
+@onready var story_text: RichTextLabel = $CanvasLayer/LeftPanel/StoryText
+@onready var right_panel: Control = $CanvasLayer/RightPanel
+@onready var question_text: RichTextLabel = $CanvasLayer/RightPanel/QuestionText
+@onready var options_container: VBoxContainer = $CanvasLayer/RightPanel/OptionsContainer
+@onready var prev_btn: Button = $CanvasLayer/LeftPanel/Pagination/PrevBtn
+@onready var next_btn: Button = $CanvasLayer/LeftPanel/Pagination/NextBtn
+@onready var page_label: Label = $CanvasLayer/LeftPanel/Pagination/PageLabel
+@onready var word_count_option: OptionButton = $CanvasLayer/TopRightSettings/WordCountOption
 @onready var loading_panel: ColorRect = $CanvasLayer/LoadingPanel
 @onready var loading_label: Label = $CanvasLayer/LoadingPanel/LoadingLabel
 @onready var card_container: Control = $CanvasLayer/CardContainer
@@ -27,10 +27,12 @@ var last_action: String = ""
 var is_requesting: bool = false
 
 func _ready() -> void:
+	# 设置 GlobalUI 为故事模式，并设为可见
 	if typeof(GlobalUI) == TYPE_OBJECT:
 		GlobalUI.visible = true
-		GlobalUI.set_mode(GlobalUI.MODE_STORY)
+		GlobalUI.set_mode(GlobalUI.MODE_BASE)
 	
+	#zhipu_api_key = OS.get_environment("ZHIPU_API_KEY")
 	if zhipu_api_key.is_empty():
 		push_error("环境变量 ZHIPU_API_KEY 未设置！")
 		story_text.text = "[color=red]环境变量 ZHIPU_API_KEY 未设置！[/color]"
@@ -38,9 +40,12 @@ func _ready() -> void:
 		
 	http_request.request_completed.connect(_on_request_completed)
 	
-	word_count_option.add_item("默认 (300 字)", 0)
-	word_count_option.add_item("简易 (100 字)", 1)
-	word_count_option.add_item("细致 (500 字)", 2)
+	prev_btn.pressed.connect(_on_prev_pressed)
+	next_btn.pressed.connect(_on_next_pressed)
+	
+	word_count_option.add_item("默认 (300字)", 0)
+	word_count_option.add_item("简易 (100字)", 1)
+	word_count_option.add_item("细致 (500字)", 2)
 	word_count_option.select(0)
 	word_count_option.item_selected.connect(_on_word_count_changed)
 	
@@ -48,12 +53,9 @@ func _ready() -> void:
 	request_story_step("开始深海下潜，四周漆黑一片。")
 
 func _on_word_count_changed(index: int) -> void:
-	if index == 0:
-		text_limit = 300
-	elif index == 1:
-		text_limit = 100
-	else:
-		text_limit = 500
+	if index == 0: text_limit = 300
+	elif index == 1: text_limit = 100
+	else: text_limit = 500
 
 func _on_prev_pressed() -> void:
 	if current_page > 0:
@@ -88,13 +90,13 @@ func hide_right_panel() -> void:
 	right_panel.modulate.a = 0.0
 
 func _on_option_selected(option_text: String) -> void:
-	if is_requesting:
-		return
+	if is_requesting: return
 	hide_right_panel()
 	last_action = option_text
 	accumulated_history += "玩家选择：" + last_action + "\n"
 	
 	if current_step >= max_loops:
+		# If it was the final choice on step 3, move to step 4 for resolution
 		current_step += 1
 		request_story_step(last_action)
 	else:
@@ -107,9 +109,9 @@ func split_text_into_pages(text: String, chars_per_page: int = 140) -> Array:
 	var current_str = ""
 	for p in paragraphs:
 		var clean_p = p.strip_edges()
-		if clean_p.is_empty():
-			continue
+		if clean_p.is_empty(): continue
 		
+		# 处理长段落不换行的情况
 		while clean_p.length() > chars_per_page:
 			var chunk = clean_p.left(chars_per_page)
 			if current_str.length() > 0:
@@ -147,19 +149,19 @@ func request_story_step(action_text: String) -> void:
 	for child in options_container.get_children():
 		child.queue_free()
 		
-	var system_prompt = "你是一个深海探险的 AI 守秘人（KP）。当前是第 " + str(current_step) + " / " + str(max_loops) + " 个互动环节。\n前情提要：\n" + accumulated_history + "\n"
+	var system_prompt = "你是一个深海探险的AI守秘人（KP）。当前是第 " + str(current_step) + " / " + str(max_loops) + " 个互动环节。\n前情提要：\n" + accumulated_history + "\n"
 	
 	if current_step <= max_loops:
 		system_prompt += "描述玩家上一个选择后发生的剧情（约" + str(text_limit) + "字）。"
-		system_prompt += "然后抛出一个关键问题，并提供 2 到 3 个具体选项。\n"
+		system_prompt += "然后抛出一个关键问题，并提供2到3个具体选项。\n"
 		system_prompt += "务必包围在 ```json 中，返回：story, question, options（字符串数组）。\n"
-		system_prompt += "范例：\n```json\n{\n  \"story\": \"剧情...\",\n  \"question\": \"你要怎么做？\",\n  \"options\": [\"选项 A\", \"选项 B\"]\n}\n```"
+		system_prompt += "范例：\n```json\n{\n  \"story\": \"剧情...\",\n  \"question\": \"你要怎么做？\",\n  \"options\": [\"选项A\", \"选项B\"]\n}\n```"
 	else:
 		system_prompt += "这是最终阶段！请给出大结局的文字描述（约" + str(text_limit) + "字）。"
 		system_prompt += "并根据玩家前面所有的选择评估性格，生成一张相关的技能卡牌。\n"
-		system_prompt += "维度 1 从【偏善，偏恶】选；维度 2 从【激进，保守】选；维度 3 从【守序，混乱】选。X 值是 1~20 的整数。\n"
-		system_prompt += "务必包围在 ```json 中，返回：story, 维度 1, 维度 2, 维度 3, 精神负荷 (1~10), 认知负荷 (1~10), X 值。\n"
-		system_prompt += "范例：\n```json\n{\n  \"story\": \"结局...\",\n  \"维度 1\": \"偏善\",\n  \"维度 2\": \"激进\",\n  \"维度 3\": \"守序\",\n  \"精神负荷\": 4,\n  \"认知负荷\": 5,\n  \"X 值\": 10\n}\n```"
+		system_prompt += "维度1从【偏善,偏恶】选；维度2从【激进,保守】选；维度3从【守序,混乱】选。X值是1~20的整数。\n"
+		system_prompt += "务必包围在 ```json 中，返回：story, 维度1, 维度2, 维度3, 精神负荷(1~10), 认知负荷(1~10), X值。\n"
+		system_prompt += "范例：\n```json\n{\n  \"story\": \"结局...\",\n  \"维度1\": \"偏善\",\n  \"维度2\": \"激进\",\n  \"维度3\": \"守序\",\n  \"精神负荷\": 4,\n  \"认知负荷\": 5,\n  \"X值\": 10\n}\n```"
 
 	var body = {
 		"model": "glm-4-flash",
@@ -185,8 +187,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 		return
 		
 	var json = JSON.new()
-	if json.parse(body.get_string_from_utf8()) != OK:
-		return
+	if json.parse(body.get_string_from_utf8()) != OK: return
 		
 	var data = json.get_data()
 	if data.has("choices") and data["choices"].size() > 0:
@@ -200,8 +201,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 		else:
 			var fs = raw.find('{')
 			var fe = raw.rfind('}')
-			if fs != -1 and fe != -1:
-				json_str = raw.substr(fs, fe - fs + 1)
+			if fs != -1 and fe != -1: json_str = raw.substr(fs, fe - fs + 1)
 				
 		var ai_json = JSON.new()
 		if ai_json.parse(json_str) == OK:
@@ -215,121 +215,128 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 				question_text.text = res.get("question", "接下来怎么做？")
 				var opts = res.get("options", ["继续"])
 				
+				# 防呆设计：如果大模型把多个选项写成了一个长字符串列表（例如 ["A选项, B选项"]），强制拆分开
 				if typeof(opts) == TYPE_STRING:
 					opts = [opts]
 				if typeof(opts) == TYPE_ARRAY and opts.size() == 1:
 					var first_opt = str(opts[0])
-					# 检查是否需要分割选项
-					if first_opt.contains(",") or first_opt.contains("，"):
-						if first_opt.contains(","):
-							opts = first_opt.split(",")
-						else:
-							opts = first_opt.split("，")
+					if "”," in first_opt or "”，" in first_opt or "\",\"" in first_opt:
+						opts = first_opt.replace("”,“", ",").replace("\",\"", ",").split(",")
+					elif "，" in first_opt:
+						opts = first_opt.split("，")
 						
 				for opt_str in opts:
-					var btn = ChoiceButton.new()
-					var clean_opt = str(opt_str).replace("\"", "").replace("\u201d", "").replace("\u201c", "").strip_edges()
-					btn.set_label_text(clean_opt)
+					var btn = Button.new()
+					var clean_opt = str(opt_str).replace("\"", "").replace("”", "").replace("“", "").strip_edges()
+					btn.text = clean_opt
 					btn.custom_minimum_size = Vector2(0, 60)
-					btn.autowrap_mode = 3
-					btn.pressed.connect(_on_option_selected.bind(clean_opt))
+					btn.add_theme_font_size_override("font_size", 22)
+					btn.autowrap_mode = 3 # TextServer.AUTOWRAP_WORD_SMART，允许按钮文字自动换行
+					
+					var style_n = StyleBoxFlat.new()
+					style_n.bg_color = Color(0.1, 0.1, 0.2, 0.8)
+					style_n.border_width_bottom = 2
+					style_n.border_color = Color(0.5, 0.5, 0.8)
+					btn.add_theme_stylebox_override("normal", style_n)
+					
+					var style_h = StyleBoxFlat.new()
+					style_h.bg_color = Color(0.3, 0.3, 0.6, 0.9)
+					btn.add_theme_stylebox_override("hover", style_h)
+					
+					btn.pressed.connect(func(): _on_option_selected(clean_opt))
 					options_container.add_child(btn)
 			else:
 				question_text.text = "[color=green]结局评估已完成。[/color]"
 				var lbl = Label.new()
-				lbl.text = "获得性格向性：" + res.get("维度 1", "偏善") + ", " + res.get("维度 2", "保守") + ", " + res.get("维度 3", "守序")
+				lbl.text = "获得性格向性: " + res.get("维度1", "偏善") + ", " + res.get("维度2", "保守") + ", " + res.get("维度3", "守序")
 				lbl.add_theme_font_size_override("font_size", 24)
 				options_container.add_child(lbl)
 				generate_card(res)
 				
-				var exit_btn = ChoiceButton.new()
-				exit_btn.set_label_text("收下卡牌并返回")
+				var exit_btn = Button.new()
+				exit_btn.text = "收下卡牌并返回"
 				exit_btn.custom_minimum_size = Vector2(0, 60)
-				exit_btn.pressed.connect(_on_exit_pressed)
+				exit_btn.add_theme_font_size_override("font_size", 24)
+				var style_exit = StyleBoxFlat.new()
+				style_exit.bg_color = Color(0.6, 0.2, 0.2, 0.9)
+				exit_btn.add_theme_stylebox_override("normal", style_exit)
+				exit_btn.pressed.connect(func(): 
+					if typeof(GlobalUI) == TYPE_OBJECT: GlobalUI.visible = true
+					get_tree().change_scene_to_file("res://scenes/explore/ExploreScene.tscn")
+				)
 				options_container.add_child(exit_btn)
 			update_page_display()
 		else:
-			story_text.text = "JSON 解析失败"
+			story_text.text = "JSON解析失败"
 	else:
 		story_text.text = "无数据返回"
 
-func _on_exit_pressed() -> void:
-	if typeof(GlobalUI) == TYPE_OBJECT:
-		GlobalUI.visible = true
-	get_tree().change_scene_to_file("res://scenes/explore/ExploreScene.tscn")
-
 func generate_card(ai_data: Dictionary) -> void:
-	var tag1 = ai_data.get("维度 1", "偏善")
-	var tag2 = ai_data.get("维度 2", "激进")
-	var tag3 = ai_data.get("维度 3", "守序")
+	var tag1 = ai_data.get("维度1", "偏善")
+	var tag2 = ai_data.get("维度2", "激进")
+	var tag3 = ai_data.get("维度3", "守序")
 	
 	var prob_a = 0.33
 	var prob_b = 0.34
 	var prob_c = 0.33
 	
 	if tag1 == "偏善":
-		prob_a -= 0.15
-		prob_b += 0.10
-		prob_c += 0.05
+		prob_a -= 0.15; prob_b += 0.10; prob_c += 0.05
 	elif tag1 == "偏恶":
-		prob_a += 0.15
-		prob_b -= 0.10
-		prob_c -= 0.05
+		prob_a += 0.15; prob_b -= 0.10; prob_c -= 0.05
 	if tag2 == "激进":
-		prob_a += 0.15
-		prob_b -= 0.10
-		prob_c -= 0.05
+		prob_a += 0.15; prob_b -= 0.10; prob_c -= 0.05
 	elif tag2 == "保守":
-		prob_a -= 0.15
-		prob_b += 0.15
+		prob_a -= 0.15; prob_b += 0.15
 	if tag3 == "守序":
-		prob_c += 0.15
-		prob_a -= 0.15
+		prob_c += 0.15; prob_a -= 0.15
 	elif tag3 == "混乱":
-		prob_c += 0.15
-		prob_b -= 0.15
+		prob_c += 0.15; prob_b -= 0.15
 		
 	var r = randf()
 	var t_type = ""
-	var x = int(ai_data.get("X 值", 1))
+	var effect = ""
+	var x = int(ai_data.get("X值", 1))
 	
 	var a_pool = [{"desc": "对敌方单体造成 %d 点伤害。" % x, "key": "damage", "val": x}]
 	var b_pool = [{"desc": "回复自身 %d 点生命值。" % x, "key": "heal_hp", "val": x}, {"desc": "增加自身 %d 点防御护盾。" % x, "key": "block", "val": x}]
 	var c_pool = [{"desc": "对目标施加 %d 层虚弱。" % x, "key": "apply_weak", "val": x}]
 	
-	if tag1 == "偏恶": 
+	if "偏恶" == tag1: 
 		a_pool.append({"desc": "冷酷地撕裂目标，造成 %d 点伤害。" % x, "key": "damage", "val": x})
 		c_pool.append({"desc": "释放深海神经毒素，施加 %d 层『麻痹』。" % x, "key": "apply_paralysis", "val": x})
-	if tag1 == "偏善": 
+	if "偏善" == tag1: 
 		b_pool.append({"desc": "牺牲认知，为自身提供 %d 点存在值回复。" % x, "key": "san_heal", "val": x})
 		b_pool.append({"desc": "生命之光闪耀，赋予自身 %d 层『残存』。" % x, "key": "apply_survival", "val": x})
-	if tag2 == "激进": 
+	if "激进" == tag2: 
 		a_pool.append({"desc": "不顾一切地爆发，对所有敌人造成 %d 点伤害。" % x, "key": "damage", "val": x})
-	if tag2 == "保守": 
+	if "保守" == tag2: 
 		b_pool.append({"desc": "闭锁心智，获得 %d 点防御。" % x, "key": "block", "val": x})
 		b_pool.append({"desc": "使自身变得无坚不摧，获得 %d 层『坚韧』。" % x, "key": "apply_resilience", "val": x})
-	if tag3 == "守序": 
+	if "守序" == tag3: 
 		c_pool.append({"desc": "制定规则，使自身获得 %d 层精神负荷。" % x, "key": "gain_energy", "val": x})
-	if tag3 == "混乱": 
+	if "混乱" == tag3: 
 		c_pool.append({"desc": "让不可名状充斥脑海，对敌人施加 %d 层『虚弱』。" % x, "key": "apply_weak", "val": x})
 		c_pool.append({"desc": "扭曲敌方感知，施加 %d 层『混乱』。" % x, "key": "apply_confusion", "val": x})
 		
 	var chosen_effect = {}
 	if r < prob_a:
-		t_type = "理解卡 (A 类)"
+		t_type = "理解卡(A类)"
 		chosen_effect = a_pool[randi() % a_pool.size()]
 	elif r < prob_a + prob_b:
-		t_type = "重构卡 (B 类)"
+		t_type = "重构卡(B类)"
 		chosen_effect = b_pool[randi() % b_pool.size()]
 	else:
-		t_type = "共情卡 (C 类)"
+		t_type = "共情卡(C类)"
 		chosen_effect = c_pool[randi() % c_pool.size()]
+		
+	effect = chosen_effect["desc"]
 	
 	var available_arts = [
 		"res://assets/art/cards/43944f6b22669d538130d73293568073.jpg",
 		"res://assets/art/cards/94263a1e9c156ddc5c7d1e2ab78a7b53.jpg",
 		"res://assets/art/cards/attack.png",
-		"res://assets/art/cards/bless.png"
+        "res://assets/art/cards/bless.png"
 	]
 	
 	var card_dict = {
@@ -342,10 +349,11 @@ func generate_card(ai_data: Dictionary) -> void:
 		"effect_key": chosen_effect.get("key", ""),
 		"effect_value": chosen_effect.get("val", 0),
 		"effect_value_2": chosen_effect.get("val2", 0),
-		"target": "enemy" if t_type.contains("A 类") else "self",
+		"target": "enemy" if "A类" in t_type else "self",
 		"art_illustration_path": available_arts[randi() % available_arts.size()]
 	}
 	
+	# 将卡牌实例化并存入数据库与玩家牌库
 	var cd = CardData.new()
 	cd.card_id = card_dict["id"]
 	cd.card_name = card_dict["name"]
@@ -357,14 +365,15 @@ func generate_card(ai_data: Dictionary) -> void:
 	cd.effect_value = card_dict["effect_value"]
 	cd.effect_value_2 = card_dict["effect_value_2"]
 	cd.target_type = card_dict["target"]
-	cd.art_illustration_path = card_dict["art_illustration_path"]
+	if "art_illustration_path" in cd:
+		cd.art_illustration_path = card_dict["art_illustration_path"]
 		
 	if typeof(CardDatabase) == TYPE_OBJECT and CardDatabase.has_method("get_all_cards"):
 		CardDatabase._repo._cards_by_id[cd.card_id] = cd
 		
 	if typeof(Game) == TYPE_OBJECT and Game.has_method("add_card"):
 		Game.add_card(cd.card_id)
-		print("已成功将生成的 AI 卡牌加入玩家牌组：", cd.card_id)
+		print("已成功将生成的AI卡牌加入玩家牌组：", cd.card_id)
 		
 	show_card_in_ui(card_dict)
 
@@ -373,9 +382,9 @@ func show_card_in_ui(card_dict: Dictionary) -> void:
 	card_container.z_index = 100
 	card_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	
-	for child in card_container.get_children():
-		child.queue_free()
+	for child in card_container.get_children(): child.queue_free()
 	
+	# 防止点击穿透到下面按钮，并提供半透明黑底
 	var bg = ColorRect.new()
 	bg.color = Color(0, 0, 0, 0.85)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -392,8 +401,7 @@ func show_card_in_ui(card_dict: Dictionary) -> void:
 		card_ui.custom_minimum_size = Vector2(300, 420)
 		if card_ui.has_method("setup"):
 			card_ui.setup(card_dict, 0, self)
-			if card_ui.has_method("_refresh_text"):
-				card_ui.call("_refresh_text")
+			if card_ui.has_method("_refresh_text"): card_ui.call("_refresh_text")
 
 	var hint = Label.new()
 	hint.text = ""
@@ -410,4 +418,4 @@ func show_card_in_ui(card_dict: Dictionary) -> void:
 	card_container.add_child(btn)
 
 func play_card(card_idx, card_dict=null):
-	print("卡牌展示场景中不允许打出卡牌：", card_idx)
+	print("卡牌展示场景中不允许打出卡牌: ", card_idx)

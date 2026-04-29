@@ -8,6 +8,13 @@ const MODE_BATTLE := "battle"
 
 @onready var atmosphere_frame: TextureRect = $AtmosphereFrame
 @onready var top_hud: Control = $TopHUD
+
+# 贴图资源
+const FRAME_TEXTURE_01: String = "res://assets/art/ui/global/ui_global_frame_01.PNG"
+const FRAME_TEXTURE_02: String = "res://assets/art/ui/global/ui_global_frame_02.PNG"
+
+var _texture_frame_01: Texture2D = null
+var _texture_frame_02: Texture2D = null
 @onready var san_label: Label = $TopHUD/SanBarRoot/SanLabel
 @onready var san_bar_fill: ProgressBar = $TopHUD/SanBarRoot/SanBarFill
 @onready var hp_label: Label = $TopHUD/HpBarRoot/HpLabel
@@ -19,7 +26,6 @@ const MODE_BATTLE := "battle"
 @onready var danger_overlay_red: ColorRect = $DangerOverlayRed
 @onready var danger_overlay_black: ColorRect = $DangerOverlayBlack
 
-@onready var deck_button: Button = $TopHUD/AvatarFrame/DeckButton
 @onready var deck_panel: PanelContainer = $DeckPanel
 @onready var deck_title_label: Label = $DeckPanel/MarginContainer/ContentVBox/HeaderRow/TitleLabel
 @onready var deck_close_button: Button = $DeckPanel/MarginContainer/ContentVBox/HeaderRow/CloseButton
@@ -53,6 +59,11 @@ var _deck_open := false
 
 func _ready() -> void:
 	layer = 100
+	
+	# 加载贴图资源
+	_texture_frame_01 = load(FRAME_TEXTURE_01)
+	_texture_frame_02 = load(FRAME_TEXTURE_02)
+	
 	set_mode(MODE_MENU)
 	clear_hint()
 	clear_energy()
@@ -61,8 +72,6 @@ func _ready() -> void:
 	deck_text.bbcode_enabled = true
 	deck_title_label.text = "当前牌库"
 
-	if not deck_button.pressed.is_connected(_on_deck_button_pressed):
-		deck_button.pressed.connect(_on_deck_button_pressed)
 	if not deck_close_button.pressed.is_connected(_on_deck_close_button_pressed):
 		deck_close_button.pressed.connect(_on_deck_close_button_pressed)
 	if not deck_icon_button.pressed.is_connected(_on_deck_icon_button_pressed):
@@ -95,14 +104,16 @@ func set_mode(mode: String) -> void:
 			top_hud.visible = false
 			bottom_hint_root.visible = false
 			atmosphere_frame.visible = true
+			_set_atmosphere_frame_texture(_texture_frame_01)  # 主菜单使用 frame_01
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
 			hide_deck_panel()
 		MODE_STORY:
 			top_hud.visible = false
-			bottom_hint_root.visible = true
-			atmosphere_frame.visible = true
+			bottom_hint_root.visible = false
+			atmosphere_frame.visible = false
+			_set_atmosphere_frame_texture(_texture_frame_01)  # 故事/AI场景使用 frame_01
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
@@ -111,6 +122,7 @@ func set_mode(mode: String) -> void:
 			top_hud.visible = true
 			bottom_hint_root.visible = true
 			atmosphere_frame.visible = true
+			_set_atmosphere_frame_texture(_texture_frame_02)  # 基地使用 frame_02
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
@@ -118,6 +130,7 @@ func set_mode(mode: String) -> void:
 			top_hud.visible = true
 			bottom_hint_root.visible = true
 			atmosphere_frame.visible = true
+			_set_atmosphere_frame_texture(_texture_frame_02)  # 探索场景使用 frame_02
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
@@ -125,6 +138,7 @@ func set_mode(mode: String) -> void:
 			top_hud.visible = false
 			bottom_hint_root.visible = false
 			atmosphere_frame.visible = false
+			_set_atmosphere_frame_texture(_texture_frame_01)  # 战斗场景使用 frame_01
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
@@ -133,6 +147,7 @@ func set_mode(mode: String) -> void:
 			top_hud.visible = true
 			bottom_hint_root.visible = true
 			atmosphere_frame.visible = true
+			_set_atmosphere_frame_texture(_texture_frame_02)
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
@@ -185,6 +200,11 @@ func set_atmosphere_visible(visible: bool) -> void:
 	atmosphere_frame.visible = visible
 
 
+func _set_atmosphere_frame_texture(texture: Texture2D) -> void:
+	if texture and atmosphere_frame:
+		atmosphere_frame.texture = texture
+
+
 func set_top_hud_visible(visible: bool) -> void:
 	top_hud.visible = visible
 
@@ -234,9 +254,9 @@ func _build_energy_text() -> String:
 
 
 func _update_deck_button_visibility() -> void:
-	var can_show := _mode == MODE_BASE or _mode == MODE_EXPLORE
-	# 同时控制旧按钮和新按钮的可见性
-	deck_button.visible = can_show
+	# 在 BASE、EXPLORE 和 STORY 模式下显示按钮
+	var can_show := _mode == MODE_BASE or _mode == MODE_EXPLORE or _mode == MODE_STORY
+	# 控制新按钮的可见性
 	deck_icon_button.visible = can_show
 	if not can_show:
 		hide_deck_panel()
@@ -249,13 +269,6 @@ func _update_deck_button_state() -> void:
 	# 如果需要，可以在这里添加按钮高亮、颜色变化等效果
 	# 例如：当卡组打开时，让按钮更亮或改变颜色
 	pass  # 目前保持简单，可以根据需要扩展
-
-
-func _on_deck_button_pressed() -> void:
-	if _deck_open:
-		hide_deck_panel()
-	else:
-		show_deck_panel()
 
 
 func _on_deck_close_button_pressed() -> void:
