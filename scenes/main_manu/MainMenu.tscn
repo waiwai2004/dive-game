@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://cxr3nvwgve4uj"]
 
 [ext_resource type="Script" uid="uid://broxp3v1pxcnh" path="res://scenes/main_manu/main_menu.gd" id="1_g316v"]
-[ext_resource type="Texture2D" uid="uid://dty202k7yyftm" path="res://assets/art/backgrounds/mainmenu_bg.PNG" id="2_6xxem"]
-[ext_resource type="Texture2D" uid="uid://dub88ew8dk35g" path="res://assets/art/backgrounds/Logo.PNG" id="3_vwd7k"]
+[ext_resource type="Texture2D" uid="uid://c81ipqll7h0dw" path="res://assets/art/backgrounds/bg_mainmenu_01.PNG" id="2_asggu"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_akniq"]
 
 [node name="MsinMenu" type="Control" unique_id=1678201818]
@@ -19,19 +18,19 @@ grow_vertical = 2
 script = ExtResource("1_g316v")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1648683079]
-modulate = Color(9.62615e-07, 0.37191892, 0.5026825, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 6
 size_flags_vertical = 6
-texture = ExtResource("2_6xxem")
-
-[node name="Logo" type="Sprite2D" parent="." unique_id=1451312404]
-texture = ExtResource("3_vwd7k")
+texture = ExtResource("2_asggu")
 
 [node name="StartHint" type="Label" parent="." unique_id=396509739]
 layout_mode = 1
