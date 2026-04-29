@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bw30ptjye8gwu"]
 
-[ext_resource type="Script" uid="uid://255h7vsrxugo" path="res://scenes/ai-add/AIFeature.gd" id="1_xxx8a"]
+[ext_resource type="Script" uid="uid://255h7vsrxugo" path="res://scenes/ai/AIFeature.gd" id="1_xxx8a"]
 [ext_resource type="Texture2D" uid="uid://cyamnjdrh1jy4" path="res://assets/art/backgrounds/base_dive01.png" id="2_bg"]
 
 [node name="AIFeature" type="Node" unique_id=1778987935]

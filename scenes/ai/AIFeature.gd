@@ -27,9 +27,7 @@ var last_action: String = ""
 var is_requesting: bool = false
 
 func _ready() -> void:
-	if typeof(GlobalUI) == TYPE_OBJECT:
-		GlobalUI.visible = false
-		
+	
 	#zhipu_api_key = OS.get_environment("ZHIPU_API_KEY")
 	if zhipu_api_key.is_empty():
 		push_error("环境变量 ZHIPU_API_KEY 未设置！")

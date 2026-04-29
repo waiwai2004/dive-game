@@ -325,7 +325,7 @@ func goto_end():
 	get_tree().change_scene_to_file("res://scenes/end/EndScene.tscn")
 	
 func goto_ai():
-	get_tree().change_scene_to_file("res://scenes/ai/aiscene.tscn")
+	get_tree().change_scene_to_file("res://scenes/ai/AIFeature.tscn")
 
 
 # 跳转到意识花苞奖励界面（新增）

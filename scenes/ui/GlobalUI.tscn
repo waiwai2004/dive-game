@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://dop82w6hp8utr"]
 
 [ext_resource type="Script" uid="uid://bm3d6khoa06k1" path="res://scripts/ui/global_ui.gd" id="1_global_ui_script"]
-[ext_resource type="Texture2D" uid="uid://dpxjuufu8wc64" path="res://assets/art/ui/global/Atmosphereframe01.PNG" id="2_a47ik"]
+[ext_resource type="Texture2D" uid="uid://b5ohwkmgmup3e" path="res://assets/art/ui/global/ui_global_frame_02.PNG" id="2_lhbd8"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="2_ui_font"]
-[ext_resource type="Texture2D" uid="uid://brmuhdjnutmow" path="res://assets/art/characters/player/IMG_3401.PNG" id="3_a47ik"]
+[ext_resource type="Texture2D" uid="uid://cidwwgftbklkr" path="res://assets/art/ui/global/ui_avatar_frame_01.PNG" id="3_lhbd8"]
 [ext_resource type="PackedScene" uid="uid://dkiay467lga8g" path="res://scenes/ui/PauseMenu.tscn" id="4_pause_menu"]
+[ext_resource type="Texture2D" uid="uid://jyj1v2e81dar" path="res://assets/art/ui/global/card.PNG" id="5_ptgf3"]
+[ext_resource type="Texture2D" uid="uid://bajbcwupiensj" path="res://assets/art/ui/global/setting.PNG" id="6_renvr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deck_button"]
 bg_color = Color(0.1, 0.16, 0.3, 0.95)
@@ -90,7 +92,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("2_a47ik")
+texture = ExtResource("2_lhbd8")
 expand_mode = 1
 stretch_mode = 5
 
@@ -149,7 +151,7 @@ offset_bottom = -72.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("3_a47ik")
+texture = ExtResource("3_lhbd8")
 expand_mode = 1
 stretch_mode = 5
 
@@ -160,10 +162,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -78.0
-offset_top = 52.0
-offset_right = 78.0
-offset_bottom = 94.0
+offset_left = 668.0
+offset_top = 104.0
+offset_right = 824.0
+offset_bottom = 146.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_ui_font")
@@ -272,6 +274,74 @@ text = "能量 0 / 3"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="DeckIconButton" type="Button" parent="TopHUD" unique_id=1001001002]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.202
+anchor_top = 0.5
+anchor_right = 1.202
+anchor_bottom = 0.5
+offset_left = -30.112
+offset_top = -30.0
+offset_right = 29.888
+offset_bottom = 30.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_lhbd8")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_lhbd8")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_lhbd8")
+flat = true
+
+[node name="IconTexture" type="TextureRect" parent="TopHUD/DeckIconButton" unique_id=1001001003]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -47.0
+offset_right = 50.0
+offset_bottom = 53.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_ptgf3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SettingsButton" type="Button" parent="TopHUD" unique_id=1001001004]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.4360001
+anchor_top = 0.5
+anchor_right = 1.4360001
+anchor_bottom = 0.5
+offset_left = -29.81604
+offset_top = -26.0
+offset_right = 30.18396
+offset_bottom = 34.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_lhbd8")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_lhbd8")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_lhbd8")
+flat = true
+
+[node name="IconTexture" type="TextureRect" parent="TopHUD/SettingsButton" unique_id=1001001005]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.55
+anchor_top = 0.5
+anchor_right = 0.55
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -49.000008
+offset_right = 50.0
+offset_bottom = 50.999992
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_renvr")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="BottomHintRoot" type="Control" parent="." unique_id=2083871548]
 layout_mode = 3
 anchors_preset = 7
@@ -358,5 +428,9 @@ theme_override_font_sizes/normal_font_size = 22
 theme_override_font_sizes/bold_font_size = 24
 bbcode_enabled = true
 
-[node name="PauseMenu" parent="." instance=ExtResource("4_pause_menu") unique_id=999888777]
+[node name="PauseMenu" parent="." unique_id=999888777 instance=ExtResource("4_pause_menu")]
 layer = 200
+visible = false
+
+[connection signal="pressed" from="TopHUD/DeckIconButton" to="." method="_on_deck_icon_button_pressed"]
+[connection signal="pressed" from="TopHUD/SettingsButton" to="." method="_on_settings_button_pressed"]

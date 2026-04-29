@@ -25,6 +25,9 @@ const MODE_BATTLE := "battle"
 @onready var deck_close_button: Button = $DeckPanel/MarginContainer/ContentVBox/HeaderRow/CloseButton
 @onready var deck_text: RichTextLabel = $DeckPanel/MarginContainer/ContentVBox/DeckText
 
+@onready var deck_icon_button: Button = $TopHUD/DeckIconButton
+@onready var settings_button: Button = $TopHUD/SettingsButton
+
 var _deck_scroll: ScrollContainer = null
 var _deck_cards_flow: HFlowContainer = null
 
@@ -62,6 +65,10 @@ func _ready() -> void:
 		deck_button.pressed.connect(_on_deck_button_pressed)
 	if not deck_close_button.pressed.is_connected(_on_deck_close_button_pressed):
 		deck_close_button.pressed.connect(_on_deck_close_button_pressed)
+	if not deck_icon_button.pressed.is_connected(_on_deck_icon_button_pressed):
+		deck_icon_button.pressed.connect(_on_deck_icon_button_pressed)
+	if not settings_button.pressed.is_connected(_on_settings_button_pressed):
+		settings_button.pressed.connect(_on_settings_button_pressed)
 
 	_ensure_deck_cards_view()
 	_refresh_stats_from_game(true)
@@ -228,9 +235,20 @@ func _build_energy_text() -> String:
 
 func _update_deck_button_visibility() -> void:
 	var can_show := _mode == MODE_BASE or _mode == MODE_EXPLORE
+	# 同时控制旧按钮和新按钮的可见性
 	deck_button.visible = can_show
+	deck_icon_button.visible = can_show
 	if not can_show:
 		hide_deck_panel()
+	else:
+		_update_deck_button_state()
+
+
+func _update_deck_button_state() -> void:
+	# 根据卡组面板的开关状态，更新按钮的视觉效果
+	# 如果需要，可以在这里添加按钮高亮、颜色变化等效果
+	# 例如：当卡组打开时，让按钮更亮或改变颜色
+	pass  # 目前保持简单，可以根据需要扩展
 
 
 func _on_deck_button_pressed() -> void:
@@ -244,15 +262,33 @@ func _on_deck_close_button_pressed() -> void:
 	hide_deck_panel()
 
 
+func _on_deck_icon_button_pressed() -> void:
+	if _deck_open:
+		hide_deck_panel()
+	else:
+		show_deck_panel()
+
+
+func _on_settings_button_pressed() -> void:
+	if has_node("PauseMenu"):
+		var pause_menu = get_node("PauseMenu")
+		if pause_menu and pause_menu.has_method("open_menu"):
+			pause_menu.open_menu()
+
+
 func show_deck_panel() -> void:
 	_deck_open = true
 	refresh_deck_panel()
 	deck_panel.visible = true
+	# 更新按钮状态（可选：添加视觉反馈）
+	_update_deck_button_state()
 
 
 func hide_deck_panel() -> void:
 	_deck_open = false
 	deck_panel.visible = false
+	# 更新按钮状态
+	_update_deck_button_state()
 
 
 func refresh_deck_panel() -> void:
