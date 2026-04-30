@@ -8,7 +8,9 @@ extends Node
 @onready var prev_btn: Button = $CanvasLayer/LeftPanel/Pagination/PrevBtn
 @onready var next_btn: Button = $CanvasLayer/LeftPanel/Pagination/NextBtn
 @onready var page_label: Label = $CanvasLayer/LeftPanel/Pagination/PageLabel
-@onready var word_count_option: OptionButton = $CanvasLayer/TopRightSettings/WordCountOption
+@onready var simple_btn: Button = $CanvasLayer/TopRightSettings/WordCountButtons/SimpleBtn
+@onready var default_btn: Button = $CanvasLayer/TopRightSettings/WordCountButtons/DefaultBtn
+@onready var detail_btn: Button = $CanvasLayer/TopRightSettings/WordCountButtons/DetailBtn
 @onready var loading_panel: ColorRect = $CanvasLayer/LoadingPanel
 @onready var loading_label: Label = $CanvasLayer/LoadingPanel/LoadingLabel
 @onready var card_container: Control = $CanvasLayer/CardContainer
@@ -27,6 +29,10 @@ var last_action: String = ""
 var is_requesting: bool = false
 
 func _ready() -> void:
+	# 设置 GlobalUI 为故事模式，并设为可见
+	if typeof(GlobalUI) == TYPE_OBJECT:
+		GlobalUI.visible = true
+		GlobalUI.set_mode(GlobalUI.MODE_BASE)
 	
 	#zhipu_api_key = OS.get_environment("ZHIPU_API_KEY")
 	if zhipu_api_key.is_empty():
@@ -39,19 +45,30 @@ func _ready() -> void:
 	prev_btn.pressed.connect(_on_prev_pressed)
 	next_btn.pressed.connect(_on_next_pressed)
 	
-	word_count_option.add_item("默认 (300字)", 0)
-	word_count_option.add_item("简易 (100字)", 1)
-	word_count_option.add_item("细致 (500字)", 2)
-	word_count_option.select(0)
-	word_count_option.item_selected.connect(_on_word_count_changed)
+	simple_btn.pressed.connect(_on_simple_btn_pressed)
+	default_btn.pressed.connect(_on_default_btn_pressed)
+	detail_btn.pressed.connect(_on_detail_btn_pressed)
+	_update_button_states()
 	
 	right_panel.modulate.a = 0
 	request_story_step("开始深海下潜，四周漆黑一片。")
 
-func _on_word_count_changed(index: int) -> void:
-	if index == 0: text_limit = 300
-	elif index == 1: text_limit = 100
-	else: text_limit = 500
+func _on_simple_btn_pressed() -> void:
+	text_limit = 100
+	_update_button_states()
+
+func _on_default_btn_pressed() -> void:
+	text_limit = 300
+	_update_button_states()
+
+func _on_detail_btn_pressed() -> void:
+	text_limit = 500
+	_update_button_states()
+
+func _update_button_states() -> void:
+	simple_btn.button_pressed = (text_limit == 100)
+	default_btn.button_pressed = (text_limit == 300)
+	detail_btn.button_pressed = (text_limit == 500)
 
 func _on_prev_pressed() -> void:
 	if current_page > 0:
@@ -99,7 +116,7 @@ func _on_option_selected(option_text: String) -> void:
 		current_step += 1
 		request_story_step(last_action)
 
-func split_text_into_pages(text: String, chars_per_page: int = 140) -> Array:
+func split_text_into_pages(text: String, chars_per_page: int = 600) -> Array:
 	var arr = []
 	var paragraphs = text.split("\n", false)
 	var current_str = ""
@@ -203,7 +220,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 		if ai_json.parse(json_str) == OK:
 			var res = ai_json.get_data()
 			var s_text = res.get("story", "......")
-			story_pages = split_text_into_pages(s_text, 140)
+			story_pages = split_text_into_pages(s_text, 600)
 			current_page = 0
 			accumulated_history += "剧情：" + s_text.left(80) + "...\n"
 			
