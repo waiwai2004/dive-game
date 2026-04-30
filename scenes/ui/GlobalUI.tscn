@@ -128,6 +128,7 @@ offset_top = 24.0
 offset_right = 208.0
 offset_bottom = 224.0
 grow_horizontal = 2
+mouse_filter = 2
 
 [node name="AvatarFrame" type="Control" parent="TopHUD" unique_id=1730245131]
 layout_mode = 1
@@ -145,7 +146,7 @@ anchors_preset = -1
 anchor_right = 1.271
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_right = -32.032013
+offset_right = -30.612
 offset_bottom = -72.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -273,14 +274,14 @@ flat = true
 [node name="IconTexture" type="TextureRect" parent="TopHUD/DeckIconButton" unique_id=1001001003]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 7.6830006
-anchor_top = 0.56700003
-anchor_right = 7.6830006
-anchor_bottom = 0.56700003
+anchor_left = 7.7830005
+anchor_top = 0.5
+anchor_right = 7.7830005
+anchor_bottom = 0.5
 offset_left = -49.98004
-offset_top = -50.02
+offset_top = -50.0
 offset_right = 50.01996
-offset_bottom = 49.98
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("5_ptgf3")
@@ -291,13 +292,13 @@ stretch_mode = 5
 custom_minimum_size = Vector2(60, 60)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 1.4360001
+anchor_left = 2.4250002
 anchor_top = 0.5
-anchor_right = 1.4360001
+anchor_right = 2.4250002
 anchor_bottom = 0.5
-offset_left = -29.81604
+offset_left = -480.80005
 offset_top = -26.0
-offset_right = 30.18396
+offset_right = -420.80005
 offset_bottom = 34.0
 theme_override_styles/normal = SubResource("StyleBoxEmpty_lhbd8")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_lhbd8")
@@ -307,14 +308,14 @@ flat = true
 [node name="IconTexture" type="TextureRect" parent="TopHUD/SettingsButton" unique_id=1001001005]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 7.6330004
-anchor_top = 0.53300005
-anchor_right = 7.6330004
-anchor_bottom = 0.53300005
+anchor_left = 7.583
+anchor_top = 0.467
+anchor_right = 7.583
+anchor_bottom = 0.467
 offset_left = -49.98001
-offset_top = -49.980003
+offset_top = -50.02
 offset_right = 50.01999
-offset_bottom = 50.019997
+offset_bottom = 49.98
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("6_renvr")
@@ -409,6 +410,7 @@ bbcode_enabled = true
 
 [node name="PauseMenu" parent="." unique_id=999888777 instance=ExtResource("4_pause_menu")]
 layer = 200
+visible = false
 
 [connection signal="pressed" from="TopHUD/DeckIconButton" to="." method="_on_deck_icon_button_pressed"]
 [connection signal="pressed" from="TopHUD/SettingsButton" to="." method="_on_settings_button_pressed"]
