@@ -1,38 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://bvbudrwd01"]
+[gd_scene format=3 uid="uid://bvbudrwd01"]
 
-[ext_resource type="Script" path="res://scenes/reward/RewardScene.gd" id="1_script"]
-
-[sub_resource type="Gradient" id="Gradient_bg"]
-offsets = PackedFloat32Array(0, 0.55, 1)
-colors = PackedColorArray(0.12, 0.14, 0.22, 1, 0.06, 0.07, 0.12, 1, 0.02, 0.03, 0.06, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
-gradient = SubResource("Gradient_bg")
-width = 256
-height = 256
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 1)
+[ext_resource type="Script" uid="uid://c7vkd6ravhskm" path="res://scenes/reward/RewardScene.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_877rc"]
+[ext_resource type="Texture2D" uid="uid://chickid2qyl0m" path="res://assets/art/backgrounds/bg_reward_bud_01.png" id="bg_texture"]
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="btn_normal"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="btn_pressed"]
+[ext_resource type="Texture2D" uid="uid://503f2u2i4gff" path="res://assets/art/ui/hint.PNG" id="hint_texture"]
 
 [sub_resource type="Gradient" id="Gradient_particle_color"]
 offsets = PackedFloat32Array(0, 0.35, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 0.98, 0.88, 0.75, 1, 0.9, 0.7, 0)
 
-[sub_resource type="Curve" id="Curve_scale_ambient"]
-_data = [Vector2(0, 0.2), 0.0, 2.0, 0, 0, Vector2(0.4, 1.0), 0.0, 0.0, 0, 0, Vector2(1, 0.0), -1.5, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_scale_ambient"]
-curve = SubResource("Curve_scale_ambient")
-
-[sub_resource type="Curve" id="Curve_scale_burst"]
-_data = [Vector2(0, 1.0), 0.0, 0.0, 0, 0, Vector2(1, 0.0), -2.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_scale_burst"]
-curve = SubResource("Curve_scale_burst")
-
-[node name="RewardScene" type="Control"]
+[node name="RewardScene" type="Control" unique_id=429738698]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=811044013]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,83 +28,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_bg")
+texture = ExtResource("bg_texture")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TitleLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -260.0
-offset_top = 54.0
-offset_right = 260.0
-offset_bottom = 118.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.93, 0.94, 0.97, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.6)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 44
-text = "意识花苞"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="FX" type="Node2D" parent="." unique_id=84224867]
+position = Vector2(960, 540)
 
-[node name="PromptLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -300.0
-offset_top = 130.0
-offset_right = 300.0
-offset_bottom = 162.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.82, 0.85, 0.92, 0.9)
-theme_override_font_sizes/font_size = 20
-text = "点击花苞，汲取意识深处的馈赠"
-horizontal_alignment = 1
-
-[node name="Center" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -100.0
-offset_right = 160.0
-offset_bottom = 220.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="BudDisplay" type="TextureRect" parent="Center"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(160, 160)
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="BudButton" type="Button" parent="Center"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-focus_mode = 0
-flat = true
-
-[node name="FX" type="Node2D" parent="."]
-
-[node name="Particles" type="CPUParticles2D" parent="FX"]
+[node name="Particles" type="CPUParticles2D" parent="FX" unique_id=793612098]
 amount = 60
 lifetime = 2.4
 preprocess = 2.0
@@ -140,10 +50,9 @@ angular_velocity_min = -30.0
 angular_velocity_max = 30.0
 scale_amount_min = 0.4
 scale_amount_max = 1.1
-scale_amount_curve = SubResource("CurveTexture_scale_ambient")
 color_ramp = SubResource("Gradient_particle_color")
 
-[node name="BurstParticles" type="CPUParticles2D" parent="FX"]
+[node name="BurstParticles" type="CPUParticles2D" parent="FX" unique_id=987812286]
 emitting = false
 amount = 120
 lifetime = 1.2
@@ -158,10 +67,9 @@ initial_velocity_min = 280.0
 initial_velocity_max = 560.0
 scale_amount_min = 0.6
 scale_amount_max = 1.9
-scale_amount_curve = SubResource("CurveTexture_scale_burst")
 color_ramp = SubResource("Gradient_particle_color")
 
-[node name="FlashOverlay" type="ColorRect" parent="."]
+[node name="FlashOverlay" type="ColorRect" parent="." unique_id=1030927765]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -170,3 +78,128 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.98, 0.9, 0)
+
+[node name="Center" type="Control" parent="." unique_id=372945614]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -100.0
+offset_right = 160.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BudDisplay" type="TextureRect" parent="Center" unique_id=1110236997]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(160, 160)
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BudButton" type="Button" parent="Center" unique_id=307985914]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+
+[node name="BottomPanel" type="HBoxContainer" parent="." unique_id=176084206]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -325.0
+offset_top = 847.0
+offset_right = 438.0
+offset_bottom = 1030.0
+grow_horizontal = 2
+
+[node name="HintPanel" type="TextureRect" parent="BottomPanel" unique_id=1314720550]
+custom_minimum_size = Vector2(700, 80)
+layout_mode = 2
+texture = ExtResource("hint_texture")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HintContent" type="HBoxContainer" parent="BottomPanel/HintPanel" unique_id=1041788528]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 29.0
+offset_right = 29.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="InteractLabel" type="Label" parent="BottomPanel/HintPanel/HintContent" unique_id=898099844]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_877rc")
+theme_override_font_sizes/font_size = 34
+text = "交互键"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PromptLabel" type="Label" parent="BottomPanel/HintPanel/HintContent" unique_id=499008374]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.15, 0.12, 0.1, 1)
+theme_override_fonts/font = ExtResource("4_877rc")
+theme_override_font_sizes/font_size = 37
+text = "点击花苞查看奖励"
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="." unique_id=790461878]
+anchors_preset = 0
+offset_left = 1445.0
+offset_top = 900.0
+offset_right = 2035.9092
+offset_bottom = 1019.4968
+scale = Vector2(0.484, 1.093)
+
+[node name="TitleButton" type="TextureButton" parent="Control" unique_id=729740163]
+custom_minimum_size = Vector2(200, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.081
+anchor_top = -0.337
+anchor_right = 0.93600005
+anchor_bottom = 0.80100006
+offset_left = 0.049324036
+offset_top = 0.014255524
+offset_right = -0.09967041
+offset_bottom = 0.026855469
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("btn_normal")
+texture_pressed = ExtResource("btn_pressed")
+stretch_mode = 1
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1405974854]
+layout_mode = 0
+offset_left = 1471.0
+offset_top = 893.0
+offset_right = 1661.0
+offset_bottom = 975.0
+theme_override_colors/font_color = Color(0.15, 0.12, 0.1, 1)
+theme_override_font_sizes/font_size = 46
+text = "意识花苞"
+horizontal_alignment = 1
+vertical_alignment = 1

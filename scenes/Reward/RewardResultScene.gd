@@ -1,34 +1,28 @@
 extends Control
 
-## 意识花苞结算弹窗：读取 Game.last_bud_rewards 显示，点击"继续"返回探索场景
-
 @onready var fade_overlay: ColorRect = $FadeOverlay
-@onready var popup: Control = $Popup
-@onready var reward_list: VBoxContainer = $Popup/OuterMargin/InnerFrame/InnerMargin/VBox/RewardList
-@onready var continue_button: Button = $Popup/OuterMargin/InnerFrame/InnerMargin/VBox/ButtonRow/ContinueButton
+@onready var dialog_panel: TextureRect = $DialogPanel
+@onready var reward_list: VBoxContainer = $DialogPanel/Content/RewardList
+@onready var continue_button: Button = $DialogPanel/Content/ContinueButton
 
 
 func _ready() -> void:
-	# 初始：整屏覆盖白色，弹窗透明——和 RewardScene 的闪白收尾对齐
 	fade_overlay.color = Color(1.0, 0.98, 0.9, 1.0)
-	popup.modulate.a = 0.0
+	dialog_panel.modulate.a = 0.0
 
 	_populate_rewards()
 
 	continue_button.pressed.connect(_on_continue_pressed)
 
-	# 进入过渡：白幕淡出 + 弹窗浮现
 	var tw := create_tween().set_parallel(true)
 	tw.tween_property(fade_overlay, "color:a", 0.0, 0.55).set_ease(Tween.EASE_OUT)
-	tw.tween_property(popup, "modulate:a", 1.0, 0.55).set_delay(0.15)
+	tw.tween_property(dialog_panel, "modulate:a", 1.0, 0.55).set_delay(0.15)
 
-	# 过渡结束后让覆盖层不再吃鼠标
 	await tw.finished
 	fade_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _populate_rewards() -> void:
-	# 清空已有
 	for child in reward_list.get_children():
 		child.queue_free()
 
@@ -65,7 +59,6 @@ func _add_reward_row(text: String, delay: float) -> void:
 
 	reward_list.add_child(row)
 
-	# 入场动画：延迟淡入
 	row.modulate.a = 0.0
 	var tw := create_tween()
 	if delay > 0.0:
@@ -76,14 +69,12 @@ func _add_reward_row(text: String, delay: float) -> void:
 func _on_continue_pressed() -> void:
 	continue_button.disabled = true
 
-	# 淡出到纯黑再切场景，避免跳切
 	fade_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	fade_overlay.color = Color(0.02, 0.03, 0.06, 0.0)
 
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(popup, "modulate:a", 0.0, 0.35)
+	tw.tween_property(dialog_panel, "modulate:a", 0.0, 0.35)
 	tw.tween_property(fade_overlay, "color:a", 1.0, 0.4)
 	await tw.finished
 
-	# 返回冒险地图（探索场景）
 	Game.goto_explore()

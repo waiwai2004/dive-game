@@ -18,7 +18,7 @@ const RESULT_SCENE_PATH := "res://scenes/reward/RewardResultScene.tscn"
 @onready var particles: CPUParticles2D = $FX/Particles
 @onready var burst_particles: CPUParticles2D = $FX/BurstParticles
 @onready var flash_overlay: ColorRect = $FlashOverlay
-@onready var prompt_label: Label = $PromptLabel
+@onready var prompt_label: Label = $BottomPanel/HintPanel/HintContent/PromptLabel
 @onready var title_label: Label = $TitleLabel
 
 var _is_blooming: bool = false
