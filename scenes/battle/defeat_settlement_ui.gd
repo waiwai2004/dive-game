@@ -2,7 +2,7 @@ extends Control
 
 @onready var title_label: Label = find_child("TitleLabel", true, false)
 @onready var status_label: Label = find_child("StatusLabel", true, false)
-@onready var return_button: Button = find_child("ReturnButton", true, false)
+@onready var return_button: TextureButton = $ReturnButton
 
 func _ready() -> void:
 	show()

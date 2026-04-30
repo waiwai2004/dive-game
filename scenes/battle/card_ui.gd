@@ -32,6 +32,11 @@ var _original_global_position: Vector2
 var _enemy_area: Control
 
 
+func _is_showcard_scene() -> bool:
+	var root = get_tree().current_scene
+	return root != null and root.name == "ShowCard"
+
+
 func _ready() -> void:
 	clip_text = true
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -88,7 +93,7 @@ func _targets_enemy() -> bool:
 
 # ====== 输入处理 ======
 func _on_gui_input(event: InputEvent) -> void:
-	if disabled:
+	if disabled or _is_showcard_scene():
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -165,12 +170,16 @@ func _mouse_over_enemy() -> bool:
 
 # ====== Hover / Click 动画 ======
 func _on_mouse_entered() -> void:
+	if _is_showcard_scene():
+		return
 	_play_hover_animation(true)
 	if battle_scene and battle_scene.has_method("show_card_tooltip"):
 		battle_scene.call("show_card_tooltip", card_data)
 
 
 func _on_mouse_exited() -> void:
+	if _is_showcard_scene():
+		return
 	_play_hover_animation(false)
 	if battle_scene and battle_scene.has_method("hide_card_tooltip"):
 		battle_scene.call("hide_card_tooltip")

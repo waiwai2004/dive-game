@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://csxik8gkieukq"]
 
 [ext_resource type="Script" uid="uid://cpwo2mgpc6p7s" path="res://scenes/battle/defeat_settlement_ui.gd" id="1_fujdp"]
-[ext_resource type="Texture2D" uid="uid://bt25lnoc5wcd2" path="res://assets/art/backgrounds/bg_top.PNG" id="2_8xixn"]
+[ext_resource type="Texture2D" uid="uid://bvpc40me6r17q" path="res://assets/art/backgrounds/bg_card_showcase_01.PNG" id="2_ce7gn"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="3_qbuwt"]
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="4_rlnc7"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="5_bi08j"]
 
 [node name="DefeatSettlementUI" type="Control" unique_id=1252509271]
 layout_mode = 3
@@ -20,15 +23,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_8xixn")
+texture = ExtResource("2_ce7gn")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1949745674]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 154.0
-offset_top = 78.0
+offset_left = 229.0
+offset_top = 368.0
 offset_right = -224.0
 offset_bottom = -384.0
 grow_horizontal = 2
@@ -37,16 +40,42 @@ mouse_filter = 2
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1045910419]
 layout_mode = 2
-theme_override_font_sizes/font_size = 80
+theme_override_colors/font_color = Color(0.92770386, 5.968213e-06, 9.62615e-07, 1)
+theme_override_fonts/font = ExtResource("3_qbuwt")
+theme_override_font_sizes/font_size = 191
+text = "战斗失败"
+horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=92274563]
 layout_mode = 2
-theme_override_font_sizes/font_size = 80
+theme_override_font_sizes/font_size = 61
+text = "你的存在被抹去"
+horizontal_alignment = 1
 
-[node name="ReturnButton" type="Button" parent="." unique_id=1160448112]
+[node name="ReturnButton" type="TextureButton" parent="." unique_id=401952166]
+custom_minimum_size = Vector2(200, 80)
 layout_mode = 1
-offset_left = 672.0
-offset_top = 736.0
-offset_right = 1220.0
-offset_bottom = 882.0
+anchors_preset = -1
+anchor_left = 0.37300003
+anchor_top = 0.57100004
+anchor_right = 0.711
+anchor_bottom = 0.697
+offset_left = -64.160034
+offset_top = 148.31995
+offset_right = -64.119995
+offset_bottom = 148.23999
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("4_rlnc7")
+texture_pressed = ExtResource("5_bi08j")
+stretch_mode = 1
+
+[node name="TitleLabel" type="Label" parent="ReturnButton" unique_id=1106085134]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 41.0
+offset_right = 540.0
+offset_bottom = 152.0
+theme_override_fonts/font = ExtResource("3_qbuwt")
+theme_override_font_sizes/font_size = 59
 text = "返回主界面"

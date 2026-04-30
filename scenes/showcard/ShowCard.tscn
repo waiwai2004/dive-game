@@ -158,7 +158,7 @@ offset_top = 380.0
 offset_right = 280.0
 offset_bottom = 660.0
 grow_vertical = 2
-mouse_filter = 2
+mouse_filter = 1
 
 [node name="CardUI" parent="Control/CardContainer" unique_id=1549521314 instance=ExtResource("5_card_ui")]
 layout_mode = 1

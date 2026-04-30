@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cf73v31ilac45"]
 
-[ext_resource type="Script" uid="uid://q0opkml76ii3" path="res://scenes/battle/victory_settlement_ui.gd" id="1_deqra"]
-[ext_resource type="Texture2D" uid="uid://dks33y85dxmh0" path="res://assets/art/ui/dialogue.PNG" id="2_4bdl5"]
-[ext_resource type="Texture2D" uid="uid://bt25lnoc5wcd2" path="res://assets/art/backgrounds/bg_top.PNG" id="2_r6r45"]
-[ext_resource type="Texture2D" uid="uid://cbv1jein1jlcv" path="res://assets/art/ui/icon.svg" id="3_m1fy5"]
-[ext_resource type="Texture2D" uid="uid://l5fe1nsc5g5y" path="res://assets/art/enemy/enemy01.png" id="3_sy0gx"]
+[ext_resource type="Script" uid="uid://q0opkml76ii3" path="res://scenes/battle/victory_settlement_ui.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bvpc40me6r17q" path="res://assets/art/backgrounds/bg_card_showcase_01.PNG" id="bg_texture"]
+[ext_resource type="Texture2D" uid="uid://cpbcutdhbivxl" path="res://assets/art/ui/ui_dialog_panel_01.PNG" id="dialog_panel"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="font"]
+[ext_resource type="Texture2D" uid="uid://c1o1aoups1es6" path="res://assets/art/ui/ui_top_box_01.PNG" id="top_box"]
 
 [node name="VictorySettlementUI" type="Control" unique_id=365724922]
 layout_mode = 3
@@ -14,11 +14,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("1_deqra")
-normal_reward_icon = ExtResource("2_4bdl5")
-boss_reward_icon = ExtResource("3_sy0gx")
+script = ExtResource("1_script")
 
-[node name="AtmosphereBorder" type="TextureRect" parent="." unique_id=439392907]
+[node name="Background" type="TextureRect" parent="." unique_id=439392907]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,48 +24,103 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("2_r6r45")
-
-[node name="RewardTexture" type="TextureRect" parent="." unique_id=246025726]
-layout_mode = 0
-offset_left = 663.0
-offset_top = 487.0
-offset_right = 1239.0
-offset_bottom = 861.0
-texture = ExtResource("3_m1fy5")
-expand_mode = 2
+texture = ExtResource("bg_texture")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=928373634]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 199.0
-offset_top = 112.5
-offset_right = -1221.0
-offset_bottom = -567.5
+offset_left = 229.0
+offset_top = 185.0
+offset_right = -286.0
+offset_bottom = -506.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=29663488]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 80
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 120
 text = "战斗胜利！"
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=1640574885]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 80
-text = "花费回合："
+theme_override_font_sizes/font_size = 65
+text = "耗时xx回合"
 horizontal_alignment = 1
 
-[node name="RewardTitleLabel" type="Label" parent="VBoxContainer" unique_id=1903715130]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 80
-text = "战斗奖励:"
+[node name="DialogPanel" type="TextureRect" parent="." unique_id=885632683]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.45100003
+anchor_top = 0.75000006
+anchor_right = 0.45100003
+anchor_bottom = 0.75000006
+offset_left = -656.92004
+offset_top = -357.00006
+offset_right = 761.07996
+offset_bottom = 305.99994
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("dialog_panel")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Header" type="Label" parent="DialogPanel" unique_id=849427319]
+layout_mode = 0
+offset_left = 352.0
+offset_top = 69.0
+offset_right = 580.0
+offset_bottom = 177.0
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 60
+text = "奖励"
 horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="DialogPanel" unique_id=597167239]
+layout_mode = 0
+offset_left = 194.0
+offset_top = 193.0
+offset_right = 1360.0
+offset_bottom = 249.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 55
+text = "具体信息"
+
+[node name="ContinueButton" type="Button" parent="DialogPanel" unique_id=235687968]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 0
+offset_left = 434.0
+offset_top = 435.0
+offset_right = 687.0
+offset_bottom = 514.0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.15, 0.12, 0.1, 1)
+theme_override_font_sizes/font_size = 28
+text = "放弃并继续"
+
+[node name="RewardPlate" type="TextureRect" parent="." unique_id=1595441570]
+layout_mode = 0
+offset_left = 1020.0
+offset_top = 376.0
+offset_right = 1626.0
+offset_bottom = 967.0
+texture = ExtResource("top_box")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="RewardTexture" type="TextureRect" parent="." unique_id=246025726]
+layout_mode = 0
+offset_left = 1157.0
+offset_top = 510.0
+offset_right = 1508.0
+offset_bottom = 813.0
+expand_mode = 2
+stretch_mode = 6
