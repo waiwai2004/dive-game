@@ -2,7 +2,7 @@ extends Control
 
 @export var use_imported_frame_art: bool = true
 
-@onready var frame_sprite: TextureRect = $FrameSprite
+@onready var frame_sprite: TextureRect = get_node_or_null("../FrameSprite")
 @onready var illustration_sprite: TextureRect = $IllustrationSprite
 @onready var name_label: Label = $NameLabel
 @onready var energy_label: Label = $EnergyContainer/EnergyLabel

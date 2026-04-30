@@ -1,0 +1,171 @@
+[gd_scene format=3 uid="uid://c8b1s4g5wx3x1"]
+
+[ext_resource type="Script" uid="uid://bd4psm1ps3ey5" path="res://scenes/showcard/ShowCard.gd" id="1_showcard_script"]
+[ext_resource type="Texture2D" uid="uid://bvpc40me6r17q" path="res://assets/art/backgrounds/bg_card_showcase_01.PNG" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://dej2bhpmhiwtc" path="res://assets/art/ui/ui_pause_panel_01.PNG" id="3_panel"]
+[ext_resource type="Texture2D" uid="uid://bqlopmgjs1gw4" path="res://assets/art/ui/ui_top_label_box_01.PNG" id="4_title_box"]
+[ext_resource type="PackedScene" uid="uid://c8b1s4g5wx3x0" path="res://scenes/battle/CardUI.tscn" id="5_card_ui"]
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="6_btn_n"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="7_btn_p"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="8_font"]
+
+[node name="ShowCard" type="Control" unique_id=428796892]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_showcard_script")
+
+[node name="Background" type="TextureRect" parent="." unique_id=880608886]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="RightPanel" type="Control" parent="." unique_id=1407544621]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -947.0
+offset_top = -311.0
+offset_right = -202.0
+offset_bottom = 364.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PanelBg" type="TextureRect" parent="RightPanel" unique_id=932643232]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_panel")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TitleBox" type="TextureRect" parent="RightPanel" unique_id=663279967]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 60.0
+offset_top = 20.0
+offset_right = -60.0
+offset_bottom = 135.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("4_title_box")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TitleLabel" type="Label" parent="RightPanel/TitleBox" unique_id=915610221]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -39.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.82, 1)
+theme_override_fonts/font = ExtResource("8_font")
+theme_override_font_sizes/font_size = 45
+text = "卡牌名称"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DescriptionText" type="RichTextLabel" parent="RightPanel" unique_id=806825326]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 59.0
+offset_top = 159.0
+offset_right = -78.0
+offset_bottom = -111.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.85, 0.82, 0.78, 1)
+theme_override_fonts/normal_font = ExtResource("8_font")
+theme_override_font_sizes/normal_font_size = 33
+bbcode_enabled = true
+text = "这里是卡牌的详细描述与故事..."
+
+[node name="CollectButton" type="TextureButton" parent="RightPanel" unique_id=679279882]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.48000002
+anchor_top = 0.859
+anchor_right = 0.48000002
+anchor_bottom = 0.859
+offset_left = -292.6
+offset_top = -75.82501
+offset_right = 304.4
+offset_bottom = 75.17499
+grow_horizontal = 2
+grow_vertical = 0
+texture_normal = ExtResource("6_btn_n")
+texture_pressed = ExtResource("7_btn_p")
+texture_hover = ExtResource("7_btn_p")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="RightPanel/CollectButton" unique_id=1202933212]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("8_font")
+theme_override_font_sizes/font_size = 55
+text = "收下！"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="." unique_id=125826431]
+anchors_preset = 0
+offset_left = 71.0
+offset_top = -1907.0
+offset_right = 113.676315
+offset_bottom = -1045.3425
+scale = Vector2(2.575, 2.575)
+
+[node name="CardContainer" type="Control" parent="Control" unique_id=1259281183]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 80.0
+offset_top = 380.0
+offset_right = 280.0
+offset_bottom = 660.0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CardUI" parent="Control/CardContainer" unique_id=1549521314 instance=ExtResource("5_card_ui")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2

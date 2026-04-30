@@ -13,7 +13,6 @@ extends Node
 @onready var detail_btn: Button = $CanvasLayer/TopRightSettings/WordCountButtons/DetailBtn
 @onready var loading_panel: ColorRect = $CanvasLayer/LoadingPanel
 @onready var loading_label: Label = $CanvasLayer/LoadingPanel/LoadingLabel
-@onready var card_container: Control = $CanvasLayer/CardContainer
 
 var zhipu_api_key: String = "a31b007061814e729b74a355965dd4b3.pqErprnEUvMIyjwO"
 
@@ -265,19 +264,6 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 				lbl.add_theme_font_size_override("font_size", 24)
 				options_container.add_child(lbl)
 				generate_card(res)
-				
-				var exit_btn = Button.new()
-				exit_btn.text = "收下卡牌并返回"
-				exit_btn.custom_minimum_size = Vector2(0, 60)
-				exit_btn.add_theme_font_size_override("font_size", 24)
-				var style_exit = StyleBoxFlat.new()
-				style_exit.bg_color = Color(0.6, 0.2, 0.2, 0.9)
-				exit_btn.add_theme_stylebox_override("normal", style_exit)
-				exit_btn.pressed.connect(func(): 
-					if typeof(GlobalUI) == TYPE_OBJECT: GlobalUI.visible = true
-					get_tree().change_scene_to_file("res://scenes/explore/ExploreScene.tscn")
-				)
-				options_container.add_child(exit_btn)
 			update_page_display()
 		else:
 			story_text.text = "JSON解析失败"
@@ -384,51 +370,25 @@ func generate_card(ai_data: Dictionary) -> void:
 	if typeof(CardDatabase) == TYPE_OBJECT and CardDatabase.has_method("get_all_cards"):
 		CardDatabase._repo._cards_by_id[cd.card_id] = cd
 		
-	if typeof(Game) == TYPE_OBJECT and Game.has_method("add_card"):
-		Game.add_card(cd.card_id)
-		print("已成功将生成的AI卡牌加入玩家牌组：", cd.card_id)
-		
-	show_card_in_ui(card_dict)
-
-func show_card_in_ui(card_dict: Dictionary) -> void:
-	card_container.show()
-	card_container.z_index = 100
-	card_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	print("已生成AI卡牌：", cd.card_id)
 	
-	for child in card_container.get_children(): child.queue_free()
-	
-	# 防止点击穿透到下面按钮，并提供半透明黑底
-	var bg = ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.85)
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	card_container.add_child(bg)
-	
-	var center = CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	card_container.add_child(center)
-	
-	var scene = load("res://scenes/battle/CardUI.tscn") as PackedScene
-	if scene:
-		var card_ui = scene.instantiate()
-		center.add_child(card_ui)
-		card_ui.custom_minimum_size = Vector2(300, 420)
-		if card_ui.has_method("setup"):
-			card_ui.setup(card_dict, 0, self)
-			if card_ui.has_method("_refresh_text"): card_ui.call("_refresh_text")
+	_show_card_scene(card_dict)
 
-	var hint = Label.new()
-	hint.text = ""
-	hint.add_theme_font_size_override("font_size", 24)
-	hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.position.y -= 100
-	card_container.add_child(hint)
-
-	var btn = Button.new()
-	btn.flat = true
-	btn.set_anchors_preset(Control.PRESET_FULL_RECT)
-	btn.pressed.connect(func(): card_container.hide())
-	card_container.add_child(btn)
-
-func play_card(card_idx, card_dict=null):
-	print("卡牌展示场景中不允许打出卡牌: ", card_idx)
+func _show_card_scene(card_dict: Dictionary) -> void:
+	print("[AIFeature] _show_card_scene called with card: ", card_dict.get("name", "unknown"))
+	var show_card_scene = load("res://scenes/showcard/ShowCard.tscn") as PackedScene
+	if show_card_scene == null:
+		push_error("[AIFeature] Failed to load ShowCard.tscn")
+		return
+	var show_card = show_card_scene.instantiate()
+	if show_card == null:
+		push_error("[AIFeature] Failed to instantiate ShowCard")
+		return
+	print("[AIFeature] ShowCard instantiated, calling setup...")
+	show_card.setup(card_dict)
+	var old_scene = get_tree().current_scene
+	get_tree().root.add_child(show_card)
+	get_tree().current_scene = show_card
+	print("[AIFeature] Scene switched to ShowCard")
+	if old_scene:
+		old_scene.queue_free()
