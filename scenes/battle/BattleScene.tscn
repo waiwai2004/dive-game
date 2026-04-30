@@ -1,59 +1,18 @@
 [gd_scene format=3 uid="uid://bdeifpkl5qfex"]
 
 [ext_resource type="Script" uid="uid://cku3ud7hb2tu6" path="res://scenes/battle/battle_scene.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://cot1251t2e3av" path="res://assets/art/backgrounds/bg_battle.PNG" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://ccgqki72ae5eb" path="res://assets/art/battle/bg_battle_01.png" id="2_4ro08"]
 [ext_resource type="Texture2D" uid="uid://cdxcv2eunnw74" path="res://assets/art/characters/enemy/boss1.PNG" id="3_boss"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_font"]
+[ext_resource type="Texture2D" uid="uid://br70bmtjsonh4" path="res://assets/art/battle/ui_battle_leftpanel_01 (1).PNG" id="5_5u8xp"]
 [ext_resource type="Script" uid="uid://fpibunk111no" path="res://scenes/battle/reward_story_ui.gd" id="5_reward_story"]
 [ext_resource type="Script" uid="uid://722bhy7eokyg" path="res://scenes/battle/pie_chart_stat.gd" id="6_pie_chart"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top_bar"]
-bg_color = Color(0.08, 0.05, 0.05, 0.88)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.75, 0.42, 0.46, 0.55)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dark_panel"]
-bg_color = Color(0.05, 0.06, 0.09, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.65, 0.68, 0.78, 0.45)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_circle_btn"]
-bg_color = Color(0.1, 0.13, 0.2, 0.96)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.82, 0.86, 0.98, 0.75)
-corner_radius_top_left = 60
-corner_radius_top_right = 60
-corner_radius_bottom_right = 60
-corner_radius_bottom_left = 60
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_circle_btn_hover"]
-bg_color = Color(0.18, 0.22, 0.32, 0.98)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(1, 0.94, 0.78, 0.92)
-corner_radius_top_left = 60
-corner_radius_top_right = 60
-corner_radius_bottom_right = 60
-corner_radius_bottom_left = 60
+[ext_resource type="Texture2D" uid="uid://c1o1aoups1es6" path="res://assets/art/ui/ui_top_box_01.PNG" id="6_yvj2l"]
+[ext_resource type="Texture2D" uid="uid://bqlopmgjs1gw4" path="res://assets/art/ui/ui_top_label_box_01.PNG" id="8_ntma3"]
+[ext_resource type="Texture2D" uid="uid://pdac2v42yhky" path="res://assets/art/battle/ui_battle_cardbtn_n.PNG" id="9_d37c3"]
+[ext_resource type="Texture2D" uid="uid://mwie5i11lx5f" path="res://assets/art/battle/ui_battle_discardbtn_p.PNG" id="10_4rstf"]
+[ext_resource type="Texture2D" uid="uid://becs4uoaghla8" path="res://assets/art/battle/ui_battle_bossbar_01.PNG" id="12_vpuc1"]
+[ext_resource type="Texture2D" uid="uid://d0b6gy6g63bu3" path="res://assets/art/battle/ui_pause_panel_01.PNG" id="13_5b2op"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_end_turn"]
 bg_color = Color(0.2, 0.1, 0.12, 0.98)
@@ -68,16 +27,7 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hand_panel"]
-bg_color = Color(0.05, 0.06, 0.09, 0.82)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.65, 0.68, 0.78, 0.45)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+bg_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_popup"]
 bg_color = Color(0.07, 0.09, 0.14, 0.96)
@@ -114,18 +64,6 @@ corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tooltip"]
-bg_color = Color(0.05, 0.06, 0.09, 0.96)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.85, 0.88, 0.98, 0.75)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nabc4"]
 bg_color = Color(0.04, 0.05, 0.09, 0.96)
@@ -168,65 +106,65 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("2_bg")
+texture = ExtResource("2_4ro08")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="DimOverlay" type="ColorRect" parent="." unique_id=1605913935]
+[node name="Bossbar" type="Control" parent="." unique_id=617800639]
+anchors_preset = 0
+offset_left = 414.0
+offset_top = -83.0
+offset_right = 1437.0
+offset_bottom = 389.0
+
+[node name="BossbarBg" type="TextureRect" parent="Bossbar" unique_id=617800640]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -9.0
+offset_top = 119.0
+offset_right = 50.0
+offset_bottom = -109.66669
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0, 0, 0.5)
+scale = Vector2(1, 0.6)
+texture = ExtResource("12_vpuc1")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="TopBossBar" type="PanelContainer" parent="." unique_id=203815538]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 380.0
-offset_top = 26.0
-offset_right = -380.0
-offset_bottom = 102.0
-grow_horizontal = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_top_bar")
-
-[node name="MarginContainer" type="MarginContainer" parent="TopBossBar" unique_id=1484473323]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 10
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TopBossBar/MarginContainer" unique_id=1055137768]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="BossNameLabel" type="Label" parent="TopBossBar/MarginContainer/HBoxContainer" unique_id=1373621922]
-custom_minimum_size = Vector2(180, 0)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 26
-text = "浅海异常体"
-vertical_alignment = 1
-
-[node name="BossHpBar" type="ProgressBar" parent="TopBossBar/MarginContainer/HBoxContainer" unique_id=1066519098]
-custom_minimum_size = Vector2(0, 22)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
+[node name="BossHpBar" type="ProgressBar" parent="Bossbar" unique_id=1066519098]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 184.0
+offset_right = 964.0
+offset_bottom = 224.0
 value = 100.0
 show_percentage = false
 
-[node name="BossIntentLabel" type="Label" parent="TopBossBar/MarginContainer/HBoxContainer" unique_id=1969428721]
-custom_minimum_size = Vector2(260, 0)
-layout_mode = 2
+[node name="BossNameLabel" type="Label" parent="Bossbar" unique_id=1373621922]
+layout_mode = 0
+offset_left = 398.0
+offset_top = 172.0
+offset_right = 618.0
+offset_bottom = 232.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 36
+text = "浅海异常体"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BossIntentLabel" type="Label" parent="Bossbar" unique_id=1969428721]
+layout_mode = 0
+offset_left = 410.0
+offset_top = 256.0
+offset_right = 649.0
+offset_bottom = 306.0
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 28
 text = "撕咬：造成2点伤害"
-horizontal_alignment = 2
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ArenaRoot" type="Control" parent="." unique_id=689677266]
@@ -234,24 +172,25 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -360.0
-offset_top = 140.0
-offset_right = 360.0
-offset_bottom = 780.0
+offset_left = -454.0
+offset_top = 130.0
+offset_right = 408.0
+offset_bottom = 765.0
 grow_horizontal = 2
+scale = Vector2(1.115, 1.115)
 mouse_filter = 1
 
 [node name="BossPortrait" type="TextureRect" parent="ArenaRoot" unique_id=1126411404]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
+anchors_preset = -1
+anchor_left = 0.46
 anchor_top = 0.5
-anchor_right = 0.5
+anchor_right = 0.46
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -260.0
-offset_right = 240.0
-offset_bottom = 220.0
+offset_left = -550.78015
+offset_top = -454.71973
+offset_right = 551.21985
+offset_bottom = 246.28027
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
@@ -260,143 +199,127 @@ texture = ExtResource("3_boss")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LeftPanel" type="PanelContainer" parent="." unique_id=556021939]
-layout_mode = 1
-offset_left = 28.0
-offset_top = 126.0
-offset_right = 330.0
-offset_bottom = 940.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_dark_panel")
+[node name="LeftPanel" type="TextureRect" parent="." unique_id=979441101]
+layout_mode = 0
+offset_left = -588.0
+offset_top = 41.0
+offset_right = 423.0
+offset_bottom = 951.0
+texture = ExtResource("5_5u8xp")
 
-[node name="MarginContainer" type="MarginContainer" parent="LeftPanel" unique_id=720002125]
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftPanel" unique_id=217232313]
+layout_mode = 0
+offset_left = 631.0
+offset_top = 73.0
+offset_right = 855.0
+offset_bottom = 669.0
+theme_override_constants/separation = 24
+
+[node name="Control" type="Control" parent="LeftPanel/VBoxContainer" unique_id=776212660]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LeftPanel/MarginContainer" unique_id=217232313]
-layout_mode = 2
-theme_override_constants/separation = 12
+[node name="RewardPlate" type="TextureRect" parent="LeftPanel/VBoxContainer/Control" unique_id=705054620]
+layout_mode = 0
+offset_left = -26.0
+offset_top = 52.0
+offset_right = 229.0
+offset_bottom = 332.0
+texture = ExtResource("6_yvj2l")
+stretch_mode = 6
 
-[node name="PlayerTitle" type="Label" parent="LeftPanel/MarginContainer/VBoxContainer" unique_id=1958198553]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 28
-text = "潜航员状态"
-horizontal_alignment = 1
-
-[node name="PieChartStat" type="Control" parent="LeftPanel/MarginContainer/VBoxContainer" unique_id=185562689]
+[node name="PieChartStat" type="Control" parent="LeftPanel/VBoxContainer/Control/RewardPlate" unique_id=185562689]
 custom_minimum_size = Vector2(250, 250)
-layout_mode = 2
+anchors_preset = 0
+offset_left = 35.0
+offset_top = 43.000004
+offset_right = 285.0
+offset_bottom = 293.0
+scale = Vector2(0.75, 0.75)
 script = ExtResource("6_pie_chart")
 
-[node name="EnergySection" type="VBoxContainer" parent="LeftPanel/MarginContainer/VBoxContainer" unique_id=317288152]
+[node name="EnergySection" type="VBoxContainer" parent="LeftPanel/VBoxContainer" unique_id=317288152]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="EnergyTitle" type="Label" parent="LeftPanel/MarginContainer/VBoxContainer/EnergySection" unique_id=807363209]
+[node name="EnergyTitle" type="Label" parent="LeftPanel/VBoxContainer/EnergySection" unique_id=807363209]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 22
 text = "精神负荷"
 
-[node name="EnergyRow" type="HBoxContainer" parent="LeftPanel/MarginContainer/VBoxContainer/EnergySection" unique_id=1215190367]
+[node name="EnergyRow" type="HBoxContainer" parent="LeftPanel/VBoxContainer/EnergySection" unique_id=1215190367]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="EnergyBar" type="ProgressBar" parent="LeftPanel/MarginContainer/VBoxContainer/EnergySection/EnergyRow" unique_id=403030161]
+[node name="EnergyBar" type="ProgressBar" parent="LeftPanel/VBoxContainer/EnergySection/EnergyRow" unique_id=403030161]
 custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 show_percentage = false
 
-[node name="EnergyValueLabel" type="Label" parent="LeftPanel/MarginContainer/VBoxContainer/EnergySection/EnergyRow" unique_id=1212297561]
+[node name="EnergyValueLabel" type="Label" parent="LeftPanel/VBoxContainer/EnergySection/EnergyRow" unique_id=1212297561]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 22
 text = "3 / 10"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="CognitionSection" type="VBoxContainer" parent="LeftPanel/MarginContainer/VBoxContainer" unique_id=936869223]
+[node name="CognitionSection" type="VBoxContainer" parent="LeftPanel/VBoxContainer" unique_id=936869223]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="CognitionTitle" type="Label" parent="LeftPanel/MarginContainer/VBoxContainer/CognitionSection" unique_id=755876053]
+[node name="CognitionTitle" type="Label" parent="LeftPanel/VBoxContainer/CognitionSection" unique_id=755876053]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 22
 text = "认知负荷"
 
-[node name="CognitionRow" type="HBoxContainer" parent="LeftPanel/MarginContainer/VBoxContainer/CognitionSection" unique_id=1717478843]
+[node name="CognitionRow" type="HBoxContainer" parent="LeftPanel/VBoxContainer/CognitionSection" unique_id=1717478843]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="CognitionBar" type="ProgressBar" parent="LeftPanel/MarginContainer/VBoxContainer/CognitionSection/CognitionRow" unique_id=1787312843]
+[node name="CognitionBar" type="ProgressBar" parent="LeftPanel/VBoxContainer/CognitionSection/CognitionRow" unique_id=1787312843]
 custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 show_percentage = false
 
-[node name="CognitionValueLabel" type="Label" parent="LeftPanel/MarginContainer/VBoxContainer/CognitionSection/CognitionRow" unique_id=1357565609]
+[node name="CognitionValueLabel" type="Label" parent="LeftPanel/VBoxContainer/CognitionSection/CognitionRow" unique_id=1357565609]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 22
 text = "0 / 6"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="StatusTitle" type="Label" parent="LeftPanel/MarginContainer/VBoxContainer" unique_id=1048108603]
+[node name="StatusTitle" type="Label" parent="LeftPanel/VBoxContainer" unique_id=1048108603]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 22
 text = "状态 / Buff"
 
-[node name="StatusIconRow" type="HBoxContainer" parent="LeftPanel/MarginContainer/VBoxContainer" unique_id=556275057]
+[node name="StatusIconRow" type="HBoxContainer" parent="LeftPanel/VBoxContainer" unique_id=556275057]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="BattleLogButton" type="Button" parent="." unique_id=1484195034]
-layout_mode = 1
-offset_left = 1768.0
-offset_top = 170.0
-offset_right = 1878.0
-offset_bottom = 280.0
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 22
-theme_override_styles/normal = SubResource("StyleBoxFlat_circle_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_circle_btn_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_circle_btn_hover")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_circle_btn")
-text = "战斗
-记录"
-
-[node name="DeckButton" type="Button" parent="." unique_id=2037331887]
-layout_mode = 1
-offset_left = 1769.0
-offset_top = 426.0
-offset_right = 1879.0
-offset_bottom = 536.0
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 22
-theme_override_styles/normal = SubResource("StyleBoxFlat_circle_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_circle_btn_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_circle_btn_hover")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_circle_btn")
-text = "卡组"
-
 [node name="EndTurnButton" type="Button" parent="." unique_id=2096853022]
 layout_mode = 1
-offset_left = 1690.0
-offset_top = 700.0
-offset_right = 1892.0
-offset_bottom = 770.0
+offset_left = 1645.0
+offset_top = 918.0
+offset_right = 1847.0
+offset_bottom = 988.0
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 26
 theme_override_styles/normal = SubResource("StyleBoxFlat_end_turn")
@@ -405,33 +328,36 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_end_turn")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_end_turn")
 text = "回合结束"
 
-[node name="DiscardPileButton" type="Button" parent="." unique_id=1807945990]
-layout_mode = 0
-offset_left = 1768.0
-offset_top = 300.0
-offset_right = 1878.0
-offset_bottom = 410.0
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 22
-theme_override_styles/normal = SubResource("StyleBoxFlat_circle_btn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_circle_btn_hover")
-theme_override_styles/hover = SubResource("StyleBoxFlat_circle_btn_hover")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_circle_btn")
-text = "弃牌
-堆"
-
-[node name="HandHintLabel" type="Label" parent="." unique_id=583805770]
+[node name="BattleLogButtonnew" type="TextureButton" parent="." unique_id=1684678795]
 layout_mode = 1
-offset_left = 1690.0
-offset_top = 780.0
-offset_right = 1892.0
-offset_bottom = 856.0
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1495.0001
+offset_top = 160.99997
+offset_right = 306.0
+offset_bottom = 345.507
+grow_horizontal = 2
+scale = Vector2(0.575, 0.935)
+texture_normal = ExtResource("8_ntma3")
+stretch_mode = 1
+
+[node name="TitleLabel" type="Label" parent="." unique_id=378288274]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1571.0
+offset_top = 194.0
+offset_right = -77.349976
+offset_bottom = -758.93494
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.82, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 18
-text = "拖拽或点击卡牌来使用。"
+theme_override_font_sizes/font_size = 45
+text = "战斗日志"
 horizontal_alignment = 1
 vertical_alignment = 1
-autowrap_mode = 3
 
 [node name="BottomHandPanel" type="PanelContainer" parent="." unique_id=942127795]
 layout_mode = 1
@@ -440,9 +366,9 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 340.0
-offset_top = -260.0
-offset_right = -260.0
-offset_bottom = -24.0
+offset_top = -272.0
+offset_right = -299.0
+offset_bottom = -43.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_hand_panel")
@@ -498,102 +424,107 @@ bbcode_enabled = true
 fit_content = true
 scroll_active = false
 
-[node name="DiscardPanel" type="PanelContainer" parent="." unique_id=727129084]
-visible = false
-z_index = 20
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -220.0
-offset_right = 300.0
-offset_bottom = 220.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dark_panel")
+[node name="DeckButtonnew" type="TextureButton" parent="." unique_id=1151302716]
+layout_mode = 0
+offset_left = 1623.0
+offset_top = 315.0
+offset_right = 1889.0
+offset_bottom = 511.0
+texture_normal = ExtResource("9_d37c3")
 
-[node name="MarginContainer" type="MarginContainer" parent="DiscardPanel" unique_id=1784797817]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 18
+[node name="Label" type="Label" parent="DeckButtonnew" unique_id=842010659]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 90.0
+offset_right = 232.0
+offset_bottom = 132.0
+text = "手牌"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="DiscardPanel/MarginContainer" unique_id=1190047305]
-layout_mode = 2
-theme_override_constants/separation = 12
+[node name="DiscardPileButtonNew" type="TextureButton" parent="." unique_id=543523437]
+layout_mode = 0
+offset_left = 1624.0
+offset_top = 480.0
+offset_right = 1890.0
+offset_bottom = 676.0
+texture_normal = ExtResource("10_4rstf")
 
-[node name="HeaderRow" type="HBoxContainer" parent="DiscardPanel/MarginContainer/VBoxContainer" unique_id=1512714979]
-layout_mode = 2
-
-[node name="TitleLabel" type="Label" parent="DiscardPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=2065300717]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 28
+[node name="Label" type="Label" parent="DiscardPileButtonNew" unique_id=469688384]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 90.0
+offset_right = 232.0
+offset_bottom = 132.0
 text = "弃牌堆"
 
-[node name="CloseButton" type="Button" parent="DiscardPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1768521733]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 20
-theme_override_styles/normal = SubResource("StyleBoxFlat_button")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button")
-text = "关闭"
+[node name="BattleLogWindow" type="Control" parent="." unique_id=2076702888]
+z_index = 19
+anchors_preset = 0
+offset_left = 691.0
+offset_top = 139.0
+offset_right = 1324.0
+offset_bottom = 898.0
 
-[node name="DiscardText" type="RichTextLabel" parent="DiscardPanel/MarginContainer/VBoxContainer" unique_id=1720217506]
-custom_minimum_size = Vector2(0, 320)
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_fonts/normal_font = ExtResource("4_font")
-theme_override_fonts/bold_font = ExtResource("4_font")
-theme_override_font_sizes/normal_font_size = 22
-theme_override_font_sizes/bold_font_size = 24
-bbcode_enabled = true
-
-[node name="BattleLogPanel" type="PanelContainer" parent="." unique_id=430427604]
-visible = false
-z_index = 20
+[node name="Background" type="TextureRect" parent="BattleLogWindow" unique_id=2076702889]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -220.0
-offset_right = 320.0
-offset_bottom = 220.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dark_panel")
+mouse_filter = 2
+texture = ExtResource("5_5u8xp")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="MarginContainer" type="MarginContainer" parent="BattleLogPanel" unique_id=1437799272]
+[node name="DragBar" type="Control" parent="BattleLogWindow" unique_id=2076702890]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 64.0
+offset_top = 77.0
+offset_right = -170.0
+offset_bottom = 178.0
+grow_horizontal = 2
+mouse_default_cursor_shape = 13
+
+[node name="BattleLogPanel" type="PanelContainer" parent="BattleLogWindow" unique_id=430427604]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.14400001
+anchor_top = 0.113000005
+anchor_right = 0.83400005
+anchor_bottom = 0.81700003
+offset_left = -0.15200806
+offset_top = 76.232994
+offset_right = 0.077941895
+offset_bottom = -0.103027344
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hand_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="BattleLogWindow/BattleLogPanel" unique_id=1437799272]
 layout_mode = 2
 theme_override_constants/margin_left = 18
 theme_override_constants/margin_top = 18
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 18
 
-[node name="VBoxContainer" type="VBoxContainer" parent="BattleLogPanel/MarginContainer" unique_id=1514186291]
+[node name="VBoxContainer" type="VBoxContainer" parent="BattleLogWindow/BattleLogPanel/MarginContainer" unique_id=1514186291]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="HeaderRow" type="HBoxContainer" parent="BattleLogPanel/MarginContainer/VBoxContainer" unique_id=2028149280]
+[node name="HeaderRow" type="HBoxContainer" parent="BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer" unique_id=2028149280]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="BattleLogPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1369888340]
+[node name="TitleLabel" type="Label" parent="BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1369888340]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 28
 text = "战斗记录"
 
-[node name="CloseButton" type="Button" parent="BattleLogPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1022302312]
+[node name="CloseButton" type="Button" parent="BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1022302312]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 20
@@ -602,10 +533,11 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button")
 text = "关闭"
 
-[node name="BattleLogText" type="RichTextLabel" parent="BattleLogPanel/MarginContainer/VBoxContainer" unique_id=350225112]
+[node name="BattleLogText" type="RichTextLabel" parent="BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer" unique_id=350225112]
 custom_minimum_size = Vector2(0, 320)
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_fonts/normal_font = ExtResource("4_font")
 theme_override_fonts/bold_font = ExtResource("4_font")
 theme_override_font_sizes/normal_font_size = 20
@@ -765,7 +697,7 @@ layout_mode = 1
 offset_right = 320.0
 offset_bottom = 120.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_tooltip")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hand_panel")
 
 [node name="MarginContainer" type="MarginContainer" parent="Tooltip" unique_id=1300930514]
 layout_mode = 2
@@ -842,5 +774,14 @@ theme_override_font_sizes/normal_font_size = 22
 theme_override_font_sizes/bold_font_size = 24
 bbcode_enabled = true
 
-[connection signal="pressed" from="DeckButton" to="." method="_on_deck_button_pressed"]
+[node name="DetailPanel" type="TextureRect" parent="." unique_id=1712457884]
+visible = false
+layout_mode = 0
+offset_left = 560.0
+offset_top = 544.0
+offset_right = 895.0
+offset_bottom = 795.0
+texture = ExtResource("13_5b2op")
+expand_mode = 1
+
 [connection signal="pressed" from="DeckPanel/MarginContainer/ContentVBox/HeaderRow/CloseButton" to="." method="hide_deck_panel"]

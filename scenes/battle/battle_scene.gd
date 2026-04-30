@@ -6,7 +6,6 @@ extends Control
 @onready var _boss_portrait: TextureRect = $ArenaRoot/BossPortrait
 @onready var _reward_story_ui: Control = $RewardStoryUI
 
-@onready var deck_button: Button = $DeckButton
 @onready var deck_panel: PanelContainer = $DeckPanel
 @onready var deck_title_label: Label = $DeckPanel/MarginContainer/ContentVBox/HeaderRow/TitleLabel
 @onready var deck_close_button: Button = $DeckPanel/MarginContainer/ContentVBox/HeaderRow/CloseButton
@@ -292,15 +291,19 @@ func _get_enemy_id_for_current_battle() -> String:
 
 
 func _apply_enemy_portrait() -> void:
-	var portrait_path := _enemy_ai.get_portrait_path()
-	if portrait_path.is_empty():
-		return
-	if not ResourceLoader.exists(portrait_path):
-		push_warning("[BattleScene] enemy portrait missing: %s" % portrait_path)
-		return
-	var texture := load(portrait_path)
-	if texture is Texture2D:
-		_boss_portrait.texture = texture
+	var enemy_id := _get_enemy_id_for_current_battle()
+	var normal_tex: Texture2D
+	var is_boss := not _is_normal_battle()
+	
+	# 根据敌人类型加载贴图
+	if is_boss:
+		normal_tex = load("res://assets/art/battle/en_boss_01.PNG") as Texture2D
+	else:
+		normal_tex = load("res://assets/art/battle/en_mob_01.PNG") as Texture2D
+	
+	if normal_tex and is_instance_valid(_boss_portrait):
+		_boss_portrait.texture = normal_tex
+		_ui.set_enemy_portrait(normal_tex)
 
 
 func _hide_global_ui_for_battle() -> void:

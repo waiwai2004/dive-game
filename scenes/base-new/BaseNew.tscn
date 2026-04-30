@@ -11,7 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://mixitejyi47x" path="res://assets/base-assets/reciprocal object_01.PNG" id="8_p24ad"]
 [ext_resource type="Texture2D" uid="uid://cpmb1di7va57y" path="res://assets/base-assets/reciprocal object_02.PNG" id="9_nylob"]
 [ext_resource type="Texture2D" uid="uid://dp02t0d00qksb" path="res://assets/base-assets/reciprocal object_03.PNG" id="10_tai2r"]
-[ext_resource type="Texture2D" uid="uid://c8hrkwr282dw4" path="res://assets/art/ui/global/player.PNG" id="11_hvcgl"]
 
 [node name="BaseNew" type="Node2D" unique_id=1151361827]
 script = ExtResource("1_script")
@@ -112,7 +111,6 @@ region_rect = Rect2(612.7732, 383.21698, 116.923035, 104.522125)
 
 [node name="sun" type="Sprite2D" parent="UI" unique_id=1924407180]
 position = Vector2(862, 2)
-texture = ExtResource("11_hvcgl")
 centered = false
 region_enabled = true
 region_rect = Rect2(857.60364, -1.3952827, 202.64612, 137.3095)

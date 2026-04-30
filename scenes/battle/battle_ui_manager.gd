@@ -26,6 +26,9 @@ var _boss_intent_label: Label
 
 # ====== 敌人区 ======
 var _boss_portrait: TextureRect
+var _enemy_texture_normal: Texture2D
+var _enemy_texture_injured: Texture2D
+var _was_injured: bool = false
 
 # ====== 左侧玩家状态 ======
 var _pie_chart: Control
@@ -37,9 +40,10 @@ var _cognition_label: Label
 var _cognition_section: Control
 var _status_icon_row: HBoxContainer
 
-# ====== 右侧圆形按钮 ======
-var _battle_log_button: Button
-var _discard_pile_button: Button
+# ====== 右侧按钮 ======
+var _deck_button_new: TextureButton
+var _discard_pile_button_new: TextureButton
+var _battle_log_button_new: TextureButton
 
 # ====== 右下动作区 ======
 var _end_turn_button: Button
@@ -60,6 +64,15 @@ var _battle_log_close_button: Button
 # ====== Tooltip ======
 var _tooltip_panel: PanelContainer
 var _tooltip_label: RichTextLabel
+var _detail_panel: TextureRect
+var _battle_log_window: Control
+var _battle_log_drag_bar: Control
+var _dragging_log: bool = false
+var _drag_offset: Vector2 = Vector2.ZERO
+
+# ====== 旧按钮（保留引用但隐藏） ======
+var _battle_log_button: Button
+var _discard_pile_button: Button
 
 # Tooltip state
 var _current_tooltip_source: Control = null
@@ -81,19 +94,30 @@ func setup(scene: Node, card_system: BattleCardSystem, enemy_ai: BattleEnemyAI, 
 func _process(_delta: float) -> void:
 	if _tooltip_panel and _tooltip_panel.visible:
 		_reposition_tooltip()
+	_handle_log_drag()
+
+
+func _handle_log_drag() -> void:
+	if not _battle_log_window or not _battle_log_drag_bar:
+		return
+	if _dragging_log:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			_battle_log_window.global_position = _battle_log_window.get_global_mouse_position() - _drag_offset
+		else:
+			_dragging_log = false
 
 
 # ====== 节点缓存 ======
 func _cache_node_refs() -> void:
-	_boss_bar_root = _scene.get_node("TopBossBar")
-	_boss_name_label = _scene.get_node("TopBossBar/MarginContainer/HBoxContainer/BossNameLabel")
-	_boss_hp_bar = _scene.get_node("TopBossBar/MarginContainer/HBoxContainer/BossHpBar")
-	_boss_intent_label = _scene.get_node("TopBossBar/MarginContainer/HBoxContainer/BossIntentLabel")
+	_boss_bar_root = _scene.get_node("Bossbar")
+	_boss_name_label = _scene.get_node("Bossbar/BossNameLabel")
+	_boss_hp_bar = _scene.get_node("Bossbar/BossHpBar")
+	_boss_intent_label = _scene.get_node("Bossbar/BossIntentLabel")
 
 	_boss_portrait = _scene.get_node("ArenaRoot/BossPortrait")
 
-	var left := "LeftPanel/MarginContainer/VBoxContainer"
-	_pie_chart = _scene.get_node(left + "/PieChartStat")
+	var left := "LeftPanel/VBoxContainer"
+	_pie_chart = _scene.get_node(left + "/Control/RewardPlate/PieChartStat")
 	_energy_section = _scene.get_node(left + "/EnergySection")
 	_energy_bar = _scene.get_node(left + "/EnergySection/EnergyRow/EnergyBar")
 	_energy_label = _scene.get_node(left + "/EnergySection/EnergyRow/EnergyValueLabel")
@@ -102,22 +126,32 @@ func _cache_node_refs() -> void:
 	_cognition_label = _scene.get_node(left + "/CognitionSection/CognitionRow/CognitionValueLabel")
 	_status_icon_row = _scene.get_node(left + "/StatusIconRow")
 
-	_battle_log_button = _scene.get_node("BattleLogButton")
-	_discard_pile_button = _scene.get_node("DiscardPileButton")
 	_end_turn_button = _scene.get_node("EndTurnButton")
-	_hand_hint_label = _scene.get_node("HandHintLabel")
+	_hand_hint_label = _scene.get_node_or_null("HandHintLabel")
 	_hand_row = _scene.get_node("BottomHandPanel/MarginContainer/HandScroll/HandRow")
 
-	_discard_panel = _scene.get_node("DiscardPanel")
-	_discard_text = _scene.get_node("DiscardPanel/MarginContainer/VBoxContainer/DiscardText")
-	_discard_close_button = _scene.get_node("DiscardPanel/MarginContainer/VBoxContainer/HeaderRow/CloseButton")
+	_discard_panel = _scene.get_node_or_null("DiscardPanel")
+	if _discard_panel:
+		_discard_text = _scene.get_node_or_null("DiscardPanel/MarginContainer/VBoxContainer/DiscardText")
+		_discard_close_button = _scene.get_node_or_null("DiscardPanel/MarginContainer/VBoxContainer/HeaderRow/CloseButton")
 
-	_battle_log_panel = _scene.get_node("BattleLogPanel")
-	_battle_log_text = _scene.get_node("BattleLogPanel/MarginContainer/VBoxContainer/BattleLogText")
-	_battle_log_close_button = _scene.get_node("BattleLogPanel/MarginContainer/VBoxContainer/HeaderRow/CloseButton")
+	_battle_log_panel = _scene.get_node_or_null("BattleLogWindow/BattleLogPanel")
+	_battle_log_text = _scene.get_node_or_null("BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer/BattleLogText")
+	_battle_log_close_button = _scene.get_node_or_null("BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer/HeaderRow/CloseButton")
+	_battle_log_window = _scene.get_node_or_null("BattleLogWindow")
+	_battle_log_drag_bar = _scene.get_node_or_null("BattleLogWindow/DragBar")
 
 	_tooltip_panel = _scene.get_node("Tooltip")
 	_tooltip_label = _scene.get_node("Tooltip/MarginContainer/TooltipLabel")
+	_detail_panel = _scene.get_node("DetailPanel")
+
+	_deck_button_new = _scene.get_node("DeckButtonnew")
+	_discard_pile_button_new = _scene.get_node("DiscardPileButtonNew")
+	_battle_log_button_new = _scene.get_node("BattleLogButtonnew")
+
+	# 旧按钮（可能不存在）
+	_battle_log_button = _scene.get_node_or_null("BattleLogButton")
+	_discard_pile_button = _scene.get_node_or_null("DiscardPileButton")
 
 
 func _apply_initial_styles() -> void:
@@ -132,13 +166,37 @@ func _apply_initial_styles() -> void:
 
 func _connect_button_signals() -> void:
 	_end_turn_button.pressed.connect(func() -> void: end_turn_pressed.emit())
-	_discard_pile_button.pressed.connect(_on_discard_button_pressed)
-	_discard_close_button.pressed.connect(func() -> void: _discard_panel.visible = false)
-	_battle_log_button.pressed.connect(_on_battle_log_button_pressed)
-	_battle_log_close_button.pressed.connect(func() -> void: _battle_log_panel.visible = false)
+	if _discard_close_button:
+		_discard_close_button.pressed.connect(func() -> void: _discard_panel.visible = false)
+	if _battle_log_drag_bar:
+		_battle_log_drag_bar.gui_input.connect(_on_drag_bar_input)
+	if _battle_log_close_button:
+		_battle_log_close_button.pressed.connect(func() -> void:
+			if _battle_log_window:
+				_battle_log_window.visible = false
+		)
+	
+	_discard_pile_button_new.pressed.connect(_on_discard_button_pressed)
+	_deck_button_new.pressed.connect(func() -> void: _scene._on_deck_button_pressed())
+	_battle_log_button_new.pressed.connect(_on_battle_log_button_pressed)
+
+	if _deck_button_new:
+		_deck_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
+		_deck_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if _discard_pile_button_new:
+		_discard_pile_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
+		_discard_pile_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if _battle_log_button_new:
+		_battle_log_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
+		_battle_log_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	
+	if _battle_log_button:
+		_battle_log_button.visible = false
+	if _discard_pile_button:
+		_discard_pile_button.visible = false
 
 	# 饼状图 hover
-	if _pie_chart.has_signal("stat_hovered"):
+	if _pie_chart and _pie_chart.has_signal("stat_hovered"):
 		_pie_chart.connect("stat_hovered", Callable(self, "_on_stat_hovered"))
 
 	# 能量 / 认知 tooltip
@@ -149,10 +207,36 @@ func _connect_button_signals() -> void:
 	_register_tooltip_area(_boss_portrait, Callable(self, "_build_enemy_tooltip"))
 
 
+func _on_drag_bar_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_dragging_log = true
+			_drag_offset = _battle_log_window.get_global_mouse_position() - _battle_log_window.position
+		else:
+			_dragging_log = false
+
 func close_all_popups() -> void:
-	_discard_panel.visible = false
-	_battle_log_panel.visible = false
+	if _discard_panel:
+		_discard_panel.visible = false
+	if _battle_log_window:
+		_battle_log_window.visible = false
 	_tooltip_panel.visible = false
+
+
+func set_enemy_portrait(tex: Texture2D) -> void:
+	if _boss_portrait:
+		_boss_portrait.texture = tex
+		_enemy_texture_normal = tex
+		
+		# Load injured portrait by replacing _01 with _02
+		if tex and tex.resource_path:
+			var path = tex.resource_path
+			var injured_path = path.replace("_01", "_02")
+			if ResourceLoader.exists(injured_path):
+				_enemy_texture_injured = ResourceLoader.load(injured_path) as Texture2D
+			else:
+				_enemy_texture_injured = tex
+		_was_injured = false
 
 
 # ====== 刷新入口 ======
@@ -160,9 +244,9 @@ func refresh_all(battle_log_lines: Array[String]) -> void:
 	refresh_enemy_ui()
 	refresh_player_ui()
 	refresh_hand()
-	if _discard_panel.visible:
+	if _discard_panel and _discard_panel.visible:
 		_refresh_discard_view()
-	if _battle_log_panel.visible:
+	if _battle_log_window and _battle_log_window.visible:
 		refresh_battle_log(battle_log_lines)
 
 
@@ -172,6 +256,13 @@ func refresh_enemy_ui() -> void:
 	_boss_hp_bar.max_value = float(maxi(_enemy_ai.max_hp, 1))
 	_boss_hp_bar.value = float(clampi(_enemy_ai.hp, 0, _enemy_ai.max_hp))
 	_boss_intent_label.text = _enemy_ai.get_current_intent_display()
+	
+	# 受伤贴图切换：血量低于一半时显示受伤状态
+	if _boss_portrait and _enemy_texture_injured:
+		var is_injured = _enemy_ai.hp < _enemy_ai.max_hp * 0.5
+		if is_injured != _was_injured:
+			_was_injured = is_injured
+			_boss_portrait.texture = _enemy_texture_injured if is_injured else _enemy_texture_normal
 
 
 func refresh_player_ui() -> void:
@@ -264,13 +355,15 @@ func refresh_hand() -> void:
 		card_ui.disabled = not can_play or _card_system.get_effective_cost(card_data) > _card_system.energy
 		_hand_row.add_child(card_ui)
 
-	_hand_hint_label.text = "手牌 %d / 弃牌 %d / 抽牌 %d" % [
-		_card_system.hand.size(), _card_system.discard_pile.size(), _card_system.draw_pile.size()
-	]
+	if _hand_hint_label:
+		_hand_hint_label.text = "手牌 %d / 弃牌 %d / 抽牌 %d" % [
+			_card_system.hand.size(), _card_system.discard_pile.size(), _card_system.draw_pile.size()
+		]
 
 
 func set_hand_hint(text: String) -> void:
-	_hand_hint_label.text = text
+	if _hand_hint_label:
+		_hand_hint_label.text = text
 
 
 func set_play_enabled(enabled: bool) -> void:
@@ -282,12 +375,16 @@ func set_play_enabled(enabled: bool) -> void:
 
 # ====== 弃牌堆 ======
 func _on_discard_button_pressed() -> void:
-	_battle_log_panel.visible = false
-	_discard_panel.visible = true
-	_refresh_discard_view()
+	if _battle_log_window:
+		_battle_log_window.visible = false
+	if _discard_panel:
+		_discard_panel.visible = true
+		_refresh_discard_view()
 
 
 func _refresh_discard_view() -> void:
+	if not _discard_text:
+		return
 	if _card_system.discard_pile.is_empty():
 		_discard_text.text = "[center]当前弃牌堆为空。[/center]"
 		return
@@ -301,15 +398,18 @@ func _refresh_discard_view() -> void:
 
 # ====== 战斗记录 ======
 func _on_battle_log_button_pressed() -> void:
-	_discard_panel.visible = false
-	_battle_log_panel.visible = true
-	# 由调用方 refresh 一次即可
+	if _discard_panel:
+		_discard_panel.visible = false
+	if _battle_log_window:
+		_battle_log_window.visible = true
 	if _scene.has_method("_refresh_battle_log_from_scene"):
 		_scene.call("_refresh_battle_log_from_scene")
 
 
 func refresh_battle_log(lines: Array[String]) -> void:
-	if not _battle_log_panel.visible:
+	if not _battle_log_text:
+		return
+	if not _battle_log_window or not _battle_log_window.visible:
 		return
 	if lines.is_empty():
 		_battle_log_text.text = "[center]（暂无记录）[/center]"
@@ -375,13 +475,21 @@ func _show_active_tooltip() -> void:
 		_hide_tooltip()
 		return
 	_tooltip_label.text = body
+	
 	_tooltip_panel.visible = true
 	_tooltip_panel.z_index = 200
+	
+	if _detail_panel:
+		_detail_panel.visible = true
+		_detail_panel.z_index = _tooltip_panel.z_index - 1
+	
 	_reposition_tooltip()
 
 
 func _hide_tooltip() -> void:
 	_tooltip_panel.visible = false
+	if _detail_panel:
+		_detail_panel.visible = false
 
 
 func _reposition_tooltip() -> void:
@@ -395,6 +503,11 @@ func _reposition_tooltip() -> void:
 	pos.x = clampf(pos.x, 4, viewport_size.x - tsize.x - 4)
 	pos.y = clampf(pos.y, 4, viewport_size.y - tsize.y - 4)
 	_tooltip_panel.global_position = pos
+	
+	# DetailPanel 跟随 tooltip 位置
+	if _detail_panel and _detail_panel.visible:
+		_detail_panel.global_position = pos - Vector2(10, 10)
+		_detail_panel.size = tsize + Vector2(20, 20)
 
 
 func _on_stat_hovered(stat_key: String, is_hovering: bool) -> void:
@@ -468,7 +581,10 @@ func show_card_tooltip(card_data: Dictionary) -> void:
 	_tooltip_label.text = body
 	_tooltip_panel.visible = true
 	_tooltip_panel.z_index = 200
-	_current_tooltip_source = null  # 卡牌 tooltip 不走 source 机制
+	if _detail_panel:
+		_detail_panel.visible = true
+		_detail_panel.z_index = _tooltip_panel.z_index - 1
+	_current_tooltip_source = null
 	_reposition_tooltip()
 
 
