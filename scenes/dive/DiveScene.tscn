@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cnqbe7wtuj0me"]
 
-[ext_resource type="Script" path="res://scenes/dive/dive_scene.gd" id="1_rp5x8"]
-[ext_resource type="Texture2D" uid="uid://ba5tkd21pifcc" path="res://assets/art/backgrounds/bg_adventure01.PNG" id="2_0s4u6"]
+[ext_resource type="Script" uid="uid://dnsw1prxoy0ex" path="res://scenes/dive/dive_scene.gd" id="1_rp5x8"]
+[ext_resource type="Texture2D" uid="uid://d3sp3v8i6erb1" path="res://assets/art/backgrounds/bg_dive_prepare_01.png" id="2_37p73"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="3_vylg6"]
 
 [node name="DiveScene" type="Control" unique_id=1108143304]
@@ -20,7 +20,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_0s4u6")
+texture = ExtResource("2_37p73")
 expand_mode = 1
 stretch_mode = 6
 
@@ -63,7 +63,7 @@ autowrap_mode = 3
 
 [node name="HintLabel" type="Label" parent="." unique_id=1086880912]
 layout_mode = 1
-anchors_preset = 14
+anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bw30ptjye8gwu"]
 
 [ext_resource type="Script" uid="uid://255h7vsrxugo" path="res://scenes/ai/AIFeature.gd" id="1_xxx8a"]
-[ext_resource type="Texture2D" uid="uid://266yltqdhbeb" path="res://assets/art/aiscene/bg_memory_story_01.PNG" id="2_o50o7"]
+[ext_resource type="Texture2D" uid="uid://dm7ihs74ga8xa" path="res://assets/art/aiscene/微信图片_20260502020331_440_131.jpg" id="2_v6jm7"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="3_v6jm7"]
 
 [node name="AIFeature" type="Node" unique_id=1778987935]
@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_o50o7")
+texture = ExtResource("2_v6jm7")
 expand_mode = 1
 stretch_mode = 6
 
@@ -145,30 +145,17 @@ theme_override_constants/separation = 137
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -774.0
+offset_left = -1015.0
 offset_top = 121.0
-offset_right = -308.0
+offset_right = -415.0
 offset_bottom = 193.0
 grow_horizontal = 0
-theme_override_constants/separation = 10
+theme_override_constants/separation = -2
 alignment = 2
-
-[node name="Label" type="Label" parent="CanvasLayer/TopRightSettings" unique_id=10101010]
-custom_minimum_size = Vector2(80, 0)
-layout_mode = 2
-size_flags_vertical = 1
-focus_mode = 2
-mouse_filter = 0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3_v6jm7")
-theme_override_font_sizes/font_size = 32
-text = "故事长度："
-vertical_alignment = 1
-autowrap_trim_flags = 128
 
 [node name="WordCountButtons" type="HBoxContainer" parent="CanvasLayer/TopRightSettings" unique_id=20202020]
 layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 60
 
 [node name="SimpleBtn" type="Button" parent="CanvasLayer/TopRightSettings/WordCountButtons" unique_id=20202021]
 custom_minimum_size = Vector2(80, 0)
