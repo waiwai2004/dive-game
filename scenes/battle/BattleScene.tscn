@@ -13,18 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://mwie5i11lx5f" path="res://assets/art/battle/ui_battle_discardbtn_p.PNG" id="10_4rstf"]
 [ext_resource type="Texture2D" uid="uid://becs4uoaghla8" path="res://assets/art/battle/ui_battle_bossbar_01.PNG" id="12_vpuc1"]
 [ext_resource type="Texture2D" uid="uid://d0b6gy6g63bu3" path="res://assets/art/battle/ui_pause_panel_01.PNG" id="13_5b2op"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_end_turn"]
-bg_color = Color(0.2, 0.1, 0.12, 0.98)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.95, 0.56, 0.62, 0.78)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="14_btn_n"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="15_btn_p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hand_panel"]
 bg_color = Color(0, 0, 0, 0)
@@ -314,25 +304,43 @@ custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="EndTurnButton" type="Button" parent="." unique_id=2096853022]
+[node name="EndTurnButton" type="TextureButton" parent="." unique_id=2096853022]
 layout_mode = 1
-offset_left = 1645.0
-offset_top = 918.0
-offset_right = 1847.0
-offset_bottom = 988.0
+offset_left = 1600.0
+offset_top = 829.0
+offset_right = 2249.0
+offset_bottom = 970.0
+scale = Vector2(0.4, 1)
+texture_normal = ExtResource("14_btn_n")
+texture_pressed = ExtResource("15_btn_p")
+texture_hover = ExtResource("15_btn_p")
+texture_disabled = ExtResource("14_btn_n")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="EndTurnButton" unique_id=2096853023]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -472.5
+offset_top = 5.0
+offset_right = -482.5
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2.5, 1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 26
-theme_override_styles/normal = SubResource("StyleBoxFlat_end_turn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_end_turn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_end_turn")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_end_turn")
+theme_override_font_sizes/font_size = 51
 text = "回合结束"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BattleLogButtonnew" type="TextureButton" parent="." unique_id=1684678795]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 1495.0001
+offset_left = 1495.0
 offset_top = 160.99997
 offset_right = 306.0
 offset_bottom = 345.507
@@ -346,10 +354,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 1571.0
-offset_top = 194.0
-offset_right = -77.349976
-offset_bottom = -758.93494
+offset_left = 1601.0
+offset_top = 222.0
+offset_right = -139.0
+offset_bottom = -795.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.95, 0.9, 0.82, 1)
@@ -544,6 +552,54 @@ theme_override_font_sizes/normal_font_size = 20
 theme_override_font_sizes/bold_font_size = 22
 bbcode_enabled = true
 scroll_following = true
+
+[node name="DiscardPanel" type="PanelContainer" parent="." unique_id=727129084]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -230.0
+offset_right = 360.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_reward_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="DiscardPanel" unique_id=1784797817]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DiscardPanel/MarginContainer" unique_id=1190047305]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeaderRow" type="HBoxContainer" parent="DiscardPanel/MarginContainer/VBoxContainer" unique_id=1512714979]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="DiscardPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=2065300717]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 28
+text = "弃牌堆"
+
+[node name="DiscardCloseButton" type="Button" parent="DiscardPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1768521733]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button")
+text = "关闭"
 
 [node name="RewardStoryUI" type="Control" parent="." unique_id=1337580499]
 visible = false

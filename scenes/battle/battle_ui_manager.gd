@@ -46,7 +46,7 @@ var _discard_pile_button_new: TextureButton
 var _battle_log_button_new: TextureButton
 
 # ====== 右下动作区 ======
-var _end_turn_button: Button
+var _end_turn_button: TextureButton
 var _hand_hint_label: Label
 
 # ====== 手牌区 ======
@@ -54,8 +54,8 @@ var _hand_row: HBoxContainer
 
 # ====== 弹窗 ======
 var _discard_panel: PanelContainer
-var _discard_text: RichTextLabel
 var _discard_close_button: Button
+var _discard_cards_flow: HFlowContainer
 
 var _battle_log_panel: PanelContainer
 var _battle_log_text: RichTextLabel
@@ -132,8 +132,8 @@ func _cache_node_refs() -> void:
 
 	_discard_panel = _scene.get_node_or_null("DiscardPanel")
 	if _discard_panel:
-		_discard_text = _scene.get_node_or_null("DiscardPanel/MarginContainer/VBoxContainer/DiscardText")
-		_discard_close_button = _scene.get_node_or_null("DiscardPanel/MarginContainer/VBoxContainer/HeaderRow/CloseButton")
+		_discard_close_button = _scene.get_node_or_null("DiscardPanel/MarginContainer/VBoxContainer/HeaderRow/DiscardCloseButton")
+		_ensure_discard_cards_view()
 
 	_battle_log_panel = _scene.get_node_or_null("BattleLogWindow/BattleLogPanel")
 	_battle_log_text = _scene.get_node_or_null("BattleLogWindow/BattleLogPanel/MarginContainer/VBoxContainer/BattleLogText")
@@ -166,6 +166,8 @@ func _apply_initial_styles() -> void:
 
 func _connect_button_signals() -> void:
 	_end_turn_button.pressed.connect(func() -> void: end_turn_pressed.emit())
+	_end_turn_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	_end_turn_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	if _discard_close_button:
 		_discard_close_button.pressed.connect(func() -> void: _discard_panel.visible = false)
 	if _battle_log_drag_bar:
@@ -183,12 +185,18 @@ func _connect_button_signals() -> void:
 	if _deck_button_new:
 		_deck_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
 		_deck_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		_deck_button_new.mouse_entered.connect(_on_button_hover.bind(_deck_button_new, true))
+		_deck_button_new.mouse_exited.connect(_on_button_hover.bind(_deck_button_new, false))
 	if _discard_pile_button_new:
 		_discard_pile_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
 		_discard_pile_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		_discard_pile_button_new.mouse_entered.connect(_on_button_hover.bind(_discard_pile_button_new, true))
+		_discard_pile_button_new.mouse_exited.connect(_on_button_hover.bind(_discard_pile_button_new, false))
 	if _battle_log_button_new:
 		_battle_log_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
 		_battle_log_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		_battle_log_button_new.mouse_entered.connect(_on_button_hover.bind(_battle_log_button_new, true))
+		_battle_log_button_new.mouse_exited.connect(_on_button_hover.bind(_battle_log_button_new, false))
 	
 	if _battle_log_button:
 		_battle_log_button.visible = false
@@ -214,6 +222,11 @@ func _on_drag_bar_input(event: InputEvent) -> void:
 			_drag_offset = _battle_log_window.get_global_mouse_position() - _battle_log_window.position
 		else:
 			_dragging_log = false
+
+func _on_button_hover(control: Control, is_hovering: bool) -> void:
+	var target_scale := Vector2(1.08, 1.08) if is_hovering else Vector2(1.0, 1.0)
+	var tw = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(control, "scale", target_scale, 0.15)
 
 func close_all_popups() -> void:
 	if _discard_panel:
@@ -378,22 +391,72 @@ func _on_discard_button_pressed() -> void:
 	if _battle_log_window:
 		_battle_log_window.visible = false
 	if _discard_panel:
-		_discard_panel.visible = true
-		_refresh_discard_view()
+		if _discard_panel.visible:
+			_discard_panel.visible = false
+		else:
+			_discard_panel.visible = true
+			_refresh_discard_view()
 
 
 func _refresh_discard_view() -> void:
-	if not _discard_text:
+	if not _discard_cards_flow:
 		return
+	for child in _discard_cards_flow.get_children():
+		child.queue_free()
 	if _card_system.discard_pile.is_empty():
-		_discard_text.text = "[center]当前弃牌堆为空。[/center]"
+		var empty_label := Label.new()
+		empty_label.text = "当前弃牌堆为空。"
+		empty_label.add_theme_font_size_override("font_size", 24)
+		empty_label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+		_discard_cards_flow.add_child(empty_label)
 		return
-
-	var lines: Array[String] = ["[center][b]弃牌堆[/b][/center]", ""]
+	var counts: Dictionary = {}
+	var order: Array[String] = []
 	for card_id in _card_system.discard_pile:
-		var card: Dictionary = CardDatabase.get_card(card_id)
-		lines.append("• %s" % str(card.get("name", card_id)))
-	_discard_text.text = "\n".join(lines)
+		if not counts.has(card_id):
+			counts[card_id] = 0
+			order.append(card_id)
+		counts[card_id] += 1
+	for card_id in order:
+		_discard_cards_flow.add_child(_build_discard_card_preview(card_id, int(counts[card_id])))
+
+func _ensure_discard_cards_view() -> void:
+	if _discard_cards_flow and is_instance_valid(_discard_cards_flow):
+		return
+	var content_vbox: Node = _discard_panel.get_node_or_null("MarginContainer/VBoxContainer")
+	if not content_vbox:
+		return
+	var scroll := ScrollContainer.new()
+	scroll.name = "DiscardScroll"
+	scroll.custom_minimum_size = Vector2(0, 320)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content_vbox.add_child(scroll)
+	_discard_cards_flow = HFlowContainer.new()
+	_discard_cards_flow.name = "DiscardCardsFlow"
+	_discard_cards_flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_discard_cards_flow.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_discard_cards_flow.add_theme_constant_override("h_separation", 14)
+	_discard_cards_flow.add_theme_constant_override("v_separation", 14)
+	scroll.add_child(_discard_cards_flow)
+
+func _build_discard_card_preview(card_id: String, count: int) -> Control:
+	var card: Dictionary = CardDatabase.get_card(card_id)
+	var card_scene = preload("res://scenes/battle/CardUI.tscn")
+	var card_ui = card_scene.instantiate()
+	if card_ui.has_method("setup"):
+		card_ui.call("setup", card, -1, null)
+	card_ui.disabled = true
+	card_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var vbox = VBoxContainer.new()
+	vbox.add_child(card_ui)
+	if count > 1:
+		var count_label = Label.new()
+		count_label.text = "x%d" % count
+		count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		count_label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+		vbox.add_child(count_label)
+	return vbox
 
 
 # ====== 战斗记录 ======
