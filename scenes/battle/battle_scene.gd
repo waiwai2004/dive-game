@@ -312,8 +312,6 @@ func _hide_global_ui_for_battle() -> void:
 	GlobalUI.set_mode(GlobalUI.MODE_BATTLE)
 	if GlobalUI.has_method("set_top_hud_visible"):
 		GlobalUI.set_top_hud_visible(false)
-	if GlobalUI.has_method("clear_hint"):
-		GlobalUI.clear_hint()
 	if GlobalUI.has_method("clear_energy"):
 		GlobalUI.clear_energy()
 	if GlobalUI.has_method("hide_deck_panel"):

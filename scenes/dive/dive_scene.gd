@@ -1,6 +1,6 @@
 extends Control
 
-const DEFAULT_BASE_SCENE := "res://scenes/base/BaseScene.tscn"
+const DEFAULT_BASE_SCENE := "res://scenes/base-new/BaseNew.tscn"
 const DEFAULT_EXPLORE_SCENE := "res://scenes/explore/ExploreScene.tscn"
 
 @export var base_scene_path: String = DEFAULT_BASE_SCENE
@@ -58,9 +58,6 @@ func _setup_initial_content() -> void:
 	narration_label.visible = false
 	narration_label.text = ""
 
-	if has_node("/root/GlobalUI"):
-		GlobalUI.set_hint("任务：确认浅海中继点的异常讯号。", true)
-
 
 func _apply_global_ui() -> void:
 	if has_node("/root/GlobalUI"):
@@ -78,9 +75,6 @@ func _on_dive_pressed() -> void:
 	dive_button.visible = false
 	hint_label.visible = false
 	description_label.visible = false
-
-	if has_node("/root/GlobalUI"):
-		GlobalUI.set_hint("下潜中...", true)
 
 	await _fade_to_alpha(narration_fade_alpha, click_fade_duration)
 	await _play_narration_sequence()

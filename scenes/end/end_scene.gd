@@ -9,7 +9,6 @@ func _ready() -> void:
 
 	if has_node("/root/GlobalUI"):
 		GlobalUI.set_mode(GlobalUI.MODE_MENU)
-		GlobalUI.clear_hint()
 		GlobalUI.clear_energy()
 		GlobalUI.refresh_stats()
 

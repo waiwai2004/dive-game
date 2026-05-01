@@ -5,6 +5,8 @@ extends Area2D
 
 var player_inside: bool = false
 @onready var highlight = get_node_or_null("Highlight")
+@onready var highlight_npc = get_node_or_null("NPCHighlight")
+@onready var highlight_dive = get_node_or_null("DiveHighlight")
 
 func _ready():
 	if not body_entered.is_connected(_on_body_entered):
@@ -61,3 +63,7 @@ func interact():
 func set_highlight(enable: bool):
 	if highlight:
 		highlight.visible = enable
+	if highlight_npc:
+		highlight_npc.visible = enable
+	if highlight_dive:
+		highlight_dive.visible = enable

@@ -112,7 +112,6 @@ func _reset_scene_state() -> void:
 	else:
 		memory_event_ui.hide()
 
-	_set_hint("", false)
 	_update_target_highlight()
 
 
@@ -135,11 +134,9 @@ func _interact_current_target() -> void:
 
 func _open_memory_event() -> void:
 	if _active_memory_zone == null:
-		_set_hint("你还无法锁定这段残响。", true)
 		return
 	
 	if _is_zone_triggered(_active_memory_zone):
-		_set_hint("这段残响已经调查过。", true)
 		return
 	
 	if _active_memory_zone:
@@ -147,7 +144,6 @@ func _open_memory_event() -> void:
 	
 	_transitioning = true
 	Game.in_dialogue = false
-	_set_hint("", false)
 	call_deferred("_goto_ai_scene")
 
 
@@ -157,7 +153,6 @@ func _open_relay_report() -> void:
 	_event_context = "relay"
 	Game.in_dialogue = true
 	_update_target_highlight()
-	_set_hint("", false)
 
 	if "event_text_value" in memory_event_ui:
 		memory_event_ui.event_text_value = "你清除了盘踞在浅海中继点附近的异常体。\n\n残骸终端还能勉强启动，吐出一段残缺记录：\n\n\"若再次收到来自海底的呼叫，切勿回应。\"\n\"门并未关闭。\"\n\n你已经完成了这一次浅海任务，该返航了。"
@@ -278,7 +273,6 @@ func _enter_battle_or_reward() -> void:
 		return
 	
 	if _is_zone_triggered(_active_battle_zone):
-		_set_hint("这里已经探索过了。", true)
 		return
 	
 	if _active_battle_zone.get_script() == BUD_NODE_SCRIPT:
@@ -297,7 +291,6 @@ func _enter_ruins_event() -> void:
 	_event_context = "ruins"
 	Game.in_dialogue = true
 	_update_target_highlight()
-	_set_hint("", false)
 
 	if "event_text_value" in memory_event_ui:
 		memory_event_ui.event_text_value = "你触碰到一段模糊的记忆残响。\n\n\"不要相信报告上的死亡时间。\"\n\"我还在下面。\"\n\n海水之下，有什么东西再一次呼唤了你。"
@@ -341,7 +334,6 @@ func _enter_enemy_battle() -> void:
 	_transitioning = true
 	Game.in_dialogue = false
 	Game.battle_index = int(_active_battle_zone.get_meta("battle_index", 1))
-	_set_hint("", false)
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
 
@@ -350,7 +342,6 @@ func _enter_bud_reward() -> void:
 		_mark_zone_triggered(_active_battle_zone)
 	_transitioning = true
 	Game.in_dialogue = false
-	_set_hint("", false)
 	if Game.has_method("goto_bud_reward"):
 		Game.goto_bud_reward()
 	else:
@@ -363,7 +354,6 @@ func _enter_wound_boss() -> void:
 	_transitioning = true
 	Game.in_dialogue = false
 	Game.battle_index = 3
-	_set_hint("", false)
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
 
@@ -414,34 +404,7 @@ func _update_target_highlight() -> void:
 
 
 func _update_hint_text() -> void:
-	if current_target == "memory":
-		_set_hint("目标：按 E 调查记忆残响。", true)
-		return
-	
-	if current_target == "battle":
-		if _active_battle_zone and _active_battle_zone.get_script() == BUD_NODE_SCRIPT:
-			_set_hint("目标：按 E 接近意识花苞，获取奖励。", true)
-		elif _active_battle_zone and _active_battle_zone.get_script() == RUINS_NODE_SCRIPT:
-			_set_hint("目标：按 E 调查认知废墟。", true)
-		else:
-			_set_hint("目标：按 E 接近异常聚集点，进入战斗。", true)
-		return
-	
-	var has_unexplored := false
-	for zone in _memory_zones:
-		if not _is_zone_triggered(zone):
-			has_unexplored = true
-			break
-	if not has_unexplored:
-		for zone in _battle_zones:
-			if not _is_zone_triggered(zone):
-				has_unexplored = true
-				break
-	
-	if has_unexplored:
-		_set_hint("目标：探索深海，寻找异常点。", true)
-	else:
-		_set_hint("探索完成。", true)
+	pass
 
 
 func _get_global_ui() -> Node:
@@ -462,18 +425,6 @@ func _apply_global_ui_mode() -> void:
 		ui.visible = true
 		if ui.has_method("set_mode"):
 			ui.set_mode(ui.MODE_EXPLORE)
-
-
-func _set_hint(text: String, visible: bool) -> void:
-	var ui := _get_global_ui()
-	if ui:
-		if visible:
-			ui.set_hint(text, true)
-		else:
-			ui.clear_hint()
-	elif is_instance_valid(hint_label):
-		hint_label.text = text
-		hint_label.visible = visible
 
 
 func _update_global_stats() -> void:

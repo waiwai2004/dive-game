@@ -29,9 +29,7 @@ func _on_body_entered(body: Node) -> void:
 		print(name, " cannot find base_scene")
 		return
 
-	if interact_type == "npc":
-		base_scene.set_hint_label("【点击】与NPC对话")
-	else:
+	if interact_type == "dive":
 		base_scene.set_click_tip("【点击】进入下潜")
 
 
@@ -49,7 +47,6 @@ func _on_body_exited(body: Node) -> void:
 		return
 
 	base_scene.clear_click_tip()
-	base_scene.clear_hint_label()
 
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:

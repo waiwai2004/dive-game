@@ -9,7 +9,6 @@ func _ready() -> void:
 		AudioManager.play_bgm_segment("menu")
 	if has_node("/root/GlobalUI"):
 		GlobalUI.set_mode(GlobalUI.MODE_MENU)
-		GlobalUI.clear_hint()
 		GlobalUI.refresh_stats()
 
 	if start_hint:

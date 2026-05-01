@@ -4,7 +4,7 @@
 script/source = "extends CanvasLayer
 
 const TITLE_SCENE := \"res://scenes/main_manu/MainMenu.tscn\"
-const BASE_SCENE := \"res://scenes/base/BaseScene.tscn\"
+const BASE_SCENE := \"res://scenes/base-new/BaseNew.tscn\"
 const SETTINGS_SCENE := \"res://scenes/ui/SettingsScene.tscn\"
 
 @onready var menu_root: Control = $Menu

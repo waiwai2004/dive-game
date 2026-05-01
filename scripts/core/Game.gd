@@ -306,7 +306,7 @@ func goto_title():
 
 func goto_base():
 	chapter_one_state = "base"
-	get_tree().change_scene_to_file("res://scenes/base/BaseScene.tscn")
+	get_tree().change_scene_to_file("res://scenes/base-new/BaseNew.tscn")
 
 
 func save_and_exit():

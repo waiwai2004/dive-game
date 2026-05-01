@@ -51,7 +51,6 @@ func show_interact_tip(text: String):
 		interact_tip.visible = true
 	if interact_tip_label and not has_node("/root/GlobalUI"):
 		interact_tip_label.text = text
-	_set_global_hint(text, true)
 
 
 func clear_interact_tip():
@@ -94,36 +93,19 @@ func _on_dialogue_finished():
 	if not Game.admin_talk_done:
 		Game.admin_talk_done = true
 		Game.begin_chapter_one()
-		_set_global_hint("任务已更新：前往下潜舱，确认浅海中继点的异常讯号。", true)
 		await get_tree().create_timer(2.0).timeout
 
 	if current_interactable:
 		show_interact_tip(current_interactable.hint_text)
-	else:
-		_refresh_objective_hint()
 
 
 func _refresh_objective_hint() -> void:
-	if Game.in_dialogue:
-		return
-
-	if not Game.admin_talk_done:
-		_set_global_hint("目标：与管理员交谈，领取下潜任务。", true)
-	else:
-		_set_global_hint("目标：前往下潜舱，开始第一章任务。", true)
+	pass
 
 
 func _apply_global_ui_mode() -> void:
 	if has_node("/root/GlobalUI"):
 		GlobalUI.set_mode(GlobalUI.MODE_BASE)
-
-
-func _set_global_hint(text: String, visible: bool) -> void:
-	if has_node("/root/GlobalUI"):
-		if visible:
-			GlobalUI.set_hint(text, true)
-		else:
-			GlobalUI.clear_hint()
 
 
 func _update_global_stats() -> void:

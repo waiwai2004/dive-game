@@ -1,6 +1,6 @@
 extends Control
 
-const BASE_SCENE_PATH := "res://scenes/base/BaseScene.tscn"
+const BASE_SCENE_PATH := "res://scenes/base-new/BaseNew.tscn"
 const STORY_DATA := preload("res://data/story_data.gd")
 
 @onready var background: ColorRect = $Background
@@ -25,7 +25,6 @@ func _ready() -> void:
 		AudioManager.play_bgm_segment("story")
 	if has_node("/root/GlobalUI"):
 		GlobalUI.set_mode(GlobalUI.MODE_STORY)
-		GlobalUI.set_hint("空格 / Z 下一页    ESC 跳过")
 		GlobalUI.refresh_stats()
 
 	_show_page(_current_index)

@@ -20,8 +20,6 @@ var _texture_frame_02: Texture2D = null
 @onready var hp_label: Label = $TopHUD/HpBarRoot/HpLabel
 @onready var hp_bar_fill: ProgressBar = $TopHUD/HpBarRoot/HpBarFill
 @onready var energy_label: Label = get_node_or_null("TopHUD/EnergyLabel")
-@onready var bottom_hint_root: Control = $BottomHintRoot
-@onready var hint_label: Label = $BottomHintRoot/HintBg/HintLabel
 @onready var avatar_image: TextureRect = $TopHUD/AvatarFrame/AvatarImage
 @onready var danger_overlay_red: ColorRect = $DangerOverlayRed
 @onready var danger_overlay_black: ColorRect = $DangerOverlayBlack
@@ -65,7 +63,6 @@ func _ready() -> void:
 	_texture_frame_02 = load(FRAME_TEXTURE_02)
 	
 	set_mode(MODE_MENU)
-	clear_hint()
 	clear_energy()
 
 	deck_panel.visible = false
@@ -102,50 +99,44 @@ func set_mode(mode: String) -> void:
 	match mode:
 		MODE_MENU:
 			top_hud.visible = false
-			bottom_hint_root.visible = false
 			atmosphere_frame.visible = true
-			_set_atmosphere_frame_texture(_texture_frame_01)  # 主菜单使用 frame_01
+			_set_atmosphere_frame_texture(_texture_frame_01)
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
 			hide_deck_panel()
 		MODE_STORY:
-			top_hud.visible = false  # 显示 TopHUD 以显示按钮
-			bottom_hint_root.visible = false
+			top_hud.visible = false
 			atmosphere_frame.visible = true
-			_set_atmosphere_frame_texture(_texture_frame_01)  
+			_set_atmosphere_frame_texture(_texture_frame_01)
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
 			hide_deck_panel()
 		MODE_BASE:
 			top_hud.visible = true
-			bottom_hint_root.visible = true
 			atmosphere_frame.visible = true
-			_set_atmosphere_frame_texture(_texture_frame_02)  # 基地使用 frame_02
+			_set_atmosphere_frame_texture(_texture_frame_02)
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
 		MODE_EXPLORE:
 			top_hud.visible = true
-			bottom_hint_root.visible = true
 			atmosphere_frame.visible = true
-			_set_atmosphere_frame_texture(_texture_frame_02)  # 探索场景使用 frame_02
+			_set_atmosphere_frame_texture(_texture_frame_02)
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
 		MODE_BATTLE:
 			top_hud.visible = false
-			bottom_hint_root.visible = false
 			atmosphere_frame.visible = false
-			_set_atmosphere_frame_texture(_texture_frame_01)  # 战斗场景使用 frame_01
+			_set_atmosphere_frame_texture(_texture_frame_01)
 			danger_overlay_red.visible = false
 			danger_overlay_black.visible = false
 			clear_energy()
 			hide_deck_panel()
 		_:
 			top_hud.visible = true
-			bottom_hint_root.visible = true
 			atmosphere_frame.visible = true
 			_set_atmosphere_frame_texture(_texture_frame_02)
 			danger_overlay_red.visible = false
@@ -153,19 +144,6 @@ func set_mode(mode: String) -> void:
 			clear_energy()
 
 	_update_deck_button_visibility()
-
-# The rest of this file intentionally keeps the user's current GlobalUI behaviors
-# unchanged outside battle mode.
-
-func set_hint(text: String, visible := true) -> void:
-	hint_label.text = text
-	bottom_hint_root.visible = visible
-
-
-func clear_hint() -> void:
-	hint_label.text = ""
-	bottom_hint_root.visible = false
-
 
 func set_energy(value: int, max_value: int = 3, visible: bool = true, block_value: int = -1, cognition_value: int = -1, cognition_max_value: int = -1) -> void:
 	if not energy_label:
