@@ -24,18 +24,15 @@ func _ready() -> void:
 
 
 func _init_dialogue_ui() -> void:
-	var base_scene = preload("res://scenes/base/BaseScene.tscn").instantiate()
-	var d_ui = base_scene.get_node_or_null("CanvasLayer/DialogueUI")
-	if d_ui:
-		d_ui.get_parent().remove_child(d_ui)
+	var d_ui_scene = preload("res://scenes/ui/DialogueUI.tscn")
+	if d_ui_scene:
+		var d_ui = d_ui_scene.instantiate()
 		$UI.add_child(d_ui)
 		dialogue_ui = d_ui
 		if dialogue_ui.has_signal("dialogue_finished"):
 			dialogue_ui.dialogue_finished.connect(_on_dialogue_finished)
 		if dialogue_ui.has_signal("choice_selected"):
 			dialogue_ui.choice_selected.connect(_on_dialogue_choice_selected)
-	
-	base_scene.queue_free()
 
 
 func _connect_signals() -> void:

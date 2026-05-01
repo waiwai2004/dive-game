@@ -1,0 +1,243 @@
+[gd_scene format=3 uid="uid://dialogue_ui_standalone"]
+
+[ext_resource type="Script" uid="uid://chaatwl7a160p" path="res://scripts/ui/dialogue_ui.gd" id="1_dialogue"]
+[ext_resource type="Texture2D" uid="uid://dtor2jdaa7lop" path="res://assets/art/characters/NPC/base_npc.PNG" id="2_portrait"]
+[ext_resource type="Texture2D" uid="uid://hgmo1ssw7qt2" path="res://assets/art/ui/button/base_dialogue.PNG" id="3_panel"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_font"]
+[ext_resource type="Texture2D" uid="uid://cqjpifchv0ojc" path="res://assets/art/characters/player/base_player.PNG" id="5_player"]
+[ext_resource type="Texture2D" uid="uid://dx4gqejeupdct" path="res://assets/art/ui/button/base_choice.PNG" id="6_choice"]
+[ext_resource type="Script" uid="uid://2f4fi75scxes" path="res://addons/richtext2/richer_text_label.gd" id="7_rich"]
+
+[sub_resource type="FontVariation" id="FontVariation_bold"]
+base_font = ExtResource("4_font")
+variation_embolden = 1.0
+
+[sub_resource type="FontVariation" id="FontVariation_italic"]
+base_font = ExtResource("4_font")
+variation_italic_angle = 15.0
+
+[node name="DialogueUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dialogue")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7058824)
+
+[node name="PortraitLeft" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DialoguePanel" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 384.0
+offset_top = 152.0
+offset_right = -128.0
+offset_bottom = -607.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_panel")
+region_rect = Rect2(418.09772, 181.17284, 1286.7563, 271.99725)
+
+[node name="MarginContainer" type="MarginContainer" parent="DialoguePanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.5
+anchor_top = -0.37500003
+anchor_right = 1.2570001
+anchor_bottom = 2.3960001
+offset_left = 752.0
+offset_top = 200.375
+offset_right = -417.85608
+offset_bottom = -569.116
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 20
+
+[node name="DialogueText" type="RichTextLabel" parent="DialoguePanel/MarginContainer"]
+clip_contents = false
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.19999999, 0.19999999, 0.19999999, 1)
+theme_override_fonts/bold_font = ExtResource("4_font")
+theme_override_fonts/bold_italics_font = SubResource("FontVariation_bold")
+theme_override_fonts/italics_font = SubResource("FontVariation_italic")
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/italics_font_size = 24
+theme_override_font_sizes/mono_font_size = 24
+bbcode_enabled = true
+fit_content = true
+vertical_alignment = 1
+script = ExtResource("7_rich")
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = 200.0
+offset_right = -1441.0
+offset_bottom = -774.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 48
+text = "管理员"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PortraitRight" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_player")
+expand_mode = 1
+
+[node name="ChoiceArea" type="Control" parent="."]
+layout_mode = 1
+anchor_right = 0.99600005
+anchor_bottom = 1.0
+offset_left = 608.0
+offset_top = 563.0
+offset_right = -616.32007
+offset_bottom = -197.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Choice1Root" type="Control" parent="ChoiceArea"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 128.0
+grow_horizontal = 2
+
+[node name="Choice1Bg" type="NinePatchRect" parent="ChoiceArea/Choice1Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -56.0
+offset_right = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_choice")
+region_rect = Rect2(613.1886, 468.9027, 735.46643, 268.41846)
+patch_margin_left = 356
+patch_margin_right = 201
+axis_stretch_horizontal = 1
+
+[node name="Choice1Label" type="Label" parent="ChoiceArea/Choice1Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 72.0
+offset_right = -24.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 24
+text = "选项1"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Choice1Button" type="Button" parent="ChoiceArea/Choice1Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.123
+anchor_top = -0.437
+anchor_right = 1.075
+anchor_bottom = 0.87500006
+offset_left = 8.304001
+offset_top = -0.063999176
+offset_right = 8.399963
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Choice2Root" type="Control" parent="ChoiceArea"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -128.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Choice2Bg" type="NinePatchRect" parent="ChoiceArea/Choice2Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -56.0
+offset_right = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_choice")
+region_rect = Rect2(616.9239, 480.69934, 731.06464, 262.19116)
+patch_margin_left = 344
+patch_margin_right = 175
+axis_stretch_horizontal = 2
+
+[node name="Choice2Label" type="Label" parent="ChoiceArea/Choice2Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 104.0
+offset_top = -16.0
+offset_right = -56.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 24
+text = "选项2"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Choice2Button" type="Button" parent="ChoiceArea/Choice2Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.123
+anchor_top = -0.37500003
+anchor_right = 1.075
+anchor_bottom = 1.0
+offset_left = 0.30400085
+offset_right = 0.39996338
+grow_horizontal = 2
+grow_vertical = 2
+flat = true

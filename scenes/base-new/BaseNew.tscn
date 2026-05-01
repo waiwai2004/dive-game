@@ -34,7 +34,7 @@
 size = Vector2(1917.5, 192)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_npc"]
-size = Vector2(282, 444)
+size = Vector2(346, 444)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_npc"]
 animations = [{
@@ -166,7 +166,7 @@ script = ExtResource("18_interact")
 hint_text = "按 E 与管理员交谈"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCZone" unique_id=1760577703]
-position = Vector2(387, 577)
+position = Vector2(355, 577)
 shape = SubResource("RectangleShape2D_npc")
 
 [node name="NPCAnimated" type="AnimatedSprite2D" parent="World/NPCZone" unique_id=1412786159]
