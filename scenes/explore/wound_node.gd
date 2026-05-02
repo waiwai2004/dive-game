@@ -20,6 +20,8 @@ var _finger_data: Array = []
 var _jagged_data: Array = []
 var _particle_data: Array = []
 var _triggered: bool = false
+var _sprite: Sprite2D = null
+var _highlight: CanvasItem = null
 
 
 func _ready() -> void:
@@ -27,6 +29,8 @@ func _ready() -> void:
 	monitorable = true
 	collision_layer = 1
 	collision_mask = 1
+	_sprite = get_node_or_null("Sprite2D") as Sprite2D
+	_highlight = get_node_or_null("Highlight") as CanvasItem
 	_init_fingers()
 	_init_jagged_edge()
 	_init_particles()
@@ -35,6 +39,10 @@ func _ready() -> void:
 
 func set_triggered(value: bool) -> void:
 	_triggered = value
+	if _sprite:
+		_sprite.modulate = Color(0.42, 0.42, 0.42, 0.55) if value else Color.WHITE
+	if _highlight:
+		_highlight.visible = false
 	queue_redraw()
 
 
@@ -110,6 +118,8 @@ func _init_particles() -> void:
 
 
 func _draw() -> void:
+	if _sprite:
+		return
 	if _triggered:
 		_draw_triggered_state()
 		return

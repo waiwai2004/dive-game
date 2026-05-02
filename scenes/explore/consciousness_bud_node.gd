@@ -6,6 +6,8 @@ const S := 4.0  # 全局缩放倍率
 
 var _time: float = 0.0
 var _triggered: bool = false
+var _sprite: Sprite2D = null
+var _highlight: CanvasItem = null
 
 
 func _ready() -> void:
@@ -13,11 +15,17 @@ func _ready() -> void:
 	monitorable = true
 	collision_layer = 1
 	collision_mask = 1
+	_sprite = get_node_or_null("Sprite2D") as Sprite2D
+	_highlight = get_node_or_null("Highlight") as CanvasItem
 	set_process(true)
 
 
 func set_triggered(value: bool) -> void:
 	_triggered = value
+	if _sprite:
+		_sprite.modulate = Color(0.42, 0.42, 0.42, 0.55) if value else Color.WHITE
+	if _highlight:
+		_highlight.visible = false
 	queue_redraw()
 
 
@@ -29,6 +37,8 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if _sprite:
+		return
 	if _triggered:
 		_draw_triggered_state()
 		return

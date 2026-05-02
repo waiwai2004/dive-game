@@ -5,6 +5,7 @@ extends Area2D
 var _time: float = 0.0
 var _debris_data: Array = []
 var _wisp_data: Array = []
+var _sprite: Sprite2D = null
 
 
 func _ready() -> void:
@@ -12,6 +13,7 @@ func _ready() -> void:
 	monitorable = true
 	collision_layer = 1
 	collision_mask = 1
+	_sprite = get_node_or_null("Sprite2D") as Sprite2D
 	_init_debris()
 	_init_wisps()
 	set_process(true)
@@ -54,6 +56,8 @@ func _init_wisps() -> void:
 
 
 func _draw() -> void:
+	if _sprite:
+		return
 	_draw_debris()
 	_draw_energy_lines()
 	_draw_wisps()

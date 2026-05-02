@@ -9,6 +9,7 @@ extends CharacterBody2D
 @onready var visual_root: Node2D = get_node_or_null("VisualRoot") as Node2D
 @onready var animated_sprite: AnimatedSprite2D = get_node_or_null("VisualRoot/AnimatedSprite2D") as AnimatedSprite2D
 @onready var idle_sprite: Sprite2D = get_node_or_null("VisualRoot/IdleSprite") as Sprite2D
+@onready var swimmer_ui: Node2D = get_node_or_null("VisualRoot/SwimmerUI") as Node2D
 @onready var head_point: Marker2D = get_node_or_null("VisualRoot/HeadPoint") as Marker2D
 
 var character_state = {
@@ -29,17 +30,26 @@ func _ready() -> void:
 		animated_sprite = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 	if not idle_sprite:
 		idle_sprite = get_node_or_null("IdleSprite") as Sprite2D
+	if not swimmer_ui:
+		swimmer_ui = get_node_or_null("SwimmerUI") as Node2D
 	if not head_point:
 		head_point = get_node_or_null("HeadPoint") as Marker2D
 
 	_visual_base_scale = visual_root.scale
 	_update_head_position()
 
-	if keep_swim_when_idle:
+	if swimmer_ui:
+		swimmer_ui.visible = true
+		if idle_sprite:
+			idle_sprite.visible = false
+		if animated_sprite:
+			animated_sprite.visible = false
+	elif keep_swim_when_idle:
 		if idle_sprite:
 			idle_sprite.visible = false
 		if animated_sprite:
 			animated_sprite.visible = true
+			animated_sprite.frame = 0
 		_play_animation_safe(idle_animation)
 	else:
 		if idle_sprite:
@@ -94,15 +104,24 @@ func _update_visual() -> void:
 	var facing_direction = character_state["facing_direction"]
 
 	if is_moving or keep_swim_when_idle:
-		if idle_sprite:
-			idle_sprite.visible = false
-		if animated_sprite:
-			animated_sprite.visible = true
+		if swimmer_ui:
+			swimmer_ui.visible = true
+			if idle_sprite:
+				idle_sprite.visible = false
+			if animated_sprite:
+				animated_sprite.visible = false
+		else:
+			if idle_sprite:
+				idle_sprite.visible = false
+			if animated_sprite:
+				animated_sprite.visible = true
 
-		var target_animation = move_animation if is_moving else idle_animation
-		if animated_sprite and animated_sprite.animation != target_animation:
-			_play_animation_safe(target_animation)
+			var target_animation = move_animation if is_moving else idle_animation
+			if animated_sprite and animated_sprite.animation != target_animation:
+				_play_animation_safe(target_animation)
 	else:
+		if swimmer_ui:
+			swimmer_ui.visible = false
 		if idle_sprite:
 			idle_sprite.visible = true
 		if animated_sprite:

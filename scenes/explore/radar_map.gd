@@ -1,6 +1,6 @@
 extends Control
 ## 雷达地图 — 圆形扫描雷达，显示玩家在探索地图中的位置
-## 右上角小尺寸显示，点击可放大至屏幕中心
+## 左上角小尺寸显示，点击可放大至屏幕中心
 
 # ── 地图常量 ──
 const MAP_CENTER := Vector2(2880.0, 2160.0)
@@ -9,8 +9,7 @@ const MAP_HALF_SIZE := Vector2(2880.0, 2160.0)
 # ── 布局 ──
 const SMALL_SIZE := 120.0
 const LARGE_SIZE := 500.0
-const MARGIN_RIGHT := 24.0
-const MARGIN_LEFT_OFFSET := 80.0  # 向左偏移
+const MARGIN_LEFT := 32.0
 const MARGIN_TOP := 24.0
 
 # ── 扫描周期 ──
@@ -269,7 +268,7 @@ func _expand() -> void:
 
 	# 保存原始位置
 	var target_size := Vector2(LARGE_SIZE, LARGE_SIZE)
-	var screen_center := Vector2(1920.0 * 0.5, 1080.0 * 0.5)
+	var screen_center := get_viewport_rect().size * 0.5
 	var target_pos := screen_center - target_size * 0.5
 
 	# 提升 z_index
@@ -340,4 +339,4 @@ func _apply_small_layout() -> void:
 
 
 func _get_small_position() -> Vector2:
-	return Vector2(1920.0 - SMALL_SIZE - MARGIN_RIGHT - MARGIN_LEFT_OFFSET, MARGIN_TOP)
+	return Vector2(MARGIN_LEFT, MARGIN_TOP)

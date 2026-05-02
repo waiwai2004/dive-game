@@ -3,15 +3,17 @@ extends ColorRect
 @export var player_path: NodePath
 @export var camera_path: NodePath
 
-@export var darkness_alpha: float = 0.95
-@export var cone_radius: float = 360.0
-@export var cone_angle_deg: float = 118.0
-@export var edge_feather: float = 140.0
-@export var angle_feather_deg: float = 18.0
+@export var darkness_alpha: float = 0.992
+@export var cone_radius: float = 520.0
+@export var cone_angle_deg: float = 72.0
+@export var edge_feather: float = 120.0
+@export var angle_feather_deg: float = 10.0
+@export var near_clear_radius: float = 96.0
+@export var light_falloff_power: float = 1.35
+@export var cone_light_layers: float = 15.0
 
-@export var peripheral_radius: float = 130.0
-@export var peripheral_feather: float = 110.0
-@export var origin_forward_offset: float = 24.0
+@export var origin_forward_offset: float = 38.0
+@export var cone_light_alpha: float = 0.18
 
 var _player: Node2D = null
 var _camera: Camera2D = null
@@ -46,9 +48,11 @@ func _process(_delta: float) -> void:
 	_shader_material.set_shader_parameter("cone_angle", deg_to_rad(cone_angle_deg))
 	_shader_material.set_shader_parameter("edge_feather", edge_feather)
 	_shader_material.set_shader_parameter("angle_feather", deg_to_rad(angle_feather_deg))
-	_shader_material.set_shader_parameter("peripheral_radius", peripheral_radius)
-	_shader_material.set_shader_parameter("peripheral_feather", peripheral_feather)
+	_shader_material.set_shader_parameter("near_clear_radius", near_clear_radius)
+	_shader_material.set_shader_parameter("light_falloff_power", light_falloff_power)
+	_shader_material.set_shader_parameter("cone_light_layers", cone_light_layers)
 	_shader_material.set_shader_parameter("darkness_alpha", darkness_alpha)
+	_shader_material.set_shader_parameter("cone_light_alpha", cone_light_alpha)
 
 
 func _ensure_material() -> void:
@@ -70,10 +74,11 @@ uniform float cone_radius = 360.0;
 uniform float cone_angle = 2.0594885;
 uniform float edge_feather = 140.0;
 uniform float angle_feather = 0.31415927;
-
-uniform float peripheral_radius = 130.0;
-uniform float peripheral_feather = 110.0;
+uniform float near_clear_radius = 82.0;
+uniform float light_falloff_power = 1.35;
+uniform float cone_light_layers = 15.0;
 uniform float darkness_alpha = 0.95;
+uniform float cone_light_alpha = 0.22;
 
 float angle_diff(float a, float b) {
 	float d = a - b;
@@ -87,25 +92,40 @@ void fragment() {
 	float dist = length(to_p);
 
 	vec2 forward = normalize(cone_dir);
+	vec2 right = vec2(-forward.y, forward.x);
 	vec2 dir = dist > 0.0001 ? (to_p / dist) : forward;
+	float local_x = dot(to_p, forward);
+	float local_y = dot(to_p, right);
 
 	float ang = abs(angle_diff(atan(dir.y, dir.x), atan(forward.y, forward.x)));
 	float half_angle = cone_angle * 0.5;
 
 	float cone_angular = 1.0 - smoothstep(half_angle - angle_feather, half_angle, ang);
-	float cone_radial = 1.0 - smoothstep(cone_radius - edge_feather, cone_radius, dist);
+	float normalized_dist = clamp(dist / max(cone_radius, 1.0), 0.0, 1.0);
+	float layer_index = floor(normalized_dist * cone_light_layers);
+	float stepped_radial = 1.0 - (layer_index + 0.5) / cone_light_layers;
+	float edge_fade = 1.0 - smoothstep(cone_radius - edge_feather, cone_radius, dist);
+	float cone_radial = clamp(stepped_radial, 0.0, 1.0) * edge_fade;
 	float cone_visibility = clamp(cone_angular * cone_radial, 0.0, 1.0);
 
-	float peripheral_visibility = 1.0 - smoothstep(
-		peripheral_radius - peripheral_feather,
-		peripheral_radius,
-		dist
-	);
+	float lamp_forward = smoothstep(-16.0, 14.0, local_x) * (1.0 - smoothstep(48.0, 78.0, local_x));
+	float lamp_width = 12.0 + max(local_x, 0.0) * 0.08;
+	float lamp_strip = lamp_forward * (1.0 - smoothstep(lamp_width * 0.55, lamp_width, abs(local_y)));
 
-	float visibility = max(cone_visibility, peripheral_visibility);
-	float alpha = darkness_alpha * (1.0 - visibility);
+	float tail_cap = 1.0 - smoothstep(0.86, 1.0, length(vec2((local_x + 12.0) / 34.0, local_y / 30.0)));
+	float inner_notch = 1.0 - smoothstep(0.78, 1.0, length(vec2((local_x + 1.0) / 18.0, local_y / 16.0)));
+	float tail_side = 1.0 - smoothstep(-34.0, -4.0, local_x);
+	float concave_tail = clamp(tail_cap * tail_side - inner_notch * 0.72, 0.0, 1.0);
+	float asymmetric_body_light = max(lamp_strip * 0.96, concave_tail * 0.62);
 
-	COLOR = vec4(0.0, 0.0, 0.0, alpha);
+	float visibility = max(cone_visibility, asymmetric_body_light);
+	float darkness = darkness_alpha * (1.0 - visibility);
+	float light = max(cone_visibility * cone_light_alpha, asymmetric_body_light * cone_light_alpha * 0.72);
+	vec3 light_color = vec3(0.72, 0.93, 1.0);
+	float alpha = max(darkness, light);
+	vec3 color = mix(vec3(0.0), light_color, step(darkness, light));
+
+	COLOR = vec4(color, alpha);
 }
 """
 	_shader_material.shader = shader
