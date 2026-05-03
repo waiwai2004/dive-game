@@ -50,7 +50,89 @@ func _ready() -> void:
 	_update_button_states()
 	
 	right_panel.modulate.a = 0
-	request_story_step("开始深海下潜，四周漆黑一片。")
+	setup_initial_story()
+
+func setup_initial_story() -> void:
+	var starting_stories = [
+		{
+			"title": "忧郁的小王同学",
+			"story": "寂静的校园里，你远远地注意到了那个孩子。穿着校服，留着不过眉的短发。一个人靠在巨大的礁石旁，背对着你。你走近一看，却发现，那是一棵白桦树。察觉到你的靠近，树干睁开了血淋淋的眼睛。“我好痛我好痛我好痛我好痛我好痛”白桦树嘶吼着，一只只眼睛张开了血盆大口。“看看我看看我看看我。”“能不能，好好看着我。”",
+			"question": "你要怎么做？",
+			"options": [
+				{"text": "杀死白桦树", "desc": "站在那里的是人还是树，已经不重要了。\n此刻你想做的，只是结束一个痛苦的生命。", "tag": "偏善"},
+				{"text": "我会注视着你", "desc": "你不知道她遭遇了什么，但“注视”是一\n件很简单的事情。", "tag": "守序"},
+				{"text": "挖出他的眼睛", "desc": "眼睛是白桦树的伤口。\n小王同学，你希望她能痊愈。", "tag": "激进"}
+			]
+		},
+		{
+			"title": "学术垃圾制造工",
+			"story": "你坐在一张书桌前，手中敲着键盘，修改电脑上的论文。发着白光的屏幕闪了闪，变成了黑屏。你焦急地拍打着电脑，因为你想起来你刚才的修改没保存。这时，电脑亮了，上面密密麻麻地写着“垃圾垃圾垃圾垃圾垃圾”。你没有在意。拼命按着重启键。“这里还要修改，这里分析不够，这里格式不对，这里......”",
+			"question": "你要怎么做？",
+			"options": [
+				{"text": "自己的事情自己做", "desc": "我的论文一定还在临时文件里。", "tag": "保守"},
+				{"text": "让出座位", "desc": "然后和无面人说：“不管你是人是鬼，帮\n我把论文写了再走。”", "tag": "守序"},
+				{"text": "掀翻书桌", "desc": "“一切都是天意。”", "tag": "混乱"}
+			]
+		},
+		{
+			"title": "响铃的电话机",
+			"story": "“叮铃铃，叮铃铃”\n学校的电话亭里，一个电话机响了。\n你路过这里的时候，它正发出尖锐的铃声。\n四周无人，你接起电话。\n电话那头只有水滴的声音。\n“滴答，滴答，滴答”\n声音突然变得嘈杂，你听见有人的声音模糊地传来。\n“妈，我今天给你打电话，怎么是别人接的？”\n“对面什么也没说。”\n“我只听到了滴答的水滴声。”\n“你和我听到的一样吗？”",
+			"question": "你要怎么做？",
+			"options": [
+				{"text": "保持沉默", "desc": "或许对面没在问你呢？\n你心怀侥幸地想。", "tag": "保守"},
+				{"text": "实话实说", "desc": "你诚恳的回答没有得到“它”的赞许。\n因为你听到了身后传来了黏腻的水声。\n“那你就和我一样了。”", "tag": "守序"},
+				{"text": "胡言乱语", "desc": "“啊对对对，我是你妈，儿子好啊，今天\n在学校咋样。”\n对面没有回答。\n“嘟——”电话被挂断了", "tag": "混乱"}
+			]
+		}
+	]
+	
+	var chosen = starting_stories[randi() % starting_stories.size()]
+	
+	current_step = 1
+	var s_text = chosen["story"]
+	story_pages = split_text_into_pages(s_text, 600)
+	current_page = 0
+	accumulated_history += "开局事件 (" + chosen["title"] + ")：" + s_text + "\n"
+	
+	question_text.text = chosen["question"]
+	
+	for child in options_container.get_children():
+		child.queue_free()
+		
+	for opt in chosen["options"]:
+		var btn = Button.new()
+		var display_text = opt["text"] + "\n" + opt["desc"]
+		btn.text = display_text
+		btn.custom_minimum_size = Vector2(0, 100)
+		btn.add_theme_font_size_override("font_size", 20)
+		btn.autowrap_mode = 3 # TextServer.AUTOWRAP_WORD_SMART
+		
+		var style_n = StyleBoxFlat.new()
+		style_n.bg_color = Color(0.1, 0.1, 0.2, 0.8)
+		style_n.border_width_bottom = 2
+		style_n.border_color = Color(0.5, 0.5, 0.8)
+		btn.add_theme_stylebox_override("normal", style_n)
+		
+		var style_h = StyleBoxFlat.new()
+		style_h.bg_color = Color(0.3, 0.3, 0.6, 0.9)
+		btn.add_theme_stylebox_override("hover", style_h)
+		
+		btn.pressed.connect(func(): _on_initial_option_selected(opt))
+		options_container.add_child(btn)
+
+	update_page_display()
+	show_right_panel()
+
+func _on_initial_option_selected(opt: Dictionary) -> void:
+	if is_requesting: return
+	hide_right_panel()
+	
+	var action_summary = opt["text"] + " (选项倾向标签: " + opt["tag"] + "，玩家动机: " + opt["desc"].replace("\n", "") + ")"
+	last_action = action_summary
+	accumulated_history += "玩家选择：" + action_summary + "\n"
+	
+	current_step += 1
+	request_story_step(action_summary)
 
 func _on_simple_btn_pressed() -> void:
 	text_limit = 100
@@ -166,13 +248,13 @@ func request_story_step(action_text: String) -> void:
 	if current_step <= max_loops:
 		system_prompt += "描述玩家上一个选择后发生的剧情（约" + str(text_limit) + "字）。"
 		system_prompt += "然后抛出一个关键问题，并提供2到3个具体选项。\n"
-		system_prompt += "务必包围在 ```json 中，返回：story, question, options（字符串数组）。\n"
+		system_prompt += "重要：所有文本必须写在单行内，如果有换行请使用转义字符 \\n，绝对不要产生真实换行。务必包围在 ```json 中，返回：story, question, options（字符串数组）。\n"
 		system_prompt += "范例：\n```json\n{\n  \"story\": \"剧情...\",\n  \"question\": \"你要怎么做？\",\n  \"options\": [\"选项A\", \"选项B\"]\n}\n```"
 	else:
 		system_prompt += "这是最终阶段！请给出大结局的文字描述（约" + str(text_limit) + "字）。"
 		system_prompt += "并根据玩家前面所有的选择评估性格，生成一张相关的技能卡牌。\n"
 		system_prompt += "维度1从【偏善,偏恶】选；维度2从【激进,保守】选；维度3从【守序,混乱】选。X值是1~20的整数。\n"
-		system_prompt += "务必包围在 ```json 中，返回：story, 维度1, 维度2, 维度3, 精神负荷(1~10), 认知负荷(1~10), X值。\n"
+		system_prompt += "重要：所有文本必须写在单行内，如果有换行请使用转义字符 \\n，绝对不要产生真实换行。务必包围在 ```json 中，返回：story, 维度1, 维度2, 维度3, 精神负荷(1~10), 认知负荷(1~10), X值。\n"
 		system_prompt += "范例：\n```json\n{\n  \"story\": \"结局...\",\n  \"维度1\": \"偏善\",\n  \"维度2\": \"激进\",\n  \"维度3\": \"守序\",\n  \"精神负荷\": 4,\n  \"认知负荷\": 5,\n  \"X值\": 10\n}\n```"
 
 	var body = {
@@ -181,7 +263,7 @@ func request_story_step(action_text: String) -> void:
 			{"role": "system", "content": system_prompt},
 			{"role": "user", "content": "行动摘要：" + action_text}
 		],
-		"temperature": 0.6
+		"temperature": 0.2
 	}
 	
 	var err = http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(body))
@@ -205,16 +287,20 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 	if data.has("choices") and data["choices"].size() > 0:
 		var raw = data["choices"][0]["message"]["content"]
 		var json_str = raw
-		var start = raw.find("```json")
+		var lower_raw = raw.to_lower()
+		var start = lower_raw.find("```json")
 		if start != -1:
-			var end = raw.find("```", start + 7)
+			var end = lower_raw.find("```", start + 7)
 			if end != -1:
 				json_str = raw.substr(start + 7, end - (start + 7)).strip_edges()
 		else:
 			var fs = raw.find('{')
 			var fe = raw.rfind('}')
 			if fs != -1 and fe != -1: json_str = raw.substr(fs, fe - fs + 1)
-				
+
+		# 修复大模型偶尔在字符串末尾生成的句号导致JSON解析失败
+		json_str = json_str.replace("\".\n", "\",\n").replace("\"。\n", "\",\n").replace("\". \n", "\",\n").replace("\"。 \n", "\",\n")
+
 		var ai_json = JSON.new()
 		if ai_json.parse(json_str) == OK:
 			var res = ai_json.get_data()
@@ -266,7 +352,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 				generate_card(res)
 			update_page_display()
 		else:
-			story_text.text = "JSON解析失败"
+			story_text.text = "JSON解析失败\n\n返回内容为：\n" + json_str + "\n\n错误信息：" + ai_json.get_error_message()
 	else:
 		story_text.text = "无数据返回"
 
