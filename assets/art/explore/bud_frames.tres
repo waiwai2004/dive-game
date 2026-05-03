@@ -1,0 +1,22 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cbud001"]
+
+[ext_resource type="Texture2D" uid="uid://bcgkp7wcmxx8u" path="res://assets/art/explore/nd_bud/frame_000.png" id="f0"]
+[ext_resource type="Texture2D" uid="uid://d4f8grqj3bwgn" path="res://assets/art/explore/nd_bud/frame_001.png" id="f1"]
+[ext_resource type="Texture2D" uid="uid://coaoh5y3sbtd2" path="res://assets/art/explore/nd_bud/frame_002.png" id="f2"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("f0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f2")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

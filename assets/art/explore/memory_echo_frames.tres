@@ -1,0 +1,14 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cmemoryecho001"]
+
+[ext_resource type="Texture2D" uid="uid://b20sl6gvx6iuh" path="res://assets/art/explore/IMG_3719.PNG" id="f0"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("f0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

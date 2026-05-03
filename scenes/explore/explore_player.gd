@@ -8,7 +8,6 @@ extends CharacterBody2D
 
 @onready var visual_root: Node2D = get_node_or_null("VisualRoot") as Node2D
 @onready var animated_sprite: AnimatedSprite2D = get_node_or_null("VisualRoot/AnimatedSprite2D") as AnimatedSprite2D
-@onready var idle_sprite: Sprite2D = get_node_or_null("VisualRoot/IdleSprite") as Sprite2D
 @onready var head_point: Marker2D = get_node_or_null("VisualRoot/HeadPoint") as Marker2D
 
 var character_state = {
@@ -27,25 +26,14 @@ func _ready() -> void:
 		visual_root = self
 	if not animated_sprite:
 		animated_sprite = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
-	if not idle_sprite:
-		idle_sprite = get_node_or_null("IdleSprite") as Sprite2D
 	if not head_point:
 		head_point = get_node_or_null("HeadPoint") as Marker2D
 
 	_visual_base_scale = visual_root.scale
 	_update_head_position()
 
-	if keep_swim_when_idle:
-		if idle_sprite:
-			idle_sprite.visible = false
-		if animated_sprite:
-			animated_sprite.visible = true
-		_play_animation_safe(idle_animation)
-	else:
-		if idle_sprite:
-			idle_sprite.visible = true
-		if animated_sprite:
-			animated_sprite.visible = false
+	if animated_sprite and animated_sprite.sprite_frames:
+		animated_sprite.play()
 
 
 func _physics_process(_delta: float) -> void:
@@ -87,32 +75,19 @@ func get_facing_direction() -> Vector2:
 	if value is Vector2 and value.length_squared() > 0.0001:
 		return value.normalized()
 	return Vector2.RIGHT
-
-
 func _update_visual() -> void:
-	var is_moving = character_state["is_moving"]
 	var facing_direction = character_state["facing_direction"]
 
-	if is_moving or keep_swim_when_idle:
-		if idle_sprite:
-			idle_sprite.visible = false
-		if animated_sprite:
-			animated_sprite.visible = true
+	if animated_sprite and animated_sprite.sprite_frames:
+		if not animated_sprite.is_playing():
+			animated_sprite.play(idle_animation)
 
-		var target_animation = move_animation if is_moving else idle_animation
-		if animated_sprite and animated_sprite.animation != target_animation:
-			_play_animation_safe(target_animation)
-	else:
-		if idle_sprite:
-			idle_sprite.visible = true
-		if animated_sprite:
-			animated_sprite.visible = false
+	var facing_left: bool = facing_direction.x < 0.0
+	animated_sprite.flip_h = not facing_left
 
-	if absf(facing_direction.x) > 0.01:
-		var facing_left: bool = facing_direction.x < 0.0
-		var sx: float = absf(_visual_base_scale.x)
-		var sy: float = _visual_base_scale.y
-		visual_root.scale = Vector2(-sx if facing_left else sx, sy)
+	var sx: float = absf(_visual_base_scale.x)
+	var sy: float = absf(_visual_base_scale.y)
+	visual_root.scale = Vector2(sx, sy)
 
 
 func _update_head_position() -> void:
@@ -120,15 +95,3 @@ func _update_head_position() -> void:
 		character_state["head_position"] = head_point.global_position + head_offset
 	else:
 		character_state["head_position"] = global_position + head_offset
-
-
-func _play_animation_safe(anim_name: StringName) -> void:
-	if not animated_sprite or not animated_sprite.sprite_frames:
-		return
-
-	if animated_sprite.sprite_frames.has_animation(anim_name):
-		animated_sprite.play(anim_name)
-	elif animated_sprite.sprite_frames.has_animation(&"swim"):
-		animated_sprite.play(&"swim")
-	elif animated_sprite.sprite_frames.has_animation(&"run"):
-		animated_sprite.play(&"run")

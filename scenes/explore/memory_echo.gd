@@ -6,7 +6,7 @@ extends Area2D
 @export var hidden_alpha: float = 0.16
 @export var visible_alpha: float = 1.0
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: CanvasItem = $Sprite2D
 @onready var highlight: CanvasItem = get_node_or_null("Highlight")
 
 var _player: Node2D = null

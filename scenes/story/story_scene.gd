@@ -36,16 +36,18 @@ func _ready() -> void:
 	await _fade_to_alpha(0.0, 0.25)
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if _is_transitioning:
 		return
 
 	if _is_skip_pressed(event):
 		_go_to_base_with_fade()
+		get_viewport().set_input_as_handled()
 		return
 
 	if _is_advance_pressed(event):
 		_next_page()
+		get_viewport().set_input_as_handled()
 
 
 func _is_advance_pressed(event: InputEvent) -> bool:
@@ -54,6 +56,9 @@ func _is_advance_pressed(event: InputEvent) -> bool:
 
 	if event is InputEventKey and event.pressed and not event.echo:
 		return event.keycode == KEY_Z
+
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		return true
 
 	return false
 

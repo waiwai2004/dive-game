@@ -1,17 +1,17 @@
 extends Control
 ## 深度剖面图 — 显示玩家所在深度层级的竖向地形图
-## 右上角（雷达右侧）小尺寸，点击可放大至屏幕中心
+## 左下角小尺寸显示，点击可放大至屏幕中心
 
 # ── 地图常量 ──
-const MAP_MAX_DEPTH := 4140.0  # Y=0 海面, Y=4140 最深
+const MAP_MAX_DEPTH := 1700.0  # Y=0 海面, Y=1700 最深
 
 # ── 层级定义: [名称, Y上界, Y下界] ──
 const DEPTH_LAYERS := [
-	["海面", 0.0, 200.0],
-	["第1层 · 浅海", 200.0, 1000.0],
-	["第2层 · 中层", 1000.0, 2200.0],
-	["第3层 · 深海", 2200.0, 3400.0],
-	["第4层 · 海沟", 3400.0, 4140.0],
+	["海面", 0.0, 100.0],
+	["第1层 · 浅海", 100.0, 450.0],
+	["第2层 · 中层", 450.0, 950.0],
+	["第3层 · 深海", 950.0, 1450.0],
+	["第4层 · 海沟", 1450.0, 1700.0],
 ]
 
 # ── 布局 ──
@@ -19,11 +19,8 @@ const SMALL_WIDTH := 44.0
 const SMALL_HEIGHT := 120.0
 const LARGE_WIDTH := 300.0
 const LARGE_HEIGHT := 600.0
-const MARGIN_RIGHT := 24.0
-const MARGIN_TOP := 24.0
-const RADAR_SMALL_SIZE := 120.0  # 需与雷达尺寸一致
-const RADAR_LEFT_OFFSET := 80.0  # 与雷达一致的左偏移
-const GAP := 8.0  # 与雷达间距
+const MARGIN_LEFT := 38.0
+const MARGIN_BOTTOM := 32.0
 
 # ── 颜色 ──
 const BG_COLOR := Color(0.02, 0.05, 0.15, 0.92)
@@ -95,7 +92,7 @@ var _tween: Tween = null
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	_apply_small_layout()
+	call_deferred("_apply_small_layout")
 
 
 func _process(delta: float) -> void:
@@ -307,7 +304,7 @@ func _expand() -> void:
 	_overlay.gui_input.connect(_on_overlay_input)
 
 	var target_size := Vector2(LARGE_WIDTH, LARGE_HEIGHT)
-	var screen_center := Vector2(1920.0 * 0.5, 1080.0 * 0.5)
+	var screen_center := get_viewport_rect().size * 0.5
 	var target_pos := screen_center - target_size * 0.5
 
 	z_index = 50
@@ -365,13 +362,12 @@ func _on_overlay_input(event: InputEvent) -> void:
 # ── 布局 ──
 
 func _apply_small_layout() -> void:
-	var pos := _get_small_position()
-	position = pos
+	var viewport_size := get_viewport_rect().size
+	position = Vector2(MARGIN_LEFT, viewport_size.y - SMALL_HEIGHT - MARGIN_BOTTOM)
 	size = Vector2(SMALL_WIDTH, SMALL_HEIGHT)
 	queue_redraw()
 
 
 func _get_small_position() -> Vector2:
-	# 雷达右侧
-	var radar_right := 1920.0 - RADAR_SMALL_SIZE - MARGIN_RIGHT - RADAR_LEFT_OFFSET + RADAR_SMALL_SIZE + GAP
-	return Vector2(radar_right, MARGIN_TOP)
+	var viewport_size := get_viewport_rect().size
+	return Vector2(MARGIN_LEFT, viewport_size.y - SMALL_HEIGHT - MARGIN_BOTTOM)

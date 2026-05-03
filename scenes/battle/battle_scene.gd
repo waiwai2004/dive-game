@@ -225,10 +225,6 @@ func _on_battle_win() -> void:
 	_log("战斗胜利。")
 	Game.clear_cognition()
 	
-	if _is_normal_battle() and not Game.first_battle_reward_done:
-		_state.change_state(BattleStateManager.State.REWARD)
-		return
-
 	_state.change_state(BattleStateManager.State.FINISHED)
 	
 	Game.set_meta("battle_is_boss", not _is_normal_battle())

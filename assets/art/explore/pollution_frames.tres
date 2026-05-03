@@ -1,0 +1,42 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cpollution001"]
+
+[ext_resource type="Texture2D" uid="uid://dkroku0xstmfq" path="res://assets/art/explore/nd_pollution/frame_000.png" id="f0"]
+[ext_resource type="Texture2D" uid="uid://dgipg7u4u24l4" path="res://assets/art/explore/nd_pollution/frame_001.png" id="f1"]
+[ext_resource type="Texture2D" uid="uid://cx278wptjcqvr" path="res://assets/art/explore/nd_pollution/frame_002.png" id="f2"]
+[ext_resource type="Texture2D" uid="uid://nphfsvfxt1tb" path="res://assets/art/explore/nd_pollution/frame_003.png" id="f3"]
+[ext_resource type="Texture2D" uid="uid://dlbpq1ykp0pal" path="res://assets/art/explore/nd_pollution/frame_004.png" id="f4"]
+[ext_resource type="Texture2D" uid="uid://dawfpu8aaro1p" path="res://assets/art/explore/nd_pollution/frame_005.png" id="f5"]
+[ext_resource type="Texture2D" uid="uid://dgkpb5viv13b2" path="res://assets/art/explore/nd_pollution/frame_006.png" id="f6"]
+[ext_resource type="Texture2D" uid="uid://ddb2urkk4i4p" path="res://assets/art/explore/nd_pollution/frame_007.png" id="f7"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("f0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

@@ -6,7 +6,7 @@ extends Control
 ## 方式一：在 Inspector 的 Bud Texture 里拖入你的花苞图
 @export var bud_texture: Texture2D
 ## 方式二：把花苞图放到这个路径，脚本会自动加载
-const BUD_TEXTURE_PATH := "res://assets/bud.png"
+const BUD_TEXTURE_PATH := "res://assets/art/explore/bud.png"
 
 ## 结算弹窗场景路径
 const RESULT_SCENE_PATH := "res://scenes/reward/RewardResultScene.tscn"

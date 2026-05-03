@@ -10,7 +10,7 @@ signal choice_selected(result: String)
 @onready var name_label: Label = $NameBanner/NameLabel
 @onready var name_banner: CanvasItem = $NameBanner
 @onready var nav_button_continue: CanvasItem = $DialogueRoot/NavButtonContinue
-@onready var nav_button_next: CanvasItem = $DialogueRoot/NavButtonNext
+@onready var nav_button_next: CanvasItem = get_node_or_null("DialogueRoot/NavButtonNext")
 
 @onready var choice_area: CanvasItem = $DialogueRoot/ChoiceArea
 @onready var choice_1_root: CanvasItem = $DialogueRoot/ChoiceArea/Choice1Root

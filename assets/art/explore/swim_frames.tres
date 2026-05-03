@@ -1,0 +1,54 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dqq7f35xxwim"]
+
+[ext_resource type="Texture2D" uid="uid://b77k87rsqwlyx" path="res://assets/art/explore/swim/frame_000.png" id="f0"]
+[ext_resource type="Texture2D" uid="uid://cra4nrx0c0dgl" path="res://assets/art/explore/swim/frame_001.png" id="f1"]
+[ext_resource type="Texture2D" uid="uid://kh5p4rmsiaed" path="res://assets/art/explore/swim/frame_002.png" id="f2"]
+[ext_resource type="Texture2D" uid="uid://bjoqaw8p0y2ac" path="res://assets/art/explore/swim/frame_003.png" id="f3"]
+[ext_resource type="Texture2D" uid="uid://dwa8alrdrrh81" path="res://assets/art/explore/swim/frame_004.png" id="f4"]
+[ext_resource type="Texture2D" uid="uid://qhgr72drp5qb" path="res://assets/art/explore/swim/frame_005.png" id="f5"]
+[ext_resource type="Texture2D" uid="uid://cb60lmsnxkulo" path="res://assets/art/explore/swim/frame_006.png" id="f6"]
+[ext_resource type="Texture2D" uid="uid://dl88h4h5hoh1c" path="res://assets/art/explore/swim/frame_007.png" id="f7"]
+[ext_resource type="Texture2D" uid="uid://wef34g0wmxgk" path="res://assets/art/explore/swim/frame_008.png" id="f8"]
+[ext_resource type="Texture2D" uid="uid://c25mp8hqw5pa4" path="res://assets/art/explore/swim/frame_009.png" id="f9"]
+[ext_resource type="Texture2D" uid="uid://3pj2i4d7eqrr" path="res://assets/art/explore/swim/frame_010.png" id="f10"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("f0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("f10")
+}],
+"loop": true,
+"name": &"swim",
+"speed": 7.0
+}]

@@ -50,6 +50,95 @@ var in_adventure: bool:
 	get:
 		return chapter_one_state != "base" and chapter_one_state != ""
 
+# --- 探索场景状态持久化 ---
+const EXPLORE_SAVE_FILE := "user://explore_state.json"
+
+var explore_data: Dictionary = {}
+
+const EXPLORE_PLAYER_START := Vector2(130, 310)
+
+var explore_player_position: Vector2:
+	get:
+		if explore_data.has("player_pos"):
+			return Vector2(explore_data.player_pos.x, explore_data.player_pos.y)
+		return EXPLORE_PLAYER_START
+	set(value):
+		explore_data.player_pos = {"x": value.x, "y": value.y}
+
+var explore_zones: Dictionary:
+	get:
+		if explore_data.has("zones"):
+			return explore_data.zones
+		return {}
+	set(value):
+		explore_data.zones = value
+
+var explore_generated: bool:
+	get:
+		return explore_data.get("generated", false)
+	set(value):
+		explore_data.generated = value
+
+var explore_memory_positions: Array:
+	get:
+		if explore_data.has("memory_positions"):
+			return explore_data.memory_positions
+		return []
+	set(value):
+		explore_data.memory_positions = value
+
+var explore_battle_positions: Array:
+	get:
+		if explore_data.has("battle_positions"):
+			return explore_data.battle_positions
+		return []
+	set(value):
+		explore_data.battle_positions = value
+
+var explore_wound_position: Vector2:
+	get:
+		if explore_data.has("wound_pos"):
+			return Vector2(explore_data.wound_pos.x, explore_data.wound_pos.y)
+		return Vector2.ZERO
+	set(value):
+		explore_data.wound_pos = {"x": value.x, "y": value.y}
+
+var explore_bud_positions: Array:
+	get:
+		if explore_data.has("bud_positions"):
+			return explore_data.bud_positions
+		return []
+	set(value):
+		explore_data.bud_positions = value
+
+var explore_ruins_positions: Array:
+	get:
+		if explore_data.has("ruins_positions"):
+			return explore_data.ruins_positions
+		return []
+	set(value):
+		explore_data.ruins_positions = value
+
+func save_explore_state() -> void:
+	explore_data.version = 1
+	var file := FileAccess.open(EXPLORE_SAVE_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(explore_data))
+
+func load_explore_state() -> void:
+	if FileAccess.file_exists(EXPLORE_SAVE_FILE):
+		var file := FileAccess.open(EXPLORE_SAVE_FILE, FileAccess.READ)
+		if file:
+			var json := JSON.new()
+			var result := json.parse(file.get_as_text())
+			if result == OK:
+				explore_data = json.data
+
+func reset_explore_state() -> void:
+	explore_data = {}
+	if FileAccess.file_exists(EXPLORE_SAVE_FILE):
+		DirAccess.remove_absolute(EXPLORE_SAVE_FILE)
+
 # 第一章垂直切片状态
 var chapter_one_state: String = "base"
 var chapter_one_memory_choice: String = ""
@@ -95,6 +184,8 @@ func reset_run():
 	chapter_one_end_choice = ""
 
 	last_bud_rewards.clear()
+
+	reset_explore_state()
 
 	deck = [
 		"cut",
