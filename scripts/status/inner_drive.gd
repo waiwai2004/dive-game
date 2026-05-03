@@ -31,7 +31,7 @@ func activate_by_card(card_id: String) -> void:
 		on_activate()
 
 
-func on_turn_end() -> void:
+func on_round_end() -> void:
 	if is_active:
 		var roll = randf()
 		if roll < extra_turn_chance:

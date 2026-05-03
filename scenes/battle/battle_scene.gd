@@ -3,6 +3,17 @@
 ## 其余的 UI / 卡牌 / 敌人 / 视觉 / 音效 全部委托给对应 Manager。
 extends Control
 
+const NORMAL_BATTLE_ENEMY_POOL := [
+	"corpse_shrimp",
+	"motor_jellyfish",
+	"polluted_fish",
+	"corrupted_lion",
+]
+const BOSS_BATTLE_ENEMY_POOL := [
+	"black_bubble",
+	"colour_out_of_space",
+]
+
 @onready var _boss_portrait: TextureRect = $ArenaRoot/BossPortrait
 @onready var _reward_story_ui: Control = $RewardStoryUI
 
@@ -25,6 +36,7 @@ var _player_buff_manager: BuffManager
 var _enemy_buff_manager: BuffManager
 
 var _battle_log_lines: Array[String] = []
+var _inner_drive_extra_turn_pending: bool = false
 
 
 
@@ -70,9 +82,13 @@ func _build_subsystems() -> void:
 func _setup_statuses() -> void:
 	var manic_status = ManicStatus.new()
 	var inner_drive_status = InnerDriveStatus.new()
+	var madness_for_fun_status = MadnessForFunStatus.new()
+	manic_status.setup(_player_buff_manager, _enemy_buff_manager)
+	madness_for_fun_status.setup(_status_manager, _card_system)
 	inner_drive_status.extra_turn_granted.connect(_on_inner_drive_extra_turn)
 	_status_manager.register_status(manic_status)
 	_status_manager.register_status(inner_drive_status)
+	_status_manager.register_status(madness_for_fun_status)
 
 
 func _wire_signals() -> void:
@@ -104,6 +120,10 @@ func _on_state_changed(new_state: int) -> void:
 func _start_player_turn() -> void:
 	_status_manager.on_turn_start()
 	_player_buff_manager.on_turn_start()
+	_apply_player_turn_start_buffs()
+	if Game.player_hp <= 0:
+		await _on_battle_lose()
+		return
 	_card_system.start_turn()
 	_state.change_state(BattleStateManager.State.PLAYER_TURN)
 	_log("你的回合开始。")
@@ -115,7 +135,18 @@ func _on_end_turn_pressed() -> void:
 	if not _state.is_player_turn():
 		return
 	_log("你结束了回合。")
+	await _end_player_turn()
+
+
+func _end_player_turn() -> void:
+	var corruption_stacks := _player_buff_manager.get_buff_stacks("腐化")
+	var old_san: int = int(Game.player_san)
 	_player_buff_manager.on_turn_end()
+	if corruption_stacks > 0:
+		_log("腐化侵蚀了你，失去1点存在值与%d点SAN。" % maxi(old_san - int(Game.player_san), 0))
+	if Game.player_hp <= 0:
+		await _on_battle_lose()
+		return
 	_status_manager.on_turn_end()
 	await _enemy_turn()
 
@@ -144,13 +175,19 @@ func _enemy_turn() -> void:
 			if Game.player_san <= 0:
 				_log("SAN值耗尽！你陷入了癫狂...")
 
+		var san_loss_to_player := int(result.get("san_loss_to_player", 0))
+		if san_loss_to_player > 0:
+			Game.player_san = maxi(Game.player_san - san_loss_to_player, 0)
+			if Game.player_san <= 0:
+				_log("SAN值耗尽！你陷入了癫狂...")
+
 		var direct_hp_loss := int(result.get("direct_hp_loss", 0))
 		if direct_hp_loss > 0:
 			Game.player_hp = maxi(Game.player_hp - direct_hp_loss, 0)
 
 		if bool(result.get("swap_player_hp_san", false)):
-			var old_hp := Game.player_hp
-			var old_san := Game.player_san
+			var old_hp: int = int(Game.player_hp)
+			var old_san: int = int(Game.player_san)
 			Game.player_hp = clampi(old_san, 0, Game.max_hp)
 			Game.player_san = mini(old_hp, Game.max_san)
 			_log("你的存在值与 SAN 值被扭曲互换。")
@@ -160,8 +197,7 @@ func _enemy_turn() -> void:
 			_card_system.player_weak += weak_gain
 
 		var extra_turn := _enemy_ai.end_turn_tick()
-		_card_system.tick_player_weak()
-		_enemy_buff_manager.on_turn_end()
+		_process_round_end_buffs()
 
 		if Game.player_hp <= 0:
 			await _on_battle_lose()
@@ -178,9 +214,8 @@ func _enemy_turn() -> void:
 
 
 func _on_inner_drive_extra_turn() -> void:
+	_inner_drive_extra_turn_pending = true
 	_log("内驱力触发！你获得了一个额外回合！")
-	await get_tree().create_timer(0.5).timeout
-	_start_player_turn()
 
 
 # ====== 对外 API：由 card_ui 调用 ======
@@ -198,6 +233,11 @@ func play_card(card_index: int) -> void:
 		Game.restore_san_to_max()
 		_log("敌对单位被击杀，理智值回满！")
 		await _on_battle_win()
+		return
+	if _card_system.consume_force_end_turn_after_card():
+		_log("麻痹打断了你的行动，回合被强制结束。")
+		_ui.refresh_all(_battle_log_lines)
+		await _end_player_turn()
 		return
 
 	_ui.refresh_all(_battle_log_lines)
@@ -217,7 +257,32 @@ func _refresh_battle_log_from_scene() -> void:
 
 
 func get_player_additional_status_info() -> Array[Dictionary]:
-	return _player_buff_manager.get_all_active_buffs_info()
+	var result := _player_buff_manager.get_all_active_buffs_info()
+	for status_name in _status_manager.get_active_status_names():
+		if status_name == "癫狂":
+			continue
+		result.append({
+			"name": status_name,
+			"stacks": -1,
+			"description": _status_manager.get_status_description(status_name),
+		})
+	return result
+
+
+func _apply_player_turn_start_buffs() -> void:
+	var collapse_stacks := _player_buff_manager.get_buff_stacks("崩溃")
+	if collapse_stacks <= 0:
+		return
+	Game.player_san -= collapse_stacks
+	_log("崩溃撕扯你的理智，失去%d点SAN。" % collapse_stacks)
+	if Game.player_san <= 0:
+		_log("SAN值耗尽！你陷入了癫狂...")
+
+
+func _process_round_end_buffs() -> void:
+	_player_buff_manager.on_round_end()
+	_enemy_buff_manager.on_round_end()
+	_status_manager.on_round_end()
 
 
 # ====== 胜负 / 奖励 ======
@@ -229,7 +294,7 @@ func _on_battle_win() -> void:
 	
 	Game.set_meta("battle_is_boss", not _is_normal_battle())
 	Game.set_meta("battle_turn_count", _get_battle_turn_count())
-	Game.set_meta("battle_boss_card", Game.get_first_reward_card_id())
+	Game.set_meta("battle_boss_card", _roll_boss_drop_card_id() if not _is_normal_battle() else "")
 	
 	get_tree().change_scene_to_file("res://scenes/battle/VictorySettlementUI.tscn")
 
@@ -246,6 +311,27 @@ func _on_battle_lose() -> void:
 
 func _get_battle_turn_count() -> int:
 	return _battle_log_lines.count("你结束了回合。") + 1
+
+
+func _roll_boss_drop_card_id() -> String:
+	var enemy_data := _enemy_ai.get_enemy_data()
+	if enemy_data == null or enemy_data.drop_table.is_empty():
+		return ""
+	var total_chance := 0
+	for drop in enemy_data.drop_table:
+		total_chance += maxi(int(drop.get("chance", 0)), 0)
+	if total_chance <= 0:
+		return ""
+	var roll := randi() % total_chance
+	var cursor := 0
+	for drop in enemy_data.drop_table:
+		cursor += maxi(int(drop.get("chance", 0)), 0)
+		if roll < cursor:
+			var card_id := str(drop.get("card_id", "")).strip_edges()
+			if card_id.is_empty() or str(drop.get("card_name", "")) == "无":
+				return ""
+			return card_id
+	return ""
 
 
 func _on_reward_selected(card_id: String) -> void:
@@ -276,30 +362,45 @@ func _log(text: String) -> void:
 
 
 func _is_normal_battle() -> bool:
+	if BOSS_BATTLE_ENEMY_POOL.has(_enemy_ai.enemy_id):
+		return false
+	if NORMAL_BATTLE_ENEMY_POOL.has(_enemy_ai.enemy_id):
+		return true
 	return Game.battle_index < 3
 
 
 func _get_enemy_id_for_current_battle() -> String:
-	var enemy_id := EnemyDatabase.get_enemy_id_for_battle_index(Game.battle_index)
+	var enemy_id := str(Game.current_battle_enemy_id).strip_edges()
+	if not enemy_id.is_empty() and EnemyDatabase.has_enemy(enemy_id):
+		return enemy_id
+	if Game.battle_index >= 3:
+		return _pick_random_enemy_id(BOSS_BATTLE_ENEMY_POOL, "black_bubble")
+	if Game.battle_index > 0:
+		return _pick_random_enemy_id(NORMAL_BATTLE_ENEMY_POOL, "corpse_shrimp")
+	enemy_id = EnemyDatabase.get_enemy_id_for_battle_index(Game.battle_index)
 	if enemy_id.is_empty():
 		return "corpse_shrimp"
 	return enemy_id
 
 
 func _apply_enemy_portrait() -> void:
-	var enemy_id := _get_enemy_id_for_current_battle()
-	var normal_tex: Texture2D
-	var is_boss := not _is_normal_battle()
-	
-	# 根据敌人类型加载贴图
-	if is_boss:
-		normal_tex = load("res://assets/art/battle/en_boss_01.PNG") as Texture2D
-	else:
-		normal_tex = load("res://assets/art/battle/en_mob_01.PNG") as Texture2D
-	
+	var normal_path := _enemy_ai.get_portrait_path()
+	var injured_path := _enemy_ai.get_portrait_injured_path()
+	var normal_tex: Texture2D = null
+	var injured_tex: Texture2D = null
+	if not normal_path.is_empty():
+		normal_tex = load(normal_path) as Texture2D
+	if not injured_path.is_empty():
+		injured_tex = load(injured_path) as Texture2D
 	if normal_tex and is_instance_valid(_boss_portrait):
 		_boss_portrait.texture = normal_tex
-		_ui.set_enemy_portrait(normal_tex)
+		_ui.set_enemy_portraits(normal_tex, injured_tex)
+
+
+func _pick_random_enemy_id(enemy_pool: Array, fallback: String) -> String:
+	if enemy_pool.is_empty():
+		return fallback
+	return str(enemy_pool[randi() % enemy_pool.size()])
 
 
 func _hide_global_ui_for_battle() -> void:

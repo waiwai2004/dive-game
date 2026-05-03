@@ -240,16 +240,17 @@ func set_enemy_portrait(tex: Texture2D) -> void:
 	if _boss_portrait:
 		_boss_portrait.texture = tex
 		_enemy_texture_normal = tex
-		
-		# Load injured portrait by replacing _01 with _02
-		if tex and tex.resource_path:
-			var path = tex.resource_path
-			var injured_path = path.replace("_01", "_02")
-			if ResourceLoader.exists(injured_path):
-				_enemy_texture_injured = ResourceLoader.load(injured_path) as Texture2D
-			else:
-				_enemy_texture_injured = tex
+		_enemy_texture_injured = tex
 		_was_injured = false
+
+
+func set_enemy_portraits(normal_tex: Texture2D, injured_tex: Texture2D = null) -> void:
+	if _boss_portrait == null:
+		return
+	_enemy_texture_normal = normal_tex
+	_enemy_texture_injured = injured_tex if injured_tex != null else normal_tex
+	_boss_portrait.texture = _enemy_texture_normal
+	_was_injured = false
 
 
 # ====== 刷新入口 ======
@@ -270,9 +271,9 @@ func refresh_enemy_ui() -> void:
 	_boss_hp_bar.value = float(clampi(_enemy_ai.hp, 0, _enemy_ai.max_hp))
 	_boss_intent_label.text = _enemy_ai.get_current_intent_display()
 	
-	# 受伤贴图切换：血量低于一半时显示受伤状态
+	# 受伤贴图切换：血量小于等于一半时显示受伤状态
 	if _boss_portrait and _enemy_texture_injured:
-		var is_injured = _enemy_ai.hp < _enemy_ai.max_hp * 0.5
+		var is_injured = _enemy_ai.hp <= _enemy_ai.max_hp * 0.5
 		if is_injured != _was_injured:
 			_was_injured = is_injured
 			_boss_portrait.texture = _enemy_texture_injured if is_injured else _enemy_texture_normal
@@ -307,13 +308,13 @@ func _refresh_status_icons() -> void:
 		var w := _card_system.player_weak
 		_add_status_icon(
 			"弱", w, Color(0.85, 0.55, 0.90, 1.0), "虚弱",
-			"虚弱 %d：本轮每次造成伤害时，伤害值 -%d（最低为1）。" % [w, w]
+			"虚弱 %d：本轮每次造成伤害时，伤害值 -%d（最低为1）。" % [w, w * 2]
 		)
 
 	if Game.is_distorted():
 		_add_status_icon(
 			"癫", -1, Color(0.95, 0.45, 0.45, 1.0), "癫狂",
-			"癫狂状态：所有卡牌费用 +1。"
+			"癫狂状态：所有手牌数值 +1。"
 		)
 
 	if _scene and _scene.has_method("get_player_additional_status_info"):
@@ -623,6 +624,18 @@ func _get_status_color(status_name: String) -> Color:
 			return Color(0.40, 0.78, 0.54, 1.0)
 		"残存":
 			return Color(0.44, 0.86, 0.88, 1.0)
+		"愤怒":
+			return Color(0.94, 0.32, 0.22, 1.0)
+		"腐化":
+			return Color(0.45, 0.78, 0.28, 1.0)
+		"崩溃":
+			return Color(0.62, 0.42, 0.95, 1.0)
+		"援军":
+			return Color(0.50, 0.74, 0.96, 1.0)
+		"内驱力":
+			return Color(0.36, 0.62, 1.0, 1.0)
+		"疯狂为乐":
+			return Color(1.0, 0.52, 0.72, 1.0)
 		_:
 			return Color(0.68, 0.72, 0.90, 1.0)
 
@@ -632,7 +645,7 @@ func show_card_tooltip(card_data: Dictionary) -> void:
 	if card_data.is_empty():
 		return
 	var name_text := str(card_data.get("name", "未知卡牌"))
-	var type_text := CardDatabase.get_type_text(str(card_data.get("type", "")))
+	var type_text: String = str(CardDatabase.get_type_text(str(card_data.get("type", ""))))
 	var cost := int(card_data.get("cost", 0))
 	var cognition := int(card_data.get("cognition", 0))
 	var desc := str(card_data.get("description", card_data.get("desc", "")))

@@ -54,6 +54,22 @@ func on_turn_end() -> void:
 	check_all_statuses()
 
 
+func on_round_end() -> void:
+	for status_name in active_statuses:
+		var status: GameStatus = active_statuses[status_name]
+		if status.is_active:
+			status.on_round_end()
+	check_all_statuses()
+
+
+func activate_status(status_name: String) -> void:
+	if not active_statuses.has(status_name):
+		return
+	var status: GameStatus = active_statuses[status_name]
+	if not status.is_active:
+		status.on_activate()
+
+
 func is_status_active(status_name: String) -> bool:
 	if active_statuses.has(status_name):
 		return active_statuses[status_name].is_active
@@ -66,6 +82,13 @@ func get_active_status_names() -> Array[String]:
 		if active_statuses[status_name].is_active:
 			result.append(status_name)
 	return result
+
+
+func get_status_description(status_name: String) -> String:
+	if not active_statuses.has(status_name):
+		return ""
+	var status: GameStatus = active_statuses[status_name]
+	return status.get_status_description()
 
 
 func modify_card_value(base_value: int, value_type: String) -> int:

@@ -64,6 +64,10 @@ func on_turn_end() -> void:
 	pass
 
 
+func on_round_end() -> void:
+	pass
+
+
 func modify_damage_dealt(base_damage: int) -> int:
 	return base_damage
 

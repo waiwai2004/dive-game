@@ -114,6 +114,15 @@ func to_battle_dict() -> Dictionary:
 			out["heal_hp"] = int(round(effect_value))
 		"apply_weak", "weak":
 			out["apply_weak"] = int(round(effect_value))
+		"apply_confusion":
+			out["apply_confusion"] = int(round(effect_value))
+		"direct_enemy_presence_loss":
+			out["direct_enemy_presence_loss"] = int(round(effect_value))
+		"swap_enemy_hp_san":
+			out["swap_enemy_hp_san"] = int(round(effect_value))
+		"alien_colour_starlight":
+			out["san_loss_all"] = int(round(effect_value))
+			out["apply_anger"] = int(round(effect_value_2))
 		"gain_energy":
 			out["gain_energy"] = int(round(effect_value))
 		"damage_and_san_loss":

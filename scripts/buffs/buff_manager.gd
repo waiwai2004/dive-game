@@ -67,28 +67,52 @@ func has_buff(buff_name: String) -> bool:
 
 
 func get_buff_stacks(buff_name: String) -> int:
-	var buff = get_buff(buff_name)
+	var buff := get_buff(buff_name)
 	if buff:
 		return buff.stacks
 	return 0
 
 
+func remove_buff_stacks(buff_name: String, amount: int, buff_type: int = -1) -> void:
+	var buff := get_buff(buff_name, buff_type)
+	if buff == null or amount <= 0:
+		return
+	buff.remove_stack(amount)
+	_remove_expired_buffs()
+
+
 func on_turn_start() -> void:
-	for key in active_buffs:
+	for key in active_buffs.keys():
+		if not active_buffs.has(key):
+			continue
 		var buff: BuffBase = active_buffs[key]
 		if buff.is_active():
 			buff.on_turn_start()
 
 
 func on_turn_end() -> void:
-	var expired_buffs: Array[String] = []
-	for key in active_buffs:
+	for key in active_buffs.keys():
+		if not active_buffs.has(key):
+			continue
 		var buff: BuffBase = active_buffs[key]
 		if buff.is_active():
 			buff.on_turn_end()
-	
+	_remove_expired_buffs()
+
+
+func on_round_end() -> void:
+	for key in active_buffs.keys():
+		if not active_buffs.has(key):
+			continue
+		var buff: BuffBase = active_buffs[key]
+		if buff.is_active():
+			buff.on_round_end()
+	_remove_expired_buffs()
+
+
+func _remove_expired_buffs() -> void:
 	var to_erase: Array[String] = []
-	for key in active_buffs:
+	for key in active_buffs.keys():
 		var buff: BuffBase = active_buffs[key]
 		if not buff.is_active():
 			to_erase.append(key)

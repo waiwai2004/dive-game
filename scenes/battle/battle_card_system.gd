@@ -22,6 +22,7 @@ var discard_pile: Array[String] = []
 var energy: int = 0
 var player_block: int = 0
 var player_weak: int = 0
+var force_end_turn_after_card: bool = false
 
 var _enemy_ai: BattleEnemyAI
 var _visual_effects: BattleVisualEffects
@@ -52,6 +53,7 @@ func start_battle() -> void:
 
 	player_block = 0
 	player_weak = 0
+	force_end_turn_after_card = false
 	energy = 0
 	Game.clear_cognition()
 
@@ -123,11 +125,15 @@ func play_card(card_index: int) -> bool:
 		return false
 
 	energy -= cost
-	_apply_card_effect(card)
+	if _should_player_card_fizzle():
+		log_emitted.emit("混乱干扰了你的行动，【%s】失效了。" % str(card.get("name", card_id)))
+	else:
+		_apply_card_effect(card)
 	_apply_cognition_cost(card)
 
 	discard_pile.append(card_id)
 	hand.remove_at(card_index)
+	force_end_turn_after_card = _should_player_turn_be_forced_end()
 
 	return true
 
@@ -164,12 +170,17 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 	var weak_on_enemy: int = _apply_card_value_modifiers(int(card.get("apply_weak", 0)), "apply_weak")
 	if weak_on_enemy > 0:
-		_enemy_ai.apply_weak(weak_on_enemy)
 		if _enemy_buff_manager:
 			var weakness_debuff = WeaknessDebuff.new()
 			weakness_debuff.set_stacks(weak_on_enemy)
 			_enemy_buff_manager.add_buff(weakness_debuff)
 		fragments.append("施加%d层虚弱" % weak_on_enemy)
+
+	var direct_enemy_presence_loss: int = _apply_card_value_modifiers(int(card.get("direct_enemy_presence_loss", 0)), "direct_enemy_presence_loss")
+	if direct_enemy_presence_loss > 0:
+		_enemy_ai.lose_presence_direct(direct_enemy_presence_loss)
+		_visual_effects.play_enemy_hit_feedback()
+		fragments.append("直接削减敌人%d点存在值" % direct_enemy_presence_loss)
 
 	var apply_confusion: int = _apply_card_value_modifiers(int(card.get("apply_confusion", 0)), "apply_confusion")
 	if apply_confusion > 0:
@@ -178,6 +189,14 @@ func _apply_card_effect(card: Dictionary) -> void:
 			confusion_debuff.set_stacks(apply_confusion)
 			_enemy_buff_manager.add_buff(confusion_debuff)
 		fragments.append("施加%d层混乱" % apply_confusion)
+
+	var apply_anger: int = _apply_card_value_modifiers(int(card.get("apply_anger", 0)), "apply_anger")
+	if apply_anger > 0:
+		if _player_buff_manager:
+			var anger_buff = AngerBuff.new()
+			anger_buff.set_stacks(apply_anger)
+			_player_buff_manager.add_buff(anger_buff)
+		fragments.append("获得%d层愤怒" % apply_anger)
 
 	var apply_paralysis: int = _apply_card_value_modifiers(int(card.get("apply_paralysis", 0)), "apply_paralysis")
 	if apply_paralysis > 0:
@@ -208,6 +227,16 @@ func _apply_card_effect(card: Dictionary) -> void:
 		Game.player_san -= san_cost
 		fragments.append("失去%d点SAN" % san_cost)
 
+	var san_loss_all: int = _apply_card_value_modifiers(int(card.get("san_loss_all", 0)), "san_loss_all")
+	if san_loss_all > 0:
+		Game.player_san -= san_loss_all
+		_enemy_ai.lose_san_direct(san_loss_all)
+		fragments.append("敌我双方失去%d点SAN" % san_loss_all)
+
+	if bool(card.get("swap_enemy_hp_san", false)):
+		_enemy_ai.swap_hp_san()
+		fragments.append("交换敌人的存在值与SAN值")
+
 	var draw_count: int = _apply_card_value_modifiers(int(card.get("draw", 0)), "draw")
 	if draw_count > 0:
 		draw_cards(draw_count)
@@ -223,6 +252,17 @@ func _apply_card_effect(card: Dictionary) -> void:
 		Game.player_cognition = maxi(Game.player_cognition - reduce_cog, 0)
 		fragments.append("降低%d点认知负荷" % reduce_cog)
 
+	var effect_key := str(card.get("effect_key", "")).strip_edges()
+	match effect_key:
+		"state_inner_drive", "activate_inner_drive":
+			if _status_manager:
+				_status_manager.activate_status("内驱力")
+			fragments.append("进入内驱力状态")
+		"state_madness_for_fun", "activate_madness_for_fun":
+			if _status_manager:
+				_status_manager.activate_status("疯狂为乐")
+			fragments.append("进入疯狂为乐状态")
+
 	if fragments.is_empty():
 		log_emitted.emit("你使用了【%s】。" % card_name)
 	else:
@@ -235,7 +275,7 @@ func _apply_cognition_cost(card: Dictionary) -> void:
 		return
 	Game.add_cognition(cog_gain)
 	if Game.player_cognition > Game.max_cognition:
-		var hp_before := Game.player_hp
+		var hp_before: int = int(Game.player_hp)
 		Game.player_hp = maxi(1, int(round(float(Game.player_hp) / 2.0)))
 		Game.clear_cognition()
 		log_emitted.emit("认知超载！存在值由%d降至%d。" % [hp_before, Game.player_hp])
@@ -255,7 +295,7 @@ static func apply_weak_to_damage(base_damage: int, weak_stack: int) -> int:
 		return 0
 	if weak_stack <= 0:
 		return base_damage
-	return maxi(1, base_damage - weak_stack)
+	return maxi(1, base_damage - weak_stack * 2)
 
 
 func _apply_card_value_modifiers(base_value: int, value_type: String) -> int:
@@ -263,3 +303,27 @@ func _apply_card_value_modifiers(base_value: int, value_type: String) -> int:
 	if _status_manager and _status_manager.is_status_active("癫狂"):
 		value = _status_manager.modify_card_value(value, value_type)
 	return value
+
+
+func consume_force_end_turn_after_card() -> bool:
+	var should_end := force_end_turn_after_card
+	force_end_turn_after_card = false
+	return should_end
+
+
+func _should_player_card_fizzle() -> bool:
+	if _player_buff_manager == null:
+		return false
+	var confusion := _player_buff_manager.get_buff("混乱")
+	if confusion and confusion.has_method("should_cancel_card"):
+		return bool(confusion.call("should_cancel_card"))
+	return false
+
+
+func _should_player_turn_be_forced_end() -> bool:
+	if _player_buff_manager == null:
+		return false
+	var paralysis := _player_buff_manager.get_buff("麻痹")
+	if paralysis and paralysis.has_method("should_force_end_turn_after_card"):
+		return bool(paralysis.call("should_force_end_turn_after_card"))
+	return false

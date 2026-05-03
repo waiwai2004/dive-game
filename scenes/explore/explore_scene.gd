@@ -15,6 +15,16 @@ const WOUND_COUNT := 1
 const BUD_COUNT := 3
 const RUINS_COUNT := 2
 const NON_BOSS_NODE_SCALE := 0.5
+const NORMAL_BATTLE_ENEMY_POOL := [
+	"corpse_shrimp",
+	"motor_jellyfish",
+	"polluted_fish",
+	"corrupted_lion",
+]
+const BOSS_BATTLE_ENEMY_POOL := [
+	"black_bubble",
+	"colour_out_of_space",
+]
 
 const MEMORY_ECHO_SCRIPT := preload("res://scenes/explore/memory_echo.gd")
 const POLLUTION_NODE_FRAMES := preload("res://assets/art/explore/pollution_frames.tres")
@@ -100,7 +110,7 @@ func _save_player_position() -> void:
 
 
 func _restore_player_position() -> void:
-	var saved_pos := Game.explore_player_position
+	var saved_pos: Vector2 = Game.explore_player_position
 	if Game.explore_generated:
 		player.global_position = saved_pos
 	else:
@@ -146,14 +156,14 @@ func _get_zone_script_name(zone: Area2D) -> String:
 
 
 func _restore_zones() -> void:
-	var mem_positions := Game.explore_memory_positions
+	var mem_positions: Array = Game.explore_memory_positions
 	for data in mem_positions:
 		var pos := Vector2(data.x, data.y)
 		var echo := _create_memory_echo(pos)
 		$World.add_child(echo)
 		_memory_zones.append(echo)
 
-	var bud_positions := Game.explore_bud_positions
+	var bud_positions: Array = Game.explore_bud_positions
 	for i in range(bud_positions.size()):
 		var data = bud_positions[i]
 		var pos := Vector2(data.x, data.y)
@@ -162,7 +172,7 @@ func _restore_zones() -> void:
 		$World.add_child(bud)
 		_battle_zones.append(bud)
 
-	var ruins_positions := Game.explore_ruins_positions
+	var ruins_positions: Array = Game.explore_ruins_positions
 	for i in range(ruins_positions.size()):
 		var data = ruins_positions[i]
 		var pos := Vector2(data.x, data.y)
@@ -171,7 +181,7 @@ func _restore_zones() -> void:
 		$World.add_child(ruins)
 		_battle_zones.append(ruins)
 
-	var battle_positions := Game.explore_battle_positions
+	var battle_positions: Array = Game.explore_battle_positions
 	for data in battle_positions:
 		var pos := Vector2(data.x, data.y)
 		var zone := _create_battle_zone(pos)
@@ -180,7 +190,7 @@ func _restore_zones() -> void:
 		$World.add_child(zone)
 		_battle_zones.append(zone)
 
-	var wound_pos := Game.explore_wound_position
+	var wound_pos: Vector2 = Game.explore_wound_position
 	if wound_pos != Vector2.ZERO:
 		var wound := _create_wound_node(wound_pos)
 		$World.add_child(wound)
@@ -201,7 +211,7 @@ func _zone_to_key(zone: Area2D) -> String:
 
 
 func _restore_triggered_states() -> void:
-	var zones_dict := Game.explore_zones
+	var zones_dict: Dictionary = Game.explore_zones
 	for zone in _memory_zones:
 		var key := _zone_to_key(zone)
 		if zones_dict.has(key) and zones_dict[key]:
@@ -488,6 +498,7 @@ func _enter_enemy_battle() -> void:
 	_transitioning = true
 	Game.in_dialogue = false
 	Game.battle_index = int(_active_battle_zone.get_meta("battle_index", 1))
+	Game.current_battle_enemy_id = _pick_random_enemy_id(NORMAL_BATTLE_ENEMY_POOL, "corpse_shrimp")
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
 
@@ -514,7 +525,14 @@ func _enter_wound_boss() -> void:
 	_transitioning = true
 	Game.in_dialogue = false
 	Game.battle_index = 3
+	Game.current_battle_enemy_id = _pick_random_enemy_id(BOSS_BATTLE_ENEMY_POOL, "black_bubble")
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
+
+
+func _pick_random_enemy_id(enemy_pool: Array, fallback: String) -> String:
+	if enemy_pool.is_empty():
+		return fallback
+	return str(enemy_pool[randi() % enemy_pool.size()])
 
 
 func _update_interaction_target() -> void:

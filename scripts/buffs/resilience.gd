@@ -17,7 +17,7 @@ func modify_damage_taken(base_damage: int) -> int:
 	return maxi(1, base_damage - reduction)
 
 
-func on_turn_end() -> void:
+func on_round_end() -> void:
 	if stacks > 0:
 		remove_stack(1)
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cku3ud7hb2tu6" path="res://scenes/battle/battle_scene.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://ccgqki72ae5eb" path="res://assets/art/battle/bg_battle_01.png" id="2_4ro08"]
-[ext_resource type="Texture2D" uid="uid://cdxcv2eunnw74" path="res://assets/art/characters/enemy/boss1.PNG" id="3_boss"]
+[ext_resource type="Texture2D" path="res://assets/art/enemy/boss01/en_boss_011.PNG" id="3_boss"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_font"]
 [ext_resource type="Texture2D" uid="uid://br70bmtjsonh4" path="res://assets/art/battle/ui_battle_leftpanel_01 (1).PNG" id="5_5u8xp"]
 [ext_resource type="Script" uid="uid://fpibunk111no" path="res://scenes/battle/reward_story_ui.gd" id="5_reward_story"]

@@ -40,6 +40,7 @@ var tag_aggressive: int = 0
 var tag_orderly: int = 0
 
 var battle_index: int = 0
+var current_battle_enemy_id: String = ""
 var first_battle_reward_done: bool = false
 var admin_talk_done: bool = false
 var memory_event_done: bool = false
@@ -173,6 +174,7 @@ func reset_run():
 	tag_orderly = 0
 
 	battle_index = 0
+	current_battle_enemy_id = ""
 	first_battle_reward_done = false
 	admin_talk_done = false
 	memory_event_done = false
@@ -202,6 +204,7 @@ func begin_chapter_one() -> void:
 	first_battle_reward_done = false
 	reward_card_given = false
 	battle_index = 0
+	current_battle_enemy_id = ""
 	chapter_one_memory_choice = ""
 	chapter_one_end_choice = ""
 

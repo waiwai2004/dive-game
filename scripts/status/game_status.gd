@@ -39,6 +39,10 @@ func on_turn_end() -> void:
 	pass
 
 
+func on_round_end() -> void:
+	pass
+
+
 func modify_card_value(base_value: int, value_type: String) -> int:
 	return base_value
 

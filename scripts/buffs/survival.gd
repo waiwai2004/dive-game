@@ -18,7 +18,7 @@ func modify_presence(base_presence: int) -> int:
 	return base_presence
 
 
-func on_turn_end() -> void:
+func on_round_end() -> void:
 	if stacks > 0:
 		remove_stack(1)
 

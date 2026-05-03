@@ -2,6 +2,9 @@
   "battle_order": [
     "corpse_shrimp",
     "motor_jellyfish",
+    "polluted_fish",
+    "corrupted_lion",
+    "colour_out_of_space",
     "black_bubble"
   ],
   "enemies": [
@@ -10,9 +13,11 @@
       "enemy_name": "尸虾",
       "max_hp": 8,
       "max_san": 8,
+      "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
-      "portrait_path": "res://assets/art/enemy/enemy01.png",
+      "portrait_path": "res://assets/art/enemy/01/en_mob_011.PNG",
+      "portrait_injured_path": "res://assets/art/enemy/01/en_mob_012.PNG",
       "ai_profile": "corpse_shrimp",
       "ai_threshold_hp": 4,
       "notes": "存在值高于阈值时优先理解牌，低于阈值时优先共情牌。",
@@ -54,9 +59,11 @@
       "enemy_name": "马达水母",
       "max_hp": 6,
       "max_san": 6,
+      "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
-      "portrait_path": "res://assets/art/enemy/enemy01.png",
+      "portrait_path": "res://assets/art/enemy/02/en_mob_021.PNG",
+      "portrait_injured_path": "res://assets/art/enemy/02/en_mob_022.PNG",
       "ai_profile": "motor_jellyfish",
       "notes": "优先机制牌，其次理解牌。",
       "cards": [
@@ -93,13 +100,193 @@
       ]
     },
     {
+      "enemy_id": "polluted_fish",
+      "enemy_name": "污染海鱼",
+      "max_hp": 7,
+      "max_san": 7,
+      "energy_initial": 0,
+      "energy_max": 10,
+      "energy_gain_per_turn": 3,
+      "portrait_path": "res://assets/art/enemy/03/en_mob_031.PNG",
+      "portrait_injured_path": "res://assets/art/enemy/03/en_mob_032.PNG",
+      "ai_profile": "corrupted_empathy_rebuild",
+      "ai_threshold_hp": 4,
+      "notes": "存在值高于阈值时优先共情牌，低于阈值时优先重构牌。",
+      "cards": [
+        {
+          "card_id": "tear",
+          "card_name": "撕裂",
+          "category": "理解",
+          "energy_cost": 3,
+          "copies": 3,
+          "effect_key": "damage",
+          "effect_value": 2,
+          "target": "player"
+        },
+        {
+          "card_id": "soul_eater",
+          "card_name": "食魂者",
+          "category": "重构",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "self_san_loss_heal_hp",
+          "effect_value": 2,
+          "effect_value_2": 3,
+          "target": "self",
+          "note": "减少自己 3 SAN 值，恢复自己 2 存在值。"
+        },
+        {
+          "card_id": "anger",
+          "card_name": "愤怒",
+          "category": "共情",
+          "energy_cost": 2,
+          "copies": 1,
+          "effect_key": "self_buff_anger",
+          "effect_value": 2,
+          "target": "self"
+        }
+      ]
+    },
+    {
+      "enemy_id": "corrupted_lion",
+      "enemy_name": "腐化狮",
+      "max_hp": 8,
+      "max_san": 8,
+      "energy_initial": 0,
+      "energy_max": 10,
+      "energy_gain_per_turn": 3,
+      "portrait_path": "res://assets/art/enemy/04/en_mob_041.PNG",
+      "portrait_injured_path": "res://assets/art/enemy/04/en_mob_042.PNG",
+      "ai_profile": "corrupted_empathy_rebuild",
+      "ai_threshold_hp": 4,
+      "notes": "存在值高于阈值时优先共情牌，低于阈值时优先重构牌。",
+      "cards": [
+        {
+          "card_id": "tear",
+          "card_name": "撕裂",
+          "category": "理解",
+          "energy_cost": 3,
+          "copies": 2,
+          "effect_key": "damage",
+          "effect_value": 2,
+          "target": "player"
+        },
+        {
+          "card_id": "soul_eater",
+          "card_name": "食魂者",
+          "category": "重构",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "self_san_loss_heal_hp",
+          "effect_value": 2,
+          "effect_value_2": 3,
+          "target": "self",
+          "note": "减少自己 3 SAN 值，恢复自己 2 存在值。"
+        },
+        {
+          "card_id": "anger",
+          "card_name": "愤怒",
+          "category": "共情",
+          "energy_cost": 2,
+          "copies": 1,
+          "effect_key": "self_buff_anger",
+          "effect_value": 2,
+          "target": "self"
+        },
+        {
+          "card_id": "corrupt_infection",
+          "card_name": "腐化感染",
+          "category": "共情",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "apply_player_corruption",
+          "effect_value": 3,
+          "target": "player"
+        }
+      ]
+    },
+    {
+      "enemy_id": "colour_out_of_space",
+      "enemy_name": "群星之彩",
+      "max_hp": 20,
+      "max_san": 20,
+      "energy_initial": 10,
+      "energy_max": 10,
+      "energy_gain_per_turn": 3,
+      "portrait_path": "res://assets/art/enemy/boss02/en_boss_021.PNG",
+      "portrait_injured_path": "res://assets/art/enemy/boss02/en_boss_022.PNG",
+      "ai_profile": "fixed_stellar_colour",
+      "traits": [
+        "共鸣"
+      ],
+      "notes": "共鸣：手牌组无法被调换、偷取等效果干扰。固定顺序：异光吸引、绝望蚀割、辐光、异彩星光。",
+      "cards": [
+        {
+          "card_id": "alien_light_attraction",
+          "card_name": "异光吸引",
+          "category": "其他",
+          "energy_cost": 9,
+          "copies": 1,
+          "effect_key": "summon_random_ally",
+          "effect_value": 1,
+          "target": "self",
+          "note": "随机生成一个友方单位，在 1N-003 和 1N-004 中抽取；场上人数满时无效。"
+        },
+        {
+          "card_id": "radiance",
+          "card_name": "辐光",
+          "category": "共情",
+          "energy_cost": 2,
+          "copies": 2,
+          "effect_key": "apply_random_other_collapse",
+          "effect_value": 1,
+          "target": "random_other"
+        },
+        {
+          "card_id": "alien_colour_starlight",
+          "card_name": "异彩星光",
+          "category": "重构",
+          "energy_cost": 3,
+          "copies": 1,
+          "effect_key": "all_san_loss_self_anger",
+          "effect_value": 2,
+          "effect_value_2": 1,
+          "target": "all",
+          "note": "全场扣除 2 点 SAN 值，并获得愤怒 1 层。"
+        },
+        {
+          "card_id": "despair_erosion",
+          "card_name": "绝望蚀割",
+          "category": "共情",
+          "energy_cost": 1,
+          "copies": 1,
+          "effect_key": "consume_all_collapse_gain_energy",
+          "effect_value": 1,
+          "target": "all"
+        }
+      ],
+      "drop_table": [
+        {
+          "card_name": "异彩星光",
+          "chance": 10,
+          "card_id": "alien_colour_starlight"
+        },
+        {
+          "card_name": "无",
+          "chance": 90
+        }
+      ]
+    },
+    {
       "enemy_id": "black_bubble",
       "enemy_name": "黑泡",
       "max_hp": 10,
       "max_san": 10,
+      "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
-      "portrait_path": "res://assets/art/characters/enemy/boss1.PNG",
+      "portrait_path": "res://assets/art/enemy/boss01/en_boss_011.PNG",
+      "portrait_injured_path": "res://assets/art/enemy/boss01/en_boss_012.PNG",
       "ai_profile": "black_bubble",
       "notes": "优先共情牌，其次重构牌。",
       "cards": [
@@ -148,15 +335,18 @@
       "drop_table": [
         {
           "card_name": "三相眼·崩坏",
-          "chance": 10
+          "chance": 10,
+          "card_id": "three_eye_collapse"
         },
         {
           "card_name": "三相眼·混乱",
-          "chance": 10
+          "chance": 10,
+          "card_id": "three_eye_chaos"
         },
         {
           "card_name": "三相眼·扭曲",
-          "chance": 10
+          "chance": 10,
+          "card_id": "three_eye_distort"
         },
         {
           "card_name": "无",

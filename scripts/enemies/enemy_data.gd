@@ -5,9 +5,11 @@ class_name EnemyData
 @export var enemy_name: String = ""
 @export var max_hp: int = 1
 @export var max_san: int = 1
+@export var energy_initial: int = 0
 @export var energy_max: int = 10
 @export var energy_gain_per_turn: int = 3
 @export var portrait_path: String = ""
+@export var portrait_injured_path: String = ""
 @export var ai_profile: String = ""
 @export var ai_threshold_hp: int = 0
 @export var notes: String = ""
@@ -22,8 +24,10 @@ static func from_dict(row: Dictionary) -> EnemyData:
 	data.max_hp = maxi(_i(row.get("max_hp", 1)), 1)
 	data.max_san = maxi(_i(row.get("max_san", 1)), 1)
 	data.energy_max = maxi(_i(row.get("energy_max", 10)), 1)
+	data.energy_initial = clampi(_i(row.get("energy_initial", 0)), 0, data.energy_max)
 	data.energy_gain_per_turn = maxi(_i(row.get("energy_gain_per_turn", 3)), 0)
 	data.portrait_path = _s(row.get("portrait_path", ""))
+	data.portrait_injured_path = _s(row.get("portrait_injured_path", ""))
 	data.ai_profile = _s(row.get("ai_profile", ""))
 	data.ai_threshold_hp = maxi(_i(row.get("ai_threshold_hp", 0)), 0)
 	data.notes = _s(row.get("notes", ""))

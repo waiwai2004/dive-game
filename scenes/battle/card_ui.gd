@@ -73,7 +73,7 @@ func _refresh_text() -> void:
 		return
 
 	var name_text := str(card_data.get("name", "未知卡牌"))
-	var type_text := CardDatabase.get_type_text(str(card_data.get("type", "")))
+	var type_text: String = str(CardDatabase.get_type_text(str(card_data.get("type", ""))))
 	var cost := int(card_data.get("cost", 0))
 	var cognition := int(card_data.get("cognition", 0))
 	var desc := str(card_data.get("description", card_data.get("desc", "")))
