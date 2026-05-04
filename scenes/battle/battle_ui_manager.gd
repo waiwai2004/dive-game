@@ -314,7 +314,7 @@ func _refresh_status_icons() -> void:
 	if Game.is_distorted():
 		_add_status_icon(
 			"癫", -1, Color(0.95, 0.45, 0.45, 1.0), "癫狂",
-			"癫狂状态：所有手牌数值 +1。"
+			"癫狂状态：手牌已有数值 +1，包括精神负荷、认知负荷、伤害值与Buff层数。"
 		)
 
 	if _scene and _scene.has_method("get_player_additional_status_info"):

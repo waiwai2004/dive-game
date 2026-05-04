@@ -83,7 +83,6 @@ func _setup_statuses() -> void:
 	var manic_status = ManicStatus.new()
 	var inner_drive_status = InnerDriveStatus.new()
 	var madness_for_fun_status = MadnessForFunStatus.new()
-	manic_status.setup(_player_buff_manager, _enemy_buff_manager)
 	madness_for_fun_status.setup(_status_manager, _card_system)
 	inner_drive_status.extra_turn_granted.connect(_on_inner_drive_extra_turn)
 	_status_manager.register_status(manic_status)

@@ -106,7 +106,7 @@ func tick_player_weak() -> void:
 
 
 func get_effective_cost(card: Dictionary) -> int:
-	var cost: int = _apply_card_value_modifiers(int(card.get("cost", 0)), "cost")
+	var cost: int = _get_modified_card_int(card, "cost")
 	return maxi(cost, 0)
 
 
@@ -144,7 +144,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 	var card_name := str(card.get("name", "未知卡牌"))
 	var fragments: Array[String] = []
 
-	var damage: int = _apply_card_value_modifiers(int(card.get("damage", 0)), "damage")
+	var damage: int = _get_modified_card_int(card, "damage")
 	if damage > 0:
 		if _enemy_buff_manager:
 			damage = _enemy_buff_manager.modify_damage_taken(damage)
@@ -153,22 +153,22 @@ func _apply_card_effect(card: Dictionary) -> void:
 		_visual_effects.play_enemy_hit_feedback()
 		fragments.append("造成%d点伤害" % final_damage)
 
-	var block_gain: int = _apply_card_value_modifiers(int(card.get("block", 0)), "block")
+	var block_gain: int = _get_modified_card_int(card, "block")
 	if block_gain > 0:
 		player_block += block_gain
 		fragments.append("获得%d点护盾" % block_gain)
 
-	var san_heal: int = _apply_card_value_modifiers(int(card.get("san_heal", 0)), "san_heal")
+	var san_heal: int = _get_modified_card_int(card, "san_heal")
 	if san_heal > 0:
 		Game.heal_san(san_heal)
 		fragments.append("恢复%d点SAN" % san_heal)
 
-	var hp_heal: int = _apply_card_value_modifiers(int(card.get("heal_hp", 0)), "heal_hp")
+	var hp_heal: int = _get_modified_card_int(card, "heal_hp")
 	if hp_heal > 0:
 		Game.heal_player(hp_heal)
 		fragments.append("恢复%d点存在值" % hp_heal)
 
-	var weak_on_enemy: int = _apply_card_value_modifiers(int(card.get("apply_weak", 0)), "apply_weak")
+	var weak_on_enemy: int = _get_modified_card_int(card, "apply_weak")
 	if weak_on_enemy > 0:
 		if _enemy_buff_manager:
 			var weakness_debuff = WeaknessDebuff.new()
@@ -176,13 +176,13 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_enemy_buff_manager.add_buff(weakness_debuff)
 		fragments.append("施加%d层虚弱" % weak_on_enemy)
 
-	var direct_enemy_presence_loss: int = _apply_card_value_modifiers(int(card.get("direct_enemy_presence_loss", 0)), "direct_enemy_presence_loss")
+	var direct_enemy_presence_loss: int = _get_modified_card_int(card, "direct_enemy_presence_loss")
 	if direct_enemy_presence_loss > 0:
 		_enemy_ai.lose_presence_direct(direct_enemy_presence_loss)
 		_visual_effects.play_enemy_hit_feedback()
 		fragments.append("直接削减敌人%d点存在值" % direct_enemy_presence_loss)
 
-	var apply_confusion: int = _apply_card_value_modifiers(int(card.get("apply_confusion", 0)), "apply_confusion")
+	var apply_confusion: int = _get_modified_card_int(card, "apply_confusion")
 	if apply_confusion > 0:
 		if _enemy_buff_manager:
 			var confusion_debuff = ConfusionDebuff.new()
@@ -190,7 +190,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_enemy_buff_manager.add_buff(confusion_debuff)
 		fragments.append("施加%d层混乱" % apply_confusion)
 
-	var apply_anger: int = _apply_card_value_modifiers(int(card.get("apply_anger", 0)), "apply_anger")
+	var apply_anger: int = _get_modified_card_int(card, "apply_anger")
 	if apply_anger > 0:
 		if _player_buff_manager:
 			var anger_buff = AngerBuff.new()
@@ -198,7 +198,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_player_buff_manager.add_buff(anger_buff)
 		fragments.append("获得%d层愤怒" % apply_anger)
 
-	var apply_paralysis: int = _apply_card_value_modifiers(int(card.get("apply_paralysis", 0)), "apply_paralysis")
+	var apply_paralysis: int = _get_modified_card_int(card, "apply_paralysis")
 	if apply_paralysis > 0:
 		if _enemy_buff_manager:
 			var paralysis_debuff = ParalysisDebuff.new()
@@ -206,7 +206,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_enemy_buff_manager.add_buff(paralysis_debuff)
 		fragments.append("施加%d层麻痹" % apply_paralysis)
 
-	var apply_resilience: int = _apply_card_value_modifiers(int(card.get("apply_resilience", 0)), "apply_resilience")
+	var apply_resilience: int = _get_modified_card_int(card, "apply_resilience")
 	if apply_resilience > 0:
 		if _player_buff_manager:
 			var resilience_buff = ResilienceBuff.new()
@@ -214,7 +214,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_player_buff_manager.add_buff(resilience_buff)
 		fragments.append("获得%d层坚韧" % apply_resilience)
 
-	var apply_survival: int = _apply_card_value_modifiers(int(card.get("apply_survival", 0)), "apply_survival")
+	var apply_survival: int = _get_modified_card_int(card, "apply_survival")
 	if apply_survival > 0:
 		if _player_buff_manager:
 			var survival_buff = SurvivalBuff.new()
@@ -222,12 +222,12 @@ func _apply_card_effect(card: Dictionary) -> void:
 			_player_buff_manager.add_buff(survival_buff)
 		fragments.append("获得%d层残存" % apply_survival)
 
-	var san_cost: int = _apply_card_value_modifiers(int(card.get("san_cost", 0)), "san_cost")
+	var san_cost: int = _get_modified_card_int(card, "san_cost")
 	if san_cost > 0:
 		Game.player_san -= san_cost
 		fragments.append("失去%d点SAN" % san_cost)
 
-	var san_loss_all: int = _apply_card_value_modifiers(int(card.get("san_loss_all", 0)), "san_loss_all")
+	var san_loss_all: int = _get_modified_card_int(card, "san_loss_all")
 	if san_loss_all > 0:
 		Game.player_san -= san_loss_all
 		_enemy_ai.lose_san_direct(san_loss_all)
@@ -237,17 +237,17 @@ func _apply_card_effect(card: Dictionary) -> void:
 		_enemy_ai.swap_hp_san()
 		fragments.append("交换敌人的存在值与SAN值")
 
-	var draw_count: int = _apply_card_value_modifiers(int(card.get("draw", 0)), "draw")
+	var draw_count: int = _get_modified_card_int(card, "draw")
 	if draw_count > 0:
 		draw_cards(draw_count)
 		fragments.append("抽%d张牌" % draw_count)
 
-	var gain_energy: int = _apply_card_value_modifiers(int(card.get("gain_energy", 0)), "gain_energy")
+	var gain_energy: int = _get_modified_card_int(card, "gain_energy")
 	if gain_energy > 0:
 		energy = mini(energy + gain_energy, ENERGY_MAX)
 		fragments.append("获得%d点精神负荷" % gain_energy)
 
-	var reduce_cog: int = _apply_card_value_modifiers(int(card.get("reduce_cognition", 0)), "reduce_cognition")
+	var reduce_cog: int = _get_modified_card_int(card, "reduce_cognition")
 	if reduce_cog > 0:
 		Game.player_cognition = maxi(Game.player_cognition - reduce_cog, 0)
 		fragments.append("降低%d点认知负荷" % reduce_cog)
@@ -270,7 +270,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 
 func _apply_cognition_cost(card: Dictionary) -> void:
-	var cog_gain: int = _apply_card_value_modifiers(int(card.get("cognition", 0)), "cognition")
+	var cog_gain: int = _get_modified_card_int(card, "cognition")
 	if cog_gain <= 0:
 		return
 	Game.add_cognition(cog_gain)
@@ -303,6 +303,12 @@ func _apply_card_value_modifiers(base_value: int, value_type: String) -> int:
 	if _status_manager and _status_manager.is_status_active("癫狂"):
 		value = _status_manager.modify_card_value(value, value_type)
 	return value
+
+
+func _get_modified_card_int(card: Dictionary, value_type: String, default_value: int = 0) -> int:
+	if not card.has(value_type):
+		return default_value
+	return _apply_card_value_modifiers(int(card.get(value_type, default_value)), value_type)
 
 
 func consume_force_end_turn_after_card() -> bool:

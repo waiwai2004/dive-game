@@ -11,7 +11,7 @@
     {
       "enemy_id": "corpse_shrimp",
       "enemy_name": "尸虾",
-      "max_hp": 8,
+      "max_hp": 16,
       "max_san": 8,
       "energy_initial": 0,
       "energy_max": 10,
@@ -57,7 +57,7 @@
     {
       "enemy_id": "motor_jellyfish",
       "enemy_name": "马达水母",
-      "max_hp": 6,
+      "max_hp": 12,
       "max_san": 6,
       "energy_initial": 0,
       "energy_max": 10,
@@ -102,7 +102,7 @@
     {
       "enemy_id": "polluted_fish",
       "enemy_name": "污染海鱼",
-      "max_hp": 7,
+      "max_hp": 14,
       "max_san": 7,
       "energy_initial": 0,
       "energy_max": 10,
@@ -150,7 +150,7 @@
     {
       "enemy_id": "corrupted_lion",
       "enemy_name": "腐化狮",
-      "max_hp": 8,
+      "max_hp": 16,
       "max_san": 8,
       "energy_initial": 0,
       "energy_max": 10,
@@ -208,7 +208,7 @@
     {
       "enemy_id": "colour_out_of_space",
       "enemy_name": "群星之彩",
-      "max_hp": 20,
+      "max_hp": 40,
       "max_san": 20,
       "energy_initial": 10,
       "energy_max": 10,
@@ -280,7 +280,7 @@
     {
       "enemy_id": "black_bubble",
       "enemy_name": "黑泡",
-      "max_hp": 10,
+      "max_hp": 20,
       "max_san": 10,
       "energy_initial": 0,
       "energy_max": 10,
