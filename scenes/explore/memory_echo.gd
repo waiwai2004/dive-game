@@ -12,6 +12,7 @@ extends Area2D
 var _player: Node2D = null
 var _is_visible_to_player: bool = false
 var _current_alpha: float = 0.0
+var _triggered: bool = false
 
 
 func _ready() -> void:
@@ -21,7 +22,25 @@ func _ready() -> void:
 	set_process(true)
 
 
+func set_triggered(value: bool) -> void:
+	_triggered = value
+	if value:
+		_is_visible_to_player = false
+		if sprite:
+			sprite.modulate = Color(1, 1, 1, 1)
+			sprite.self_modulate = Color(0.4, 0.4, 0.4, 0.55)
+		if highlight:
+			highlight.visible = false
+		set_process(false)
+	else:
+		if sprite:
+			sprite.self_modulate = Color.WHITE
+		set_process(true)
+
+
 func _process(delta: float) -> void:
+	if _triggered:
+		return
 	if not _player or not is_instance_valid(_player):
 		_find_player()
 		if not _player:
@@ -34,6 +53,8 @@ func _process(delta: float) -> void:
 
 
 func is_discovered_by_player(player: Node2D) -> bool:
+	if _triggered:
+		return false
 	if not player:
 		return false
 

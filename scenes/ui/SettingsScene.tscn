@@ -1,6 +1,37 @@
 [gd_scene format=3 uid="uid://byrbbsebvqsuc"]
 
 [ext_resource type="Script" uid="uid://c6cm4gw6mhj1h" path="res://scripts/SettingsDialog.gd" id="1_1"]
+[ext_resource type="Texture2D" uid="uid://dej2bhpmhiwtc" path="res://assets/art/ui/ui_pause_panel_01.PNG" id="2_77fge"]
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="btn_normal"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="btn_pressed"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="font"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_normal"]
+texture = ExtResource("btn_normal")
+texture_margin_left = 20.0
+texture_margin_top = 10.0
+texture_margin_right = 20.0
+texture_margin_bottom = 10.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_pressed"]
+texture = ExtResource("btn_pressed")
+texture_margin_left = 20.0
+texture_margin_top = 10.0
+texture_margin_right = 20.0
+texture_margin_bottom = 10.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hover"]
+texture = ExtResource("btn_pressed")
+texture_margin_left = 20.0
+texture_margin_top = 10.0
+texture_margin_right = 20.0
+texture_margin_bottom = 10.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
 
 [node name="SettingsScene" type="Control" unique_id=123456789]
 layout_mode = 3
@@ -20,15 +51,20 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.5)
 
-[node name="Menu" type="Panel" parent="." unique_id=1443334930]
+[node name="Menu" type="TextureRect" parent="." unique_id=1443334930]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.2
 anchor_top = 0.1
 anchor_right = 0.8
 anchor_bottom = 0.9
+offset_top = 68.0
+offset_bottom = -54.0
 grow_horizontal = 2
 grow_vertical = 2
+texture = ExtResource("2_77fge")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="TitleLabel" type="Label" parent="." unique_id=791773018]
 layout_mode = 1
@@ -40,7 +76,8 @@ offset_top = 30.0
 offset_right = -100.0
 offset_bottom = -450.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 40
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 48
 text = "设置"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -68,6 +105,8 @@ layout_mode = 2
 
 [node name="BrightnessLabel" type="Label" parent="MainContainer/BrightnessSection/BrightnessHeader" unique_id=65595976]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "亮度"
 
 [node name="BrightnessSlider" type="HSlider" parent="MainContainer/BrightnessSection/BrightnessHeader" unique_id=1031625382]
@@ -77,6 +116,8 @@ value = 50.0
 
 [node name="BrightnessValueLabe" type="Label" parent="MainContainer/BrightnessSection" unique_id=2111913896]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 20
 text = "当前亮度"
 
 [node name="SystemSection" type="VBoxContainer" parent="MainContainer" unique_id=1217612319]
@@ -87,6 +128,8 @@ layout_mode = 2
 
 [node name="SystemToggleLabel" type="Label" parent="MainContainer/SystemSection/SystemToggleRow" unique_id=1529439789]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "系统声音"
 
 [node name="SystemToggleButton" type="CheckButton" parent="MainContainer/SystemSection/SystemToggleRow" unique_id=1731302083]
@@ -98,6 +141,8 @@ layout_mode = 2
 
 [node name="SystemVolumeLabel" type="Label" parent="MainContainer/SystemSection/SystemVolumeRow" unique_id=63864635]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "系统音量"
 
 [node name="SystemVolumeSlider" type="HSlider" parent="MainContainer/SystemSection/SystemVolumeRow" unique_id=1176522415]
@@ -113,6 +158,8 @@ layout_mode = 2
 
 [node name="SoundToggleLabel" type="Label" parent="MainContainer/SoundSection/SoundToggleRow" unique_id=1000237200]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "音效"
 
 [node name="SoundToggleButton" type="CheckButton" parent="MainContainer/SoundSection/SoundToggleRow" unique_id=495523475]
@@ -124,6 +171,8 @@ layout_mode = 2
 
 [node name="SoundVolumeLabel" type="Label" parent="MainContainer/SoundSection/SoundVolumeRow" unique_id=1470162680]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "音效音量"
 
 [node name="SoundVolumeSlider" type="HSlider" parent="MainContainer/SoundSection/SoundVolumeRow" unique_id=210394511]
@@ -139,6 +188,8 @@ layout_mode = 2
 
 [node name="BgmToggleLabel" type="Label" parent="MainContainer/BgmSection/BgmToggleRow" unique_id=444938572]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "BGM"
 
 [node name="BgmToggleButton" type="CheckButton" parent="MainContainer/BgmSection/BgmToggleRow" unique_id=859165923]
@@ -150,6 +201,8 @@ layout_mode = 2
 
 [node name="BgmVolumeLabel" type="Label" parent="MainContainer/BgmSection/BgmVolumeRow" unique_id=414327556]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "BGM音量"
 
 [node name="BgmVolumeSlider" type="HSlider" parent="MainContainer/BgmSection/BgmVolumeRow" unique_id=1852371037]
@@ -162,6 +215,8 @@ layout_mode = 2
 
 [node name="FullscreenLabel" type="Label" parent="MainContainer/FullscreenRow" unique_id=1325100014]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
 text = "全屏模式"
 
 [node name="FullscreenToggleButton" type="CheckButton" parent="MainContainer/FullscreenRow" unique_id=175908804]
@@ -169,11 +224,22 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MainContainer" unique_id=589435911]
 layout_mode = 2
+alignment = 1
 
 [node name="SaveButton" type="Button" parent="MainContainer/HBoxContainer" unique_id=613673859]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "保存"
 
 [node name="CancelButton" type="Button" parent="MainContainer/HBoxContainer" unique_id=832419830]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "取消"

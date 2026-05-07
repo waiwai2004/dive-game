@@ -26,9 +26,9 @@ var _segment_start := 0.0
 var _segment_end := 0.0
 var _request_id := 0
 
-var _bgm_volume_percent := 70
-var _sfx_volume_percent := 75
-var _master_volume_percent := 80
+var _bgm_volume_percent := 50
+var _sfx_volume_percent := 100
+var _master_volume_percent := 100
 var _bgm_enabled := true
 var _sfx_enabled := true
 var _master_enabled := true

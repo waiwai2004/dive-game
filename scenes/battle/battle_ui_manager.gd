@@ -29,6 +29,7 @@ var _boss_portrait: TextureRect
 var _enemy_texture_normal: Texture2D
 var _enemy_texture_injured: Texture2D
 var _was_injured: bool = false
+var _minion_row: HBoxContainer
 
 # ====== 左侧玩家状态 ======
 var _pie_chart: Control
@@ -115,6 +116,7 @@ func _cache_node_refs() -> void:
 	_boss_intent_label = _scene.get_node("Bossbar/BossIntentLabel")
 
 	_boss_portrait = _scene.get_node("ArenaRoot/BossPortrait")
+	_ensure_minion_row()
 
 	var left := "LeftPanel/VBoxContainer"
 	_pie_chart = _scene.get_node(left + "/Control/RewardPlate/PieChartStat")
@@ -232,7 +234,7 @@ func close_all_popups() -> void:
 	if _discard_panel:
 		_discard_panel.visible = false
 	if _battle_log_window:
-		_battle_log_window.visible = false
+		_battle_log_window.visible = true
 	_tooltip_panel.visible = false
 
 
@@ -277,6 +279,74 @@ func refresh_enemy_ui() -> void:
 		if is_injured != _was_injured:
 			_was_injured = is_injured
 			_boss_portrait.texture = _enemy_texture_injured if is_injured else _enemy_texture_normal
+
+	_refresh_minion_row()
+
+
+func _ensure_minion_row() -> void:
+	if _minion_row and is_instance_valid(_minion_row):
+		return
+	var root := _scene as Control
+	if root == null:
+		return
+	_minion_row = HBoxContainer.new()
+	_minion_row.name = "MinionRow"
+	_minion_row.add_theme_constant_override("separation", 32)
+	_minion_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_minion_row.z_index = 50
+	# 屏幕右上区域：在 Boss 头像条下方、按钮列左侧
+	_minion_row.anchor_left = 1.0
+	_minion_row.anchor_right = 1.0
+	_minion_row.anchor_top = 0.0
+	_minion_row.anchor_bottom = 0.0
+	_minion_row.offset_left = -680.0
+	_minion_row.offset_right = -80.0
+	_minion_row.offset_top = 200.0
+	_minion_row.offset_bottom = 450.0
+	_minion_row.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	root.add_child(_minion_row)
+
+
+func _refresh_minion_row() -> void:
+	_ensure_minion_row()
+	if _minion_row == null:
+		return
+	for child in _minion_row.get_children():
+		child.queue_free()
+	if _enemy_ai == null or not _enemy_ai.has_method("get_summoned_allies_info"):
+		return
+	var allies: Array = _enemy_ai.get_summoned_allies_info()
+	for info in allies:
+		_minion_row.add_child(_build_minion_icon(info))
+
+
+func _build_minion_icon(info: Dictionary) -> Control:
+	var wrapper := VBoxContainer.new()
+	wrapper.add_theme_constant_override("separation", 4)
+	wrapper.mouse_filter = Control.MOUSE_FILTER_PASS
+	wrapper.tooltip_text = str(info.get("enemy_name", "援军"))
+
+	var icon := TextureRect.new()
+	var path := str(info.get("portrait_path", ""))
+	if not path.is_empty() and ResourceLoader.exists(path):
+		icon.texture = load(path) as Texture2D
+	icon.custom_minimum_size = Vector2(400, 400)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wrapper.add_child(icon)
+
+	var label := Label.new()
+	label.text = str(info.get("enemy_name", "援军"))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color", Color(1, 0.86, 0.6, 1.0))
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	label.add_theme_constant_override("outline_size", 4)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wrapper.add_child(label)
+
+	return wrapper
 
 
 func refresh_player_ui() -> void:

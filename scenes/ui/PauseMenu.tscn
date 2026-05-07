@@ -1,5 +1,10 @@
 [gd_scene format=3 uid="uid://dkiay467lga8g"]
 
+[ext_resource type="Texture2D" uid="uid://dej2bhpmhiwtc" path="res://assets/art/ui/ui_pause_panel_01.PNG" id="1_5twic"]
+[ext_resource type="Texture2D" uid="uid://biqukrir2udxw" path="res://assets/art/ui/button/ui_choice_btn_n.PNG" id="btn_normal"]
+[ext_resource type="Texture2D" uid="uid://dusv71jbg3pxa" path="res://assets/art/ui/button/ui_choice_btn_p.PNG" id="btn_pressed"]
+[ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="font"]
+
 [sub_resource type="GDScript" id="GDScript_cup6r"]
 script/source = "extends CanvasLayer
 
@@ -134,6 +139,33 @@ func _on_quit_button_pressed() -> void:
 	get_tree().quit()
 "
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_normal"]
+texture = ExtResource("btn_normal")
+texture_margin_left = 20.0
+texture_margin_top = 10.0
+texture_margin_right = 20.0
+texture_margin_bottom = 10.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_pressed"]
+texture = ExtResource("btn_pressed")
+texture_margin_left = 20.0
+texture_margin_top = 10.0
+texture_margin_right = 20.0
+texture_margin_bottom = 10.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hover"]
+texture = ExtResource("btn_pressed")
+texture_margin_left = 20.0
+texture_margin_top = 10.0
+texture_margin_right = 20.0
+texture_margin_bottom = 10.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
 [node name="PauseMenu" type="CanvasLayer" unique_id=820440405]
 script = SubResource("GDScript_cup6r")
 
@@ -145,7 +177,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.7)
 
-[node name="Menu" type="Panel" parent="." unique_id=1443334930]
+[node name="Menu" type="TextureRect" parent="." unique_id=1443334930]
 anchors_preset = -1
 anchor_left = 0.25
 anchor_top = 0.15
@@ -153,6 +185,9 @@ anchor_right = 0.75
 anchor_bottom = 0.85
 grow_horizontal = 2
 grow_vertical = 2
+texture = ExtResource("1_5twic")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Label" type="Label" parent="Menu" unique_id=1705703681]
 layout_mode = 1
@@ -166,7 +201,8 @@ offset_right = 100.0
 offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 36
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 48
 text = "菜单"
 horizontal_alignment = 1
 
@@ -187,30 +223,55 @@ theme_override_constants/separation = 20
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 5
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "返回游戏"
 
 [node name="SettingsButton" type="Button" parent="Menu/VBoxContainer" unique_id=1642725794]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 5
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "设置"
 
 [node name="SaveQuitButton" type="Button" parent="Menu/VBoxContainer" unique_id=178730982]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 5
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "保存并退出"
 
 [node name="ReturnBaseButton" type="Button" parent="Menu/VBoxContainer" unique_id=839201948]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 5
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "返回基地"
 
 [node name="QuitButton" type="Button" parent="Menu/VBoxContainer" unique_id=1234567895]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 5
+theme_override_fonts/font = ExtResource("font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "退出游戏"
 
 [node name="ConfirmationDialog" type="ConfirmationDialog" parent="Menu" unique_id=1569642661]

@@ -11,15 +11,15 @@
     {
       "enemy_id": "corpse_shrimp",
       "enemy_name": "尸虾",
-      "max_hp": 16,
-      "max_san": 8,
+      "max_hp": 12,
+      "max_san": 6,
       "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
       "portrait_path": "res://assets/art/enemy/01/en_mob_011.PNG",
       "portrait_injured_path": "res://assets/art/enemy/01/en_mob_012.PNG",
       "ai_profile": "corpse_shrimp",
-      "ai_threshold_hp": 4,
+      "ai_threshold_hp": 3,
       "notes": "存在值高于阈值时优先理解牌，低于阈值时优先共情牌。",
       "cards": [
         {
@@ -52,13 +52,30 @@
           "effect_value": 2,
           "target": "self"
         }
+      ],
+      "drop_table": [
+        {
+          "card_name": "撕裂",
+          "chance": 33,
+          "card_id": "tear"
+        },
+        {
+          "card_name": "固化",
+          "chance": 33,
+          "card_id": "solidify"
+        },
+        {
+          "card_name": "残存",
+          "chance": 34,
+          "card_id": "survive"
+        }
       ]
     },
     {
       "enemy_id": "motor_jellyfish",
       "enemy_name": "马达水母",
-      "max_hp": 12,
-      "max_san": 6,
+      "max_hp": 9,
+      "max_san": 5,
       "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
@@ -97,20 +114,37 @@
           "effect_value": 1,
           "target": "self"
         }
+      ],
+      "drop_table": [
+        {
+          "card_name": "电击",
+          "chance": 33,
+          "card_id": "shock"
+        },
+        {
+          "card_name": "麻痹",
+          "chance": 33,
+          "card_id": "paralyze"
+        },
+        {
+          "card_name": "内驱力",
+          "chance": 34,
+          "card_id": "inner_drive"
+        }
       ]
     },
     {
       "enemy_id": "polluted_fish",
       "enemy_name": "污染海鱼",
-      "max_hp": 14,
-      "max_san": 7,
+      "max_hp": 11,
+      "max_san": 5,
       "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
       "portrait_path": "res://assets/art/enemy/03/en_mob_031.PNG",
       "portrait_injured_path": "res://assets/art/enemy/03/en_mob_032.PNG",
       "ai_profile": "corrupted_empathy_rebuild",
-      "ai_threshold_hp": 4,
+      "ai_threshold_hp": 3,
       "notes": "存在值高于阈值时优先共情牌，低于阈值时优先重构牌。",
       "cards": [
         {
@@ -145,20 +179,37 @@
           "effect_value": 2,
           "target": "self"
         }
+      ],
+      "drop_table": [
+        {
+          "card_name": "撕裂",
+          "chance": 33,
+          "card_id": "tear"
+        },
+        {
+          "card_name": "食魂者",
+          "chance": 33,
+          "card_id": "soul_eater"
+        },
+        {
+          "card_name": "愤怒",
+          "chance": 34,
+          "card_id": "anger"
+        }
       ]
     },
     {
       "enemy_id": "corrupted_lion",
       "enemy_name": "腐化狮",
-      "max_hp": 16,
-      "max_san": 8,
+      "max_hp": 12,
+      "max_san": 6,
       "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
       "portrait_path": "res://assets/art/enemy/04/en_mob_041.PNG",
       "portrait_injured_path": "res://assets/art/enemy/04/en_mob_042.PNG",
       "ai_profile": "corrupted_empathy_rebuild",
-      "ai_threshold_hp": 4,
+      "ai_threshold_hp": 3,
       "notes": "存在值高于阈值时优先共情牌，低于阈值时优先重构牌。",
       "cards": [
         {
@@ -203,13 +254,35 @@
           "effect_value": 3,
           "target": "player"
         }
+      ],
+      "drop_table": [
+        {
+          "card_name": "撕裂",
+          "chance": 25,
+          "card_id": "tear"
+        },
+        {
+          "card_name": "食魂者",
+          "chance": 25,
+          "card_id": "soul_eater"
+        },
+        {
+          "card_name": "愤怒",
+          "chance": 25,
+          "card_id": "anger"
+        },
+        {
+          "card_name": "腐化感染",
+          "chance": 25,
+          "card_id": "corrupt_infection"
+        }
       ]
     },
     {
       "enemy_id": "colour_out_of_space",
       "enemy_name": "群星之彩",
-      "max_hp": 40,
-      "max_san": 20,
+      "max_hp": 30,
+      "max_san": 15,
       "energy_initial": 10,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
@@ -268,20 +341,16 @@
       "drop_table": [
         {
           "card_name": "异彩星光",
-          "chance": 10,
+          "chance": 100,
           "card_id": "alien_colour_starlight"
-        },
-        {
-          "card_name": "无",
-          "chance": 90
         }
       ]
     },
     {
       "enemy_id": "black_bubble",
       "enemy_name": "黑泡",
-      "max_hp": 20,
-      "max_san": 10,
+      "max_hp": 15,
+      "max_san": 8,
       "energy_initial": 0,
       "energy_max": 10,
       "energy_gain_per_turn": 3,
@@ -335,22 +404,18 @@
       "drop_table": [
         {
           "card_name": "三相眼·崩坏",
-          "chance": 10,
+          "chance": 34,
           "card_id": "three_eye_collapse"
         },
         {
           "card_name": "三相眼·混乱",
-          "chance": 10,
+          "chance": 33,
           "card_id": "three_eye_chaos"
         },
         {
           "card_name": "三相眼·扭曲",
-          "chance": 10,
+          "chance": 33,
           "card_id": "three_eye_distort"
-        },
-        {
-          "card_name": "无",
-          "chance": 70
         }
       ]
     }

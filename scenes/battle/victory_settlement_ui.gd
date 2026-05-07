@@ -18,6 +18,7 @@ func _ready() -> void:
 	
 	_is_boss = Game.get_meta("battle_is_boss", false)
 	var turns_taken = Game.get_meta("battle_turn_count", 0)
+	var reward_card_id := str(Game.get_meta("battle_boss_card", ""))
 	
 	Game.player_san = Game.max_san
 	Game.clear_cognition()
@@ -27,29 +28,20 @@ func _ready() -> void:
 	
 	if status_label: status_label.text = "耗时%d回合" % turns_taken
 	
-	if _is_boss:
-		if title_label: title_label.text = "战斗胜利！"
-		if header_label: header_label.text = "奖励"
-		if reward_plate: reward_plate.visible = true
-		if reward_texture: reward_texture.texture = _card_back
-		var db = get_node_or_null("/root/CardDatabase")
-		if db and db.has_method("get_card"):
-			var boss_card_id := str(Game.get_meta("battle_boss_card", ""))
-			if not boss_card_id.is_empty():
-				_reward_card_data = db.get_card(boss_card_id)
-		if _reward_card_data.is_empty():
-			if info_label: info_label.text = "没有获得专属卡牌"
-			if reward_texture: reward_texture.texture = null
-			continue_button.text = "继续"
-		else:
-			if info_label: info_label.text = "获得一张新卡牌"
-			continue_button.text = "放弃并继续"
-	else:
-		if title_label: title_label.text = "战斗胜利！"
-		if header_label: header_label.text = "奖励"
+	var db = get_node_or_null("/root/CardDatabase")
+	if db and db.has_method("get_card") and not reward_card_id.is_empty():
+		_reward_card_data = db.get_card(reward_card_id)
+	
+	if title_label: title_label.text = "战斗胜利！"
+	if header_label: header_label.text = "奖励"
+	if reward_plate: reward_plate.visible = true
+	
+	if _reward_card_data.is_empty():
 		if info_label: info_label.text = "获得记忆碎片"
-		if reward_plate: reward_plate.visible = true
 		if reward_texture: reward_texture.texture = _memory_fragment
+	else:
+		if info_label: info_label.text = "获得一张新卡牌"
+		if reward_texture: reward_texture.texture = _card_back
 	
 	if continue_button.text.is_empty():
 		continue_button.text = "放弃并继续"
@@ -62,23 +54,21 @@ func _ready() -> void:
 
 func _on_reward_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if _is_boss:
-			if _reward_card_data.is_empty():
-				return
-			if not _reward_card_data.is_empty() and _reward_card_data.has("id"):
+		if _reward_card_data.is_empty():
+			var ai_scene = load("res://scenes/ai/AIFeature.tscn") as PackedScene
+			if ai_scene:
+				var ai_feature = ai_scene.instantiate()
+				get_tree().root.add_child(ai_feature)
+				get_tree().current_scene = ai_feature
+		else:
+			if _reward_card_data.has("id"):
 				Game.add_card(str(_reward_card_data["id"]))
 			var show_card_scene = load("res://scenes/showcard/ShowCard.tscn") as PackedScene
 			if show_card_scene:
 				var show_card = show_card_scene.instantiate()
 				get_tree().root.add_child(show_card)
 				get_tree().current_scene = show_card
-				show_card.setup(_reward_card_data)
-		else:
-			var ai_scene = load("res://scenes/ai/AIFeature.tscn") as PackedScene
-			if ai_scene:
-				var ai_feature = ai_scene.instantiate()
-				get_tree().root.add_child(ai_feature)
-				get_tree().current_scene = ai_feature
+				show_card.setup(_reward_card_data, false)
 
 
 func _on_continue_pressed() -> void:

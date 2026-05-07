@@ -6,6 +6,8 @@ var _time: float = 0.0
 var _debris_data: Array = []
 var _wisp_data: Array = []
 var _sprite: CanvasItem = null
+var _highlight: CanvasItem = null
+var _triggered: bool = false
 
 
 func _ready() -> void:
@@ -14,12 +16,25 @@ func _ready() -> void:
 	collision_layer = 1
 	collision_mask = 1
 	_sprite = get_node_or_null("Sprite2D") as CanvasItem
+	_highlight = get_node_or_null("Highlight") as CanvasItem
 	_init_debris()
 	_init_wisps()
 	set_process(true)
 
 
+func set_triggered(value: bool) -> void:
+	_triggered = value
+	if _sprite:
+		_sprite.self_modulate = Color(0.4, 0.4, 0.4, 0.55) if value else Color.WHITE
+	if _highlight:
+		_highlight.visible = false
+	set_process(not value)
+	queue_redraw()
+
+
 func _process(delta: float) -> void:
+	if _triggered:
+		return
 	_time += delta
 	queue_redraw()
 

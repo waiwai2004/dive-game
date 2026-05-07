@@ -173,6 +173,8 @@ func _on_mouse_entered() -> void:
 	if _is_showcard_scene():
 		return
 	_play_hover_animation(true)
+	if has_node("/root/AudioManager"):
+		AudioManager.play_sfx("card_hover")
 	if battle_scene and battle_scene.has_method("show_card_tooltip"):
 		battle_scene.call("show_card_tooltip", card_data)
 

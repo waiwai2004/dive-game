@@ -106,6 +106,8 @@ func to_battle_dict() -> Dictionary:
 	match effect_key.strip_edges().to_lower():
 		"damage":
 			out["damage"] = int(round(effect_value))
+		"damage_all":
+			out["damage"] = int(round(effect_value))
 		"block":
 			out["block"] = int(round(effect_value))
 		"san_heal", "heal_san", "heal":
@@ -137,6 +139,21 @@ func to_battle_dict() -> Dictionary:
 		"block_and_reduce_cognition":
 			out["block"] = int(round(effect_value))
 			out["reduce_cognition"] = int(round(effect_value_2))
+		"apply_anger":
+			out["apply_anger"] = int(round(effect_value))
+		"apply_resilience":
+			out["apply_resilience"] = int(round(effect_value))
+		"apply_survival":
+			out["apply_survival"] = int(round(effect_value))
+		"apply_paralysis":
+			out["apply_paralysis"] = int(round(effect_value))
+		"apply_corruption":
+			out["apply_corruption"] = int(round(effect_value))
+		"san_loss_heal_hp":
+			out["san_cost"] = int(round(effect_value_2))
+			out["heal_hp"] = int(round(effect_value))
+		"apply_inner_drive":
+			out["activate_inner_drive"] = 1
 		_:
 			pass
 

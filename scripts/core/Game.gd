@@ -227,6 +227,8 @@ func add_card(card_id: String):
 
 func damage_player(amount: int, _san_loss: int = -1):
 	player_hp = max(player_hp - amount, 0)
+	if has_node("/root/AudioManager"):
+		AudioManager.play_sfx("hit")
 
 
 func heal_player(amount: int):

@@ -7,6 +7,7 @@ var collect_button: TextureButton = null
 
 var card_data: Dictionary = {}
 var _pending_setup: Dictionary = {}
+var _add_card_on_collect: bool = true
 
 func _ready() -> void:
 	card_ui = get_node_or_null("Control/CardContainer/CardUI")
@@ -21,8 +22,9 @@ func _ready() -> void:
 		_apply_setup(_pending_setup)
 		_pending_setup = {}
 
-func setup(data: Dictionary) -> void:
+func setup(data: Dictionary, add_card_on_collect: bool = true) -> void:
 	card_data = data
+	_add_card_on_collect = add_card_on_collect
 	
 	if is_inside_tree():
 		_apply_setup(data)
@@ -44,7 +46,7 @@ func _apply_setup(data: Dictionary) -> void:
 			card_ui.call("_refresh_text")
 
 func _on_collect_pressed() -> void:
-	if card_data.has("id"):
+	if _add_card_on_collect and card_data.has("id"):
 		var card_id = str(card_data["id"])
 		if typeof(Game) == TYPE_OBJECT and Game.has_method("add_card"):
 			Game.add_card(card_id)

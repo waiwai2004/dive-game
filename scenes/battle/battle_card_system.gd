@@ -128,6 +128,8 @@ func play_card(card_index: int) -> bool:
 	if _should_player_card_fizzle():
 		log_emitted.emit("混乱干扰了你的行动，【%s】失效了。" % str(card.get("name", card_id)))
 	else:
+		if has_node("/root/AudioManager"):
+			AudioManager.play_sfx("card_play")
 		_apply_card_effect(card)
 	_apply_cognition_cost(card)
 

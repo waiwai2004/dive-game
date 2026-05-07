@@ -133,6 +133,8 @@ func _start_player_turn() -> void:
 func _on_end_turn_pressed() -> void:
 	if not _state.is_player_turn():
 		return
+	if has_node("/root/AudioManager"):
+		AudioManager.play_sfx("end_turn")
 	_log("你结束了回合。")
 	await _end_player_turn()
 
@@ -293,7 +295,7 @@ func _on_battle_win() -> void:
 	
 	Game.set_meta("battle_is_boss", not _is_normal_battle())
 	Game.set_meta("battle_turn_count", _get_battle_turn_count())
-	Game.set_meta("battle_boss_card", _roll_boss_drop_card_id() if not _is_normal_battle() else "")
+	Game.set_meta("battle_boss_card", _roll_boss_drop_card_id())
 	
 	get_tree().change_scene_to_file("res://scenes/battle/VictorySettlementUI.tscn")
 
@@ -316,19 +318,29 @@ func _roll_boss_drop_card_id() -> String:
 	var enemy_data := _enemy_ai.get_enemy_data()
 	if enemy_data == null or enemy_data.drop_table.is_empty():
 		return ""
-	var total_chance := 0
+	
+	var valid_drops := []
 	for drop in enemy_data.drop_table:
+		var card_id := str(drop.get("card_id", "")).strip_edges()
+		var card_name := str(drop.get("card_name", ""))
+		if not card_id.is_empty() and card_name != "无":
+			valid_drops.append(drop)
+	
+	if valid_drops.is_empty():
+		return ""
+	
+	var total_chance := 0
+	for drop in valid_drops:
 		total_chance += maxi(int(drop.get("chance", 0)), 0)
 	if total_chance <= 0:
 		return ""
+	
 	var roll := randi() % total_chance
 	var cursor := 0
-	for drop in enemy_data.drop_table:
+	for drop in valid_drops:
 		cursor += maxi(int(drop.get("chance", 0)), 0)
 		if roll < cursor:
 			var card_id := str(drop.get("card_id", "")).strip_edges()
-			if card_id.is_empty() or str(drop.get("card_name", "")) == "无":
-				return ""
 			return card_id
 	return ""
 

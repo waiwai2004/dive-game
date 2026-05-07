@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cf73v31ilac45"]
 
 [ext_resource type="Script" uid="uid://q0opkml76ii3" path="res://scenes/battle/victory_settlement_ui.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dgmnkh45l1txm" path="res://assets/art/cards/card_back.PNG" id="6_sy0gx"]
 [ext_resource type="Texture2D" uid="uid://bvpc40me6r17q" path="res://assets/art/backgrounds/bg_card_showcase_01.PNG" id="bg_texture"]
 [ext_resource type="Texture2D" uid="uid://cpbcutdhbivxl" path="res://assets/art/ui/ui_dialog_panel_01.PNG" id="dialog_panel"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="font"]
@@ -118,9 +119,11 @@ stretch_mode = 6
 
 [node name="RewardTexture" type="TextureRect" parent="." unique_id=246025726]
 layout_mode = 0
-offset_left = 1157.0
-offset_top = 510.0
-offset_right = 1508.0
-offset_bottom = 813.0
-expand_mode = 2
+offset_left = 1223.0
+offset_top = 373.99997
+offset_right = 1577.7306
+offset_bottom = 881.6583
+rotation = 0.26703537
+texture = ExtResource("6_sy0gx")
+expand_mode = 1
 stretch_mode = 6

@@ -96,6 +96,24 @@ func get_portrait_injured_path() -> String:
 	return _enemy_data.portrait_injured_path
 
 
+func get_summoned_allies_info() -> Array[Dictionary]:
+	## 提供给 UI 用来显示当前召唤出的小怪信息
+	var result: Array[Dictionary] = []
+	for ally in _summoned_allies:
+		var ally_id := str(ally.get("enemy_id", ""))
+		var ally_name := str(ally.get("enemy_name", "援军"))
+		var portrait := ""
+		var ally_data: EnemyData = EnemyDatabase.get_enemy_data(ally_id)
+		if ally_data:
+			portrait = ally_data.portrait_path
+		result.append({
+			"enemy_id": ally_id,
+			"enemy_name": ally_name,
+			"portrait_path": portrait,
+		})
+	return result
+
+
 func start_turn() -> void:
 	energy = mini(energy + energy_gain_per_turn, energy_max)
 	_apply_turn_start_buffs()

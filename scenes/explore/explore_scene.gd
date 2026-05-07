@@ -9,8 +9,8 @@ const SPAWN_MARGIN := 150.0
 const MIN_ENTITY_DISTANCE := 200.0
 const PLAYER_SAFE_RADIUS := 300.0
 const PLAYER_START := Vector2(130, 310)
-const EXTRA_MEMORY_COUNT := 5
-const EXTRA_BATTLE_COUNT := 6
+const EXTRA_MEMORY_COUNT := 4
+const EXTRA_BATTLE_COUNT := 8
 const WOUND_COUNT := 1
 const BUD_COUNT := 3
 const RUINS_COUNT := 2
@@ -207,7 +207,8 @@ func _save_triggered_states() -> void:
 
 
 func _zone_to_key(zone: Area2D) -> String:
-	return "%s_%d_%d" % [zone.name, int(zone.position.x), int(zone.position.y)]
+	# 仅使用位置作为 key，避免运行时自动分配的名字（@Area2D@xxx）在保存/读取间不一致
+	return "%d_%d" % [int(zone.position.x), int(zone.position.y)]
 
 
 func _restore_triggered_states() -> void:
