@@ -1,5 +1,11 @@
 extends Control
 
+const NORMAL_ENERGY_COLOR := Color(0.2, 0.1, 0.05, 1)
+const NORMAL_REC_COLOR := Color(0.2, 0.1, 0.05, 1)
+const NORMAL_DESC_COLOR := Color(0.2, 0.12, 0.08, 1)
+const MANIC_COLOR := Color(0.95, 0.2, 0.2, 1)
+const MANIC_BORDER_COLOR := Color(0.95, 0.25, 0.2, 0.85)
+
 @export var use_imported_frame_art: bool = true
 
 @onready var frame_sprite: TextureRect = get_node_or_null("../FrameSprite")
@@ -7,7 +13,10 @@ extends Control
 @onready var name_label: Label = $NameLabel
 @onready var energy_label: Label = $EnergyContainer/EnergyLabel
 @onready var rec_label: Label = $RecContainer/RecLabel
-@onready var description_label: Label = $DescriptionLabel
+@onready var description_label: RichTextLabel = $DescriptionLabel
+
+var _manic_border: PanelContainer = null
+var _is_manic: bool = false
 
 
 func _ready() -> void:
@@ -92,3 +101,113 @@ func _clear_view() -> void:
 	energy_label.text = ""
 	rec_label.text = ""
 	description_label.text = ""
+
+
+func apply_manic_visual(card_dict: Dictionary) -> void:
+	if _is_manic:
+		return
+	_is_manic = true
+
+	var raw_cost := int(card_dict.get("cost", card_dict.get("energy_cost", 0)))
+	var raw_cognition := int(card_dict.get("cognition", card_dict.get("cognition_cost", 0)))
+	var modified_cost := raw_cost + 1
+	var modified_cognition := raw_cognition + 1
+
+	print("[Manic] 卡牌:%s 原始费用=%s→%s 原始认知=%s→%s" % [
+		card_dict.get("name", "?"), raw_cost, modified_cost, raw_cognition, modified_cognition
+	])
+
+	energy_label.text = str(modified_cost)
+	energy_label.add_theme_color_override("font_color", MANIC_COLOR)
+
+	rec_label.text = str(modified_cognition)
+	rec_label.add_theme_color_override("font_color", MANIC_COLOR)
+
+	var raw_desc := str(card_dict.get("description", card_dict.get("desc", "")))
+	_set_description_with_highlighted_numbers(raw_desc, 1)
+
+	_ensure_manic_border()
+
+
+func clear_manic_visual(card_dict: Dictionary) -> void:
+	if not _is_manic:
+		return
+	_is_manic = false
+
+	var base_cost := int(card_dict.get("cost", card_dict.get("energy_cost", 0)))
+	var base_cognition := int(card_dict.get("cognition", card_dict.get("cognition_cost", 0)))
+
+	energy_label.text = str(base_cost)
+	energy_label.remove_theme_color_override("font_color")
+
+	rec_label.text = str(base_cognition)
+	rec_label.remove_theme_color_override("font_color")
+
+	description_label.clear()
+	description_label.push_normal()
+	description_label.add_text(str(card_dict.get("description", card_dict.get("desc", ""))))
+	description_label.pop()
+
+	if _manic_border and is_instance_valid(_manic_border):
+		_manic_border.queue_free()
+		_manic_border = null
+
+
+func _set_description_with_highlighted_numbers(raw_text: String, add_amount: int) -> void:
+	description_label.clear()
+	description_label.push_normal()
+
+	var regex := RegEx.new()
+	regex.compile("(\\d+)")
+	var found := regex.search_all(raw_text)
+	if found.is_empty():
+		description_label.add_text(raw_text)
+		description_label.pop()
+		return
+
+	var last_end := 0
+	for m in found:
+		var start := m.get_start()
+		var end := m.get_end()
+		if start > last_end:
+			description_label.add_text(raw_text.substr(last_end, start - last_end))
+		var num_str := m.get_string(1)
+		var new_num := int(num_str) + add_amount
+		description_label.push_color(MANIC_COLOR)
+		description_label.add_text(str(new_num))
+		description_label.pop()
+		last_end = end
+	if last_end < raw_text.length():
+		description_label.add_text(raw_text.substr(last_end))
+	description_label.pop()
+
+
+func _ensure_manic_border() -> void:
+	if _manic_border and is_instance_valid(_manic_border):
+		return
+	var parent := get_parent()
+	if parent == null:
+		return
+	_manic_border = PanelContainer.new()
+	_manic_border.name = "ManicBorder"
+	_manic_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 0)
+	sb.border_width_left = 4
+	sb.border_width_top = 4
+	sb.border_width_right = 4
+	sb.border_width_bottom = 4
+	sb.border_color = MANIC_BORDER_COLOR
+	sb.corner_radius_top_left = 14
+	sb.corner_radius_top_right = 14
+	sb.corner_radius_bottom_right = 14
+	sb.corner_radius_bottom_left = 14
+	sb.shadow_color = Color(0.95, 0.25, 0.15, 0.45)
+	sb.shadow_size = 8
+	_manic_border.add_theme_stylebox_override("panel", sb)
+	_manic_border.anchors_preset = Control.PRESET_FULL_RECT
+	_manic_border.offset_left = -3
+	_manic_border.offset_top = -3
+	_manic_border.offset_right = 3
+	_manic_border.offset_bottom = 3
+	parent.add_child(_manic_border)

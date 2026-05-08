@@ -448,6 +448,7 @@ func refresh_hand() -> void:
 		child.queue_free()
 
 	var can_play := _state_manager.is_player_turn()
+	var is_manic := _card_system.is_manic_active()
 	for i in range(_card_system.hand.size()):
 		var card_id: String = _card_system.hand[i]
 		var card_data: Dictionary = CardDatabase.get_card(card_id)
@@ -456,6 +457,8 @@ func refresh_hand() -> void:
 		card_ui.call("setup", card_data, i, _scene)
 		card_ui.disabled = not can_play or _card_system.get_effective_cost(card_data) > _card_system.energy
 		_hand_row.add_child(card_ui)
+		if is_manic and card_ui.has_method("set_manic_active"):
+			card_ui.call("set_manic_active", true)
 
 	if _hand_hint_label:
 		_hand_hint_label.text = "手牌 %d 张  ·  弃堆 %d 张  ·  抽堆 %d 张" % [

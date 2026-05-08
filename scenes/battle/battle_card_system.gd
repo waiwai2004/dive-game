@@ -110,6 +110,10 @@ func get_effective_cost(card: Dictionary) -> int:
 	return maxi(cost, 0)
 
 
+func is_manic_active() -> bool:
+	return _status_manager != null and _status_manager.is_status_active("癫狂")
+
+
 ## 尝试打出指定手牌。成功 → true，能量不足或越界 → false。
 ## 所有效果日志通过 log_emitted 信号发出。
 func play_card(card_index: int) -> bool:

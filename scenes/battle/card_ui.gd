@@ -80,6 +80,20 @@ func _refresh_text() -> void:
 	text = "%s  [%s]\n%d费  认知%d\n%s" % [name_text, type_text, cost, cognition, desc]
 
 
+func set_manic_active(active: bool) -> void:
+	if card_view and card_view.has_method("apply_manic_visual") and card_view.has_method("clear_manic_visual"):
+		call_deferred("_do_set_manic_active", active)
+
+
+func _do_set_manic_active(active: bool) -> void:
+	if not is_instance_valid(card_view):
+		return
+	if active:
+		card_view.call("apply_manic_visual", card_data)
+	else:
+		card_view.call("clear_manic_visual", card_data)
+
+
 ## 判定是否以"敌人"为目标：显式 target 字段优先；否则看造伤/施弱。
 func _targets_enemy() -> bool:
 	if card_data.has("target"):

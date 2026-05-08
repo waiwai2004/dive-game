@@ -36,13 +36,13 @@ const BATTLE_TUTORIAL_STEPS := [
 	{
 		"focus": "right_buttons",
 		"title": "辅助按钮区",
-		"body": "这里可以查看牌库、弃牌堆和战斗日志。战斗日志只记录真实战斗过程，不再放教学说明；需要复盘时再打开查看。",
+		"body": "这里可以查看牌库、弃牌堆和战斗日志。战斗日志只记录真实战斗过程，不再放教学说明；需要复盘时再打开查看。\n\n快捷键提示：按 [K] 打开牌库，按 [Q] 查看弃牌堆，按 [L] 打开战斗日志。",
 		"bubble_anchor": "left",
 	},
 	{
 		"focus": "end_turn",
 		"title": "结束回合",
-		"body": "确认本轮不再出牌后，点击这里结束回合。认知负荷会随着出牌持续累积，只有上一轮手牌耗尽并完成重整后才会回落；一旦超过上限，你的存在值会立刻减半并清空当前认知。",
+		"body": "确认本轮不再出牌后，点击这里结束回合。认知负荷会随着出牌持续累积，只有上一轮手牌耗尽并完成重整后才会回落；一旦超过上限，你的存在值会立刻减半并清空当前认知。\n\n快捷键提示：按 [空格键] 可快速结束回合。",
 		"bubble_anchor": "left",
 	},
 ]
@@ -182,6 +182,8 @@ func _setup_statuses() -> void:
 	_status_manager.register_status(manic_status)
 	_status_manager.register_status(inner_drive_status)
 	_status_manager.register_status(madness_for_fun_status)
+	if not _status_manager.status_changed.is_connected(_on_status_changed):
+		_status_manager.status_changed.connect(_on_status_changed)
 
 
 func _wire_signals() -> void:
@@ -195,6 +197,11 @@ func _wire_signals() -> void:
 
 
 # ====== 状态切换回调 ======
+func _on_status_changed(status_name: String, activated: bool) -> void:
+	if status_name == "癫狂":
+		_ui.refresh_hand()
+		_ui.refresh_player_ui()
+
 func _on_state_changed(new_state: int) -> void:
 	var can_play := new_state == BattleStateManager.State.PLAYER_TURN
 	_ui.set_play_enabled(can_play)

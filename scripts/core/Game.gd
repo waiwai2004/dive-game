@@ -183,7 +183,7 @@ func reset_run():
 	battle_index = 0
 	current_battle_enemy_id = ""
 	first_battle_reward_done = false
-	_load_battle_tutorial_state()
+	_reset_battle_tutorial_state()
 	admin_talk_done = false
 	memory_event_done = false
 	reward_card_given = false
@@ -239,6 +239,12 @@ func mark_battle_tutorial_shown() -> void:
 	var file := FileAccess.open(BATTLE_TUTORIAL_SAVE_FILE, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify({"shown": true}))
+
+
+func _reset_battle_tutorial_state() -> void:
+	battle_tutorial_shown = false
+	if FileAccess.file_exists(BATTLE_TUTORIAL_SAVE_FILE):
+		DirAccess.remove_absolute(BATTLE_TUTORIAL_SAVE_FILE)
 
 
 func _load_battle_tutorial_state() -> void:
