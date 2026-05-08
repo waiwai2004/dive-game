@@ -6,7 +6,7 @@ var max_hp: int = 10
 var player_san: int = 10
 var max_san: int = 10
 var player_cognition: int = 0
-var max_cognition: int = 10
+var max_cognition: int = 15
 var cognition_current: int:
 	get:
 		return player_cognition
@@ -166,7 +166,7 @@ func reset_run():
 	player_san = 10
 	max_san = 10
 	player_cognition = 0
-	max_cognition = 10
+	max_cognition = 15
 	player_mental_load = 0
 	max_mental_load = 10
 

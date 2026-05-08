@@ -381,7 +381,11 @@ func generate_card(ai_data: Dictionary) -> void:
 	var r = randf()
 	var t_type = ""
 	var effect = ""
-	var x = int(ai_data.get("X值", 1))
+	var raw_effect_value := int(ai_data.get("X值", 1))
+	var scaled_effect_value := _halve_effect_value(raw_effect_value)
+	var scaled_cost := _halve_cost_value(int(ai_data.get("精神负荷", 1)))
+	var scaled_cognition := _halve_cost_value(int(ai_data.get("认知负荷", 1)))
+	var x = scaled_effect_value
 	
 	var a_pool = [{"desc": "对敌方单体造成 %d 点伤害。" % x, "key": "damage", "val": x}]
 	var b_pool = [{"desc": "回复自身 %d 点生命值。" % x, "key": "heal_hp", "val": x}, {"desc": "增加自身 %d 点防御护盾。" % x, "key": "block", "val": x}]
@@ -428,8 +432,8 @@ func generate_card(ai_data: Dictionary) -> void:
 		"id": "ai_card_" + str(Time.get_ticks_msec()),
 		"name": "意念干涉",
 		"type": t_type,
-		"cost": ai_data.get("精神负荷", 1),
-		"cognition": ai_data.get("认知负荷", 1),
+		"cost": scaled_cost,
+		"cognition": scaled_cognition,
 		"description": chosen_effect.get("desc", ""),
 		"effect_key": chosen_effect.get("key", ""),
 		"effect_value": chosen_effect.get("val", 0),
@@ -459,6 +463,16 @@ func generate_card(ai_data: Dictionary) -> void:
 	print("已生成AI卡牌：", cd.card_id)
 	
 	_show_card_scene(card_dict)
+
+func _halve_cost_value(value: int) -> int:
+	if value <= 0:
+		return 0
+	return maxi(value / 2, 1)
+
+func _halve_effect_value(value: int) -> int:
+	if value <= 0:
+		return 0
+	return maxi(int(ceil(float(value) / 2.0)), 1)
 
 func _show_card_scene(card_dict: Dictionary) -> void:
 	print("[AIFeature] _show_card_scene called with card: ", card_dict.get("name", "unknown"))
