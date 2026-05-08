@@ -1,5 +1,7 @@
 extends Node
 
+const BATTLE_TUTORIAL_SAVE_FILE := "user://battle_tutorial_state.json"
+
 var player_hp: int = 10
 var max_hp: int = 10
 
@@ -42,6 +44,7 @@ var tag_orderly: int = 0
 var battle_index: int = 0
 var current_battle_enemy_id: String = ""
 var first_battle_reward_done: bool = false
+var battle_tutorial_shown: bool = false
 var admin_talk_done: bool = false
 var memory_event_done: bool = false
 var reward_card_given: bool = false
@@ -160,6 +163,10 @@ const _BUD_CONTINUE_PROB: float = 0.20
 var last_bud_rewards: Array[String] = []
 
 
+func _ready() -> void:
+	_load_battle_tutorial_state()
+
+
 func reset_run():
 	max_hp = 10
 	player_hp = 10
@@ -176,6 +183,7 @@ func reset_run():
 	battle_index = 0
 	current_battle_enemy_id = ""
 	first_battle_reward_done = false
+	_load_battle_tutorial_state()
 	admin_talk_done = false
 	memory_event_done = false
 	reward_card_given = false
@@ -202,6 +210,7 @@ func begin_chapter_one() -> void:
 	chapter_one_state = "briefed"
 	memory_event_done = false
 	first_battle_reward_done = false
+	_load_battle_tutorial_state()
 	reward_card_given = false
 	battle_index = 0
 	current_battle_enemy_id = ""
@@ -223,6 +232,27 @@ func set_end_choice(choice_id: String) -> void:
 
 func add_card(card_id: String):
 	deck.append(card_id)
+
+
+func mark_battle_tutorial_shown() -> void:
+	battle_tutorial_shown = true
+	var file := FileAccess.open(BATTLE_TUTORIAL_SAVE_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify({"shown": true}))
+
+
+func _load_battle_tutorial_state() -> void:
+	battle_tutorial_shown = false
+	if not FileAccess.file_exists(BATTLE_TUTORIAL_SAVE_FILE):
+		return
+	var file := FileAccess.open(BATTLE_TUTORIAL_SAVE_FILE, FileAccess.READ)
+	if file == null:
+		return
+	var json := JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return
+	if json.data is Dictionary:
+		battle_tutorial_shown = bool((json.data as Dictionary).get("shown", false))
 
 
 func damage_player(amount: int, _san_loss: int = -1):

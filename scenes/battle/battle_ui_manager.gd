@@ -30,8 +30,10 @@ var _enemy_texture_normal: Texture2D
 var _enemy_texture_injured: Texture2D
 var _was_injured: bool = false
 var _minion_row: HBoxContainer
+var _arena_root: Control
 
 # ====== 左侧玩家状态 ======
+var _left_panel: Control
 var _pie_chart: Control
 var _energy_bar: ProgressBar
 var _energy_label: Label
@@ -45,12 +47,14 @@ var _status_icon_row: HBoxContainer
 var _deck_button_new: TextureButton
 var _discard_pile_button_new: TextureButton
 var _battle_log_button_new: TextureButton
+var _tutorial_button_new: TextureButton
 
 # ====== 右下动作区 ======
 var _end_turn_button: TextureButton
 var _hand_hint_label: Label
 
 # ====== 手牌区 ======
+var _bottom_hand_panel: Control
 var _hand_row: HBoxContainer
 
 # ====== 弹窗 ======
@@ -115,10 +119,12 @@ func _cache_node_refs() -> void:
 	_boss_hp_bar = _scene.get_node("Bossbar/BossHpBar")
 	_boss_intent_label = _scene.get_node("Bossbar/BossIntentLabel")
 
+	_arena_root = _scene.get_node("ArenaRoot")
 	_boss_portrait = _scene.get_node("ArenaRoot/BossPortrait")
 	_ensure_minion_row()
 
 	var left := "LeftPanel/VBoxContainer"
+	_left_panel = _scene.get_node("LeftPanel")
 	_pie_chart = _scene.get_node(left + "/Control/RewardPlate/PieChartStat")
 	_energy_section = _scene.get_node(left + "/EnergySection")
 	_energy_bar = _scene.get_node(left + "/EnergySection/EnergyRow/EnergyBar")
@@ -130,6 +136,7 @@ func _cache_node_refs() -> void:
 
 	_end_turn_button = _scene.get_node("EndTurnButton")
 	_hand_hint_label = _scene.get_node_or_null("HandHintLabel")
+	_bottom_hand_panel = _scene.get_node("BottomHandPanel")
 	_hand_row = _scene.get_node("BottomHandPanel/MarginContainer/HandScroll/HandRow")
 
 	_discard_panel = _scene.get_node_or_null("DiscardPanel")
@@ -150,6 +157,7 @@ func _cache_node_refs() -> void:
 	_deck_button_new = _scene.get_node("DeckButtonnew")
 	_discard_pile_button_new = _scene.get_node("DiscardPileButtonNew")
 	_battle_log_button_new = _scene.get_node("BattleLogButtonnew")
+	_tutorial_button_new = _scene.get_node_or_null("TutorialButton")
 
 	# 旧按钮（可能不存在）
 	_battle_log_button = _scene.get_node_or_null("BattleLogButton")
@@ -183,6 +191,11 @@ func _connect_button_signals() -> void:
 	_discard_pile_button_new.pressed.connect(_on_discard_button_pressed)
 	_deck_button_new.pressed.connect(func() -> void: _scene._on_deck_button_pressed())
 	_battle_log_button_new.pressed.connect(_on_battle_log_button_pressed)
+	if _tutorial_button_new:
+		_tutorial_button_new.pressed.connect(func() -> void:
+			if _scene and _scene.has_method("reopen_battle_tutorial"):
+				_scene.call("reopen_battle_tutorial")
+		)
 
 	if _deck_button_new:
 		_deck_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -199,6 +212,11 @@ func _connect_button_signals() -> void:
 		_battle_log_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		_battle_log_button_new.mouse_entered.connect(_on_button_hover.bind(_battle_log_button_new, true))
 		_battle_log_button_new.mouse_exited.connect(_on_button_hover.bind(_battle_log_button_new, false))
+	if _tutorial_button_new:
+		_tutorial_button_new.mouse_filter = Control.MOUSE_FILTER_STOP
+		_tutorial_button_new.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		_tutorial_button_new.mouse_entered.connect(_on_button_hover.bind(_tutorial_button_new, true))
+		_tutorial_button_new.mouse_exited.connect(_on_button_hover.bind(_tutorial_button_new, false))
 	
 	if _battle_log_button:
 		_battle_log_button.visible = false
@@ -234,7 +252,7 @@ func close_all_popups() -> void:
 	if _discard_panel:
 		_discard_panel.visible = false
 	if _battle_log_window:
-		_battle_log_window.visible = true
+		_battle_log_window.visible = false
 	_tooltip_panel.visible = false
 
 
@@ -440,7 +458,7 @@ func refresh_hand() -> void:
 		_hand_row.add_child(card_ui)
 
 	if _hand_hint_label:
-		_hand_hint_label.text = "手牌 %d / 弃牌 %d / 抽牌 %d" % [
+		_hand_hint_label.text = "手牌 %d 张  ·  弃堆 %d 张  ·  抽堆 %d 张" % [
 			_card_system.hand.size(), _card_system.discard_pile.size(), _card_system.draw_pile.size()
 		]
 
@@ -457,6 +475,27 @@ func set_play_enabled(enabled: bool) -> void:
 			node.disabled = not enabled
 
 
+func get_tutorial_focus_rect(focus_id: String) -> Rect2:
+	match focus_id:
+		"enemy_info":
+			return _merge_control_rects([_boss_bar_root, _arena_root])
+		"player_status":
+			return _get_control_global_rect(_left_panel)
+		"hand":
+			return _get_control_global_rect(_bottom_hand_panel)
+		"right_buttons":
+			return _merge_control_rects([
+				_deck_button_new,
+				_discard_pile_button_new,
+				_battle_log_button_new,
+				_tutorial_button_new,
+			])
+		"end_turn":
+			return _get_control_global_rect(_end_turn_button)
+		_:
+			return Rect2()
+
+
 # ====== 弃牌堆 ======
 func _on_discard_button_pressed() -> void:
 	if _battle_log_window:
@@ -468,6 +507,9 @@ func _on_discard_button_pressed() -> void:
 			_discard_panel.visible = true
 			_refresh_discard_view()
 
+func toggle_discard_panel() -> void:
+	_on_discard_button_pressed()
+
 
 func _refresh_discard_view() -> void:
 	if not _discard_cards_flow:
@@ -476,7 +518,7 @@ func _refresh_discard_view() -> void:
 		child.queue_free()
 	if _card_system.discard_pile.is_empty():
 		var empty_label := Label.new()
-		empty_label.text = "当前弃牌堆为空。"
+		empty_label.text = "此刻尚无卡牌沉入弃堆。"
 		empty_label.add_theme_font_size_override("font_size", 24)
 		empty_label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
 		_discard_cards_flow.add_child(empty_label)
@@ -538,6 +580,9 @@ func _on_battle_log_button_pressed() -> void:
 		_battle_log_window.visible = true
 	if _scene.has_method("_refresh_battle_log_from_scene"):
 		_scene.call("_refresh_battle_log_from_scene")
+
+func open_battle_log() -> void:
+	_on_battle_log_button_pressed()
 
 
 func refresh_battle_log(lines: Array[String]) -> void:
@@ -679,7 +724,7 @@ func _build_energy_tooltip() -> String:
 
 
 func _build_cognition_tooltip() -> String:
-	return "[b]认知负荷[/b]\n当前 %d / %d\n超过上限时，存在值减半并清零累积。" % [
+	return "[b]认知负荷[/b]\n当前 %d / %d\n每打出一张牌都会累积认知负荷。\n只有上一轮手牌耗尽，并在下一轮重整时，认知才会回落。\n超过上限时，存在值减半，并清空当前累积。" % [
 		Game.player_cognition, Game.max_cognition
 	]
 
@@ -737,3 +782,26 @@ func show_card_tooltip(card_data: Dictionary) -> void:
 func hide_card_tooltip() -> void:
 	if _current_tooltip_source == null:
 		_hide_tooltip()
+
+
+func _get_control_global_rect(control: Control) -> Rect2:
+	if control == null or not is_instance_valid(control):
+		return Rect2()
+	return Rect2(control.global_position, control.size)
+
+
+func _merge_control_rects(controls: Array) -> Rect2:
+	var merged := Rect2()
+	var has_rect := false
+	for control in controls:
+		if not (control is Control):
+			continue
+		var rect := _get_control_global_rect(control)
+		if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+			continue
+		if not has_rect:
+			merged = rect
+			has_rect = true
+			continue
+		merged = merged.merge(rect)
+	return merged

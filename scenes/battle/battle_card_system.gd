@@ -69,7 +69,7 @@ func _draw_all_cards_to_hand() -> void:
 		draw_pile.shuffle()
 		while not draw_pile.is_empty():
 			hand.append(draw_pile.pop_back())
-	log_emitted.emit("获得全部手牌。")
+	log_emitted.emit("牌序重新归拢，你再次握住了全部手牌。")
 
 
 func start_turn() -> void:
@@ -77,7 +77,7 @@ func start_turn() -> void:
 	if hand.is_empty():
 		if Game.player_cognition > 0:
 			Game.clear_cognition()
-			log_emitted.emit("手牌打完，认知负荷已清零。")
+			log_emitted.emit("上一轮手牌已耗尽，认知负荷随之回落至零。")
 		_draw_all_cards_to_hand()
 
 
@@ -88,7 +88,7 @@ func draw_cards(count: int) -> void:
 			discard_pile.clear()
 			draw_pile.shuffle()
 			if not draw_pile.is_empty():
-				log_emitted.emit("弃牌堆洗回抽牌堆。")
+				log_emitted.emit("弃牌堆被重新编织，回到了抽牌堆。")
 		if draw_pile.is_empty():
 			break
 		hand.append(draw_pile.pop_back())
@@ -280,7 +280,7 @@ func _apply_cognition_cost(card: Dictionary) -> void:
 		var hp_before: int = int(Game.player_hp)
 		Game.player_hp = maxi(1, int(round(float(Game.player_hp) / 2.0)))
 		Game.clear_cognition()
-		log_emitted.emit("认知超载！存在值由%d降至%d。" % [hp_before, Game.player_hp])
+		log_emitted.emit("认知负荷越过阈值，意识结构崩塌，存在值由%d降至%d。" % [hp_before, Game.player_hp])
 
 
 func _ensure_playable_deck() -> void:

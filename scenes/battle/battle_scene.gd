@@ -13,9 +13,52 @@ const BOSS_BATTLE_ENEMY_POOL := [
 	"black_bubble",
 	"colour_out_of_space",
 ]
+const TUTORIAL_FOCUS_PADDING := 28.0
+const BATTLE_TUTORIAL_STEPS := [
+	{
+		"focus": "enemy_info",
+		"title": "敌方信息区",
+		"body": "这里会显示敌人的立绘、名称、存在值与下一步意图。先看清敌人的攻击方式，再决定这一轮要防守还是抢先输出。",
+		"bubble_anchor": "right",
+	},
+	{
+		"focus": "player_status",
+		"title": "自身状态区",
+		"body": "左侧集中展示你的存在值、SAN、精神负荷、认知负荷与当前状态。精神负荷决定你这轮能打出多少牌，状态图标则提示护盾、虚弱或异常影响。",
+		"bubble_anchor": "right",
+	},
+	{
+		"focus": "hand",
+		"title": "手牌区",
+		"body": "这里是本轮可用的全部手牌。打出的牌不会立刻补进新牌，只有这一轮手牌彻底耗尽后，下次轮到你时才会重整并重新获得手牌。",
+		"bubble_anchor": "above",
+	},
+	{
+		"focus": "right_buttons",
+		"title": "辅助按钮区",
+		"body": "这里可以查看牌库、弃牌堆和战斗日志。战斗日志只记录真实战斗过程，不再放教学说明；需要复盘时再打开查看。",
+		"bubble_anchor": "left",
+	},
+	{
+		"focus": "end_turn",
+		"title": "结束回合",
+		"body": "确认本轮不再出牌后，点击这里结束回合。认知负荷会随着出牌持续累积，只有上一轮手牌耗尽并完成重整后才会回落；一旦超过上限，你的存在值会立刻减半并清空当前认知。",
+		"bubble_anchor": "left",
+	},
+]
 
 @onready var _boss_portrait: TextureRect = $ArenaRoot/BossPortrait
 @onready var _reward_story_ui: Control = $RewardStoryUI
+@onready var _battle_tutorial_overlay: Control = $BattleTutorialOverlay
+@onready var _tutorial_mask_top: ColorRect = $BattleTutorialOverlay/MaskTop
+@onready var _tutorial_mask_bottom: ColorRect = $BattleTutorialOverlay/MaskBottom
+@onready var _tutorial_mask_left: ColorRect = $BattleTutorialOverlay/MaskLeft
+@onready var _tutorial_mask_right: ColorRect = $BattleTutorialOverlay/MaskRight
+@onready var _tutorial_focus_frame: PanelContainer = $BattleTutorialOverlay/FocusFrame
+@onready var _tutorial_bubble: PanelContainer = $BattleTutorialOverlay/TutorialBubble
+@onready var _tutorial_title_label: Label = $BattleTutorialOverlay/TutorialBubble/MarginContainer/VBoxContainer/TitleLabel
+@onready var _tutorial_body_label: RichTextLabel = $BattleTutorialOverlay/TutorialBubble/MarginContainer/VBoxContainer/BodyLabel
+@onready var _tutorial_page_label: Label = $BattleTutorialOverlay/TutorialBubble/MarginContainer/VBoxContainer/FooterLabel
 
 @onready var deck_panel: PanelContainer = $DeckPanel
 @onready var deck_title_label: Label = $DeckPanel/MarginContainer/ContentVBox/HeaderRow/TitleLabel
@@ -37,6 +80,8 @@ var _enemy_buff_manager: BuffManager
 
 var _battle_log_lines: Array[String] = []
 var _inner_drive_extra_turn_pending: bool = false
+var _tutorial_step_index: int = -1
+var _battle_tutorial_active: bool = false
 
 
 
@@ -48,9 +93,58 @@ func _ready() -> void:
 	_audio.play_battle_bgm()
 	_enemy_ai.setup(_get_enemy_id_for_current_battle(), _enemy_buff_manager, _player_buff_manager)
 	_apply_enemy_portrait()
-	_log("敌人逼近：%s。" % _enemy_ai.enemy_name)
+	_log("深处的水影开始收束：%s 现身了。" % _enemy_ai.enemy_name)
 	_card_system.start_battle()
 	_start_player_turn()
+	_setup_battle_tutorial_overlay()
+	_maybe_start_battle_tutorial()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _battle_tutorial_active:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			_advance_battle_tutorial()
+			get_viewport().set_input_as_handled()
+		elif event is InputEventKey and event.pressed and not event.echo:
+			_advance_battle_tutorial()
+			get_viewport().set_input_as_handled()
+		return
+	if not (event is InputEventKey):
+		return
+	if not event.pressed or event.echo:
+		return
+	if not _can_handle_battle_hotkeys():
+		return
+
+	match event.keycode:
+		KEY_SPACE:
+			if _state and _state.is_player_turn():
+				_on_end_turn_pressed()
+				get_viewport().set_input_as_handled()
+		KEY_K:
+			_on_deck_button_pressed()
+			get_viewport().set_input_as_handled()
+		KEY_Q:
+			if _ui:
+				_ui.toggle_discard_panel()
+				get_viewport().set_input_as_handled()
+		KEY_L:
+			if _ui:
+				_ui.open_battle_log()
+				get_viewport().set_input_as_handled()
+
+func _can_handle_battle_hotkeys() -> bool:
+	if _state == null:
+		return false
+	if _battle_tutorial_active:
+		return false
+	if _state.is_finished() or _state.is_reward():
+		return false
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused and focused is LineEdit:
+		return false
+	if focused and focused is TextEdit:
+		return false
+	return true
 
 
 # ====== 子系统装配 ======
@@ -110,7 +204,7 @@ func _on_state_changed(new_state: int) -> void:
 			_reward_story_ui.show_ui()
 		else:
 			_reward_story_ui.show()
-		_log("从残响中选择一张新卡。")
+		_log("战斗余烬尚未散尽，你可以从残响里带走一张新卡。")
 
 	_ui.refresh_all(_battle_log_lines)
 
@@ -125,8 +219,8 @@ func _start_player_turn() -> void:
 		return
 	_card_system.start_turn()
 	_state.change_state(BattleStateManager.State.PLAYER_TURN)
-	_log("你的回合开始。")
-	_ui.set_hand_hint("拖拽或点击卡牌来使用。")
+	_log("轮到你出手了。")
+	_ui.set_hand_hint("拖拽或点击卡牌，将意志投向战场。")
 	_ui.refresh_all(_battle_log_lines)
 
 
@@ -135,7 +229,7 @@ func _on_end_turn_pressed() -> void:
 		return
 	if has_node("/root/AudioManager"):
 		AudioManager.play_sfx("end_turn")
-	_log("你结束了回合。")
+	_log("你收束了这轮行动。")
 	await _end_player_turn()
 
 
@@ -288,7 +382,7 @@ func _process_round_end_buffs() -> void:
 
 # ====== 胜负 / 奖励 ======
 func _on_battle_win() -> void:
-	_log("战斗胜利。")
+	_log("异变沉寂了，这一战由你收束。")
 	Game.clear_cognition()
 	
 	_state.change_state(BattleStateManager.State.FINISHED)
@@ -424,6 +518,131 @@ func _hide_global_ui_for_battle() -> void:
 		GlobalUI.clear_energy()
 	if GlobalUI.has_method("hide_deck_panel"):
 		GlobalUI.hide_deck_panel()
+
+
+func _setup_battle_tutorial_overlay() -> void:
+	_battle_tutorial_overlay.visible = false
+	_battle_tutorial_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	if not _battle_tutorial_overlay.gui_input.is_connected(_on_battle_tutorial_overlay_input):
+		_battle_tutorial_overlay.gui_input.connect(_on_battle_tutorial_overlay_input)
+	_tutorial_body_label.bbcode_enabled = false
+	_tutorial_body_label.fit_content = true
+
+
+func _maybe_start_battle_tutorial() -> void:
+	if Game.battle_tutorial_shown:
+		return
+	_start_battle_tutorial()
+
+
+func _start_battle_tutorial() -> void:
+	_battle_tutorial_active = true
+	_tutorial_step_index = 0
+	_battle_tutorial_overlay.visible = true
+	_ui.close_all_popups()
+	_ui.hide_card_tooltip()
+	_render_battle_tutorial_step()
+
+
+func reopen_battle_tutorial() -> void:
+	_start_battle_tutorial()
+
+
+func _advance_battle_tutorial() -> void:
+	if not _battle_tutorial_active:
+		return
+	_tutorial_step_index += 1
+	if _tutorial_step_index >= BATTLE_TUTORIAL_STEPS.size():
+		_finish_battle_tutorial()
+		return
+	_render_battle_tutorial_step()
+
+
+func _finish_battle_tutorial() -> void:
+	_battle_tutorial_active = false
+	_tutorial_step_index = -1
+	_battle_tutorial_overlay.visible = false
+	Game.mark_battle_tutorial_shown()
+
+
+func _on_battle_tutorial_overlay_input(event: InputEvent) -> void:
+	if not _battle_tutorial_active:
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		_advance_battle_tutorial()
+		get_viewport().set_input_as_handled()
+
+
+func _render_battle_tutorial_step() -> void:
+	if _tutorial_step_index < 0 or _tutorial_step_index >= BATTLE_TUTORIAL_STEPS.size():
+		return
+	var step: Dictionary = BATTLE_TUTORIAL_STEPS[_tutorial_step_index]
+	var focus_rect := _expand_tutorial_rect(_ui.get_tutorial_focus_rect(str(step.get("focus", ""))))
+	_tutorial_title_label.text = str(step.get("title", ""))
+	_tutorial_body_label.text = str(step.get("body", ""))
+	_tutorial_page_label.text = "点击任意位置继续  %d / %d" % [_tutorial_step_index + 1, BATTLE_TUTORIAL_STEPS.size()]
+	_apply_tutorial_focus_mask(focus_rect)
+	_position_tutorial_bubble(focus_rect, str(step.get("bubble_anchor", "right")))
+
+
+func _expand_tutorial_rect(rect: Rect2) -> Rect2:
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return rect
+	return Rect2(
+		rect.position - Vector2(TUTORIAL_FOCUS_PADDING, TUTORIAL_FOCUS_PADDING),
+		rect.size + Vector2(TUTORIAL_FOCUS_PADDING * 2.0, TUTORIAL_FOCUS_PADDING * 2.0)
+	)
+
+
+func _apply_tutorial_focus_mask(focus_rect: Rect2) -> void:
+	var viewport_rect := get_viewport_rect()
+	var viewport_size := viewport_rect.size
+	var safe_rect := focus_rect
+	safe_rect.position.x = clampf(safe_rect.position.x, 0.0, viewport_size.x)
+	safe_rect.position.y = clampf(safe_rect.position.y, 0.0, viewport_size.y)
+	safe_rect.size.x = clampf(safe_rect.size.x, 0.0, viewport_size.x - safe_rect.position.x)
+	safe_rect.size.y = clampf(safe_rect.size.y, 0.0, viewport_size.y - safe_rect.position.y)
+
+	_tutorial_mask_top.position = Vector2.ZERO
+	_tutorial_mask_top.size = Vector2(viewport_size.x, safe_rect.position.y)
+
+	_tutorial_mask_bottom.position = Vector2(0.0, safe_rect.position.y + safe_rect.size.y)
+	_tutorial_mask_bottom.size = Vector2(viewport_size.x, maxf(0.0, viewport_size.y - _tutorial_mask_bottom.position.y))
+
+	_tutorial_mask_left.position = Vector2(0.0, safe_rect.position.y)
+	_tutorial_mask_left.size = Vector2(safe_rect.position.x, safe_rect.size.y)
+
+	_tutorial_mask_right.position = Vector2(safe_rect.position.x + safe_rect.size.x, safe_rect.position.y)
+	_tutorial_mask_right.size = Vector2(maxf(0.0, viewport_size.x - _tutorial_mask_right.position.x), safe_rect.size.y)
+
+	_tutorial_focus_frame.position = safe_rect.position
+	_tutorial_focus_frame.size = safe_rect.size
+
+
+func _position_tutorial_bubble(focus_rect: Rect2, anchor: String) -> void:
+	var viewport_size := get_viewport_rect().size
+	_tutorial_bubble.reset_size()
+	var bubble_size := _tutorial_bubble.size
+	if bubble_size.x <= 0.0 or bubble_size.y <= 0.0:
+		bubble_size = _tutorial_bubble.get_combined_minimum_size()
+	_tutorial_bubble.size = bubble_size
+
+	var margin := 24.0
+	var gap := 18.0
+	var pos := Vector2.ZERO
+	match anchor:
+		"left":
+			pos = Vector2(focus_rect.position.x - bubble_size.x - gap, focus_rect.position.y)
+		"above":
+			pos = Vector2(focus_rect.position.x, focus_rect.position.y - bubble_size.y - gap)
+		"below":
+			pos = Vector2(focus_rect.position.x, focus_rect.position.y + focus_rect.size.y + gap)
+		_:
+			pos = Vector2(focus_rect.position.x + focus_rect.size.x + gap, focus_rect.position.y)
+
+	pos.x = clampf(pos.x, margin, viewport_size.x - bubble_size.x - margin)
+	pos.y = clampf(pos.y, margin, viewport_size.y - bubble_size.y - margin)
+	_tutorial_bubble.position = pos
 
 func show_deck_panel() -> void:
 	_deck_open = true

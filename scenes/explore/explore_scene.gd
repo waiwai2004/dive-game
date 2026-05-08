@@ -586,11 +586,11 @@ func _update_hint_text() -> void:
 	var prompt_text := ""
 	match current_target:
 		"memory":
-			prompt_text = "按 E 触发随机事件"
+			prompt_text = "按 E 聆听这段浮上海面的残响"
 		"battle":
 			prompt_text = _get_battle_prompt_text()
 		_:
-			prompt_text = "留意光束中的异常讯号"
+			prompt_text = "海水仍在回响，留意那些不该出现的讯号"
 
 	if hint_label:
 		hint_label.text = prompt_text
@@ -618,14 +618,14 @@ func _set_explore_hud_visible(value: bool) -> void:
 
 func _get_battle_prompt_text() -> String:
 	if _active_battle_zone == null:
-		return "按 E 进入遭遇"
+		return "按 E 靠近前方那道异动"
 	if _active_battle_zone.get_script() == BUD_NODE_SCRIPT:
-		return "按 E 回收奖励节点"
+		return "按 E 触碰那枚在水中脉动的意识花苞"
 	if _active_battle_zone.get_script() == RUINS_NODE_SCRIPT:
-		return "按 E 触发随机事件"
+		return "按 E 探查前方裸露出的认知废墟"
 	if _active_battle_zone.name == "WoundBoss":
-		return "按 E 接近 Boss 伤口"
-	return "按 E 进入小怪战斗"
+		return "按 E 直面那道尚未愈合的深渊裂口"
+	return "按 E 直面潜伏于水影中的异变"
 
 
 func _get_depth_layer_name() -> String:

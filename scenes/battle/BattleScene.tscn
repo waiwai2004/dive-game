@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cku3ud7hb2tu6" path="res://scenes/battle/battle_scene.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://ccgqki72ae5eb" path="res://assets/art/battle/bg_battle_01.png" id="2_4ro08"]
-[ext_resource type="Texture2D" path="res://assets/art/enemy/boss01/en_boss_011.PNG" id="3_boss"]
+[ext_resource type="Texture2D" uid="uid://d30dvsqoo14rg" path="res://assets/art/enemy/boss01/en_boss_011.PNG" id="3_boss"]
 [ext_resource type="FontFile" uid="uid://dpefca2hymo42" path="res://assets/art/霞鹜漫黑.ttf" id="4_font"]
 [ext_resource type="Texture2D" uid="uid://br70bmtjsonh4" path="res://assets/art/battle/ui_battle_leftpanel_01 (1).PNG" id="5_5u8xp"]
 [ext_resource type="Script" uid="uid://fpibunk111no" path="res://scenes/battle/reward_story_ui.gd" id="5_reward_story"]
@@ -78,6 +78,34 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tutorial_focus"]
+bg_color = Color(1, 1, 1, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.4, 0.25, 0.96)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(1, 0.52, 0.32, 0.32)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tutorial_bubble"]
+bg_color = Color(0.05, 0.07, 0.11, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.82, 0.46, 0.82)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 12
 
 [node name="BattleScene" type="Control" unique_id=782462466]
 layout_mode = 3
@@ -464,7 +492,29 @@ offset_right = 232.0
 offset_bottom = 132.0
 text = "弃牌堆"
 
+[node name="TutorialButton" type="TextureButton" parent="." unique_id=1543523437]
+layout_mode = 0
+offset_left = 1624.0
+offset_top = 645.0
+offset_right = 1890.0
+offset_bottom = 841.0
+texture_normal = ExtResource("8_ntma3")
+stretch_mode = 1
+
+[node name="Label" type="Label" parent="TutorialButton" unique_id=1543523438]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 88.0
+offset_right = 170.0
+offset_bottom = 134.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.82, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 34
+text = "教程"
+horizontal_alignment = 1
+
 [node name="BattleLogWindow" type="Control" parent="." unique_id=2076702888]
+visible = false
 z_index = 19
 anchors_preset = 0
 offset_left = 691.0
@@ -839,5 +889,102 @@ offset_right = 895.0
 offset_bottom = 795.0
 texture = ExtResource("13_5b2op")
 expand_mode = 1
+
+[node name="BattleTutorialOverlay" type="Control" parent="." unique_id=2011051001]
+visible = false
+z_index = 300
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MaskTop" type="ColorRect" parent="BattleTutorialOverlay" unique_id=2011051002]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.2, 0.22, 0.24, 0.72)
+
+[node name="MaskBottom" type="ColorRect" parent="BattleTutorialOverlay" unique_id=2011051003]
+layout_mode = 0
+offset_top = 960.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.2, 0.22, 0.24, 0.72)
+
+[node name="MaskLeft" type="ColorRect" parent="BattleTutorialOverlay" unique_id=2011051004]
+layout_mode = 0
+offset_right = 160.0
+offset_bottom = 500.0
+mouse_filter = 2
+color = Color(0.2, 0.22, 0.24, 0.72)
+
+[node name="MaskRight" type="ColorRect" parent="BattleTutorialOverlay" unique_id=2011051005]
+layout_mode = 0
+offset_left = 1760.0
+offset_right = 1920.0
+offset_bottom = 500.0
+mouse_filter = 2
+color = Color(0.2, 0.22, 0.24, 0.72)
+
+[node name="FocusFrame" type="PanelContainer" parent="BattleTutorialOverlay" unique_id=2011051006]
+layout_mode = 0
+offset_left = 480.0
+offset_top = 140.0
+offset_right = 1280.0
+offset_bottom = 520.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tutorial_focus")
+
+[node name="TutorialBubble" type="PanelContainer" parent="BattleTutorialOverlay" unique_id=2011051007]
+layout_mode = 0
+offset_left = 1280.0
+offset_top = 180.0
+offset_right = 1740.0
+offset_bottom = 520.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tutorial_bubble")
+
+[node name="MarginContainer" type="MarginContainer" parent="BattleTutorialOverlay/TutorialBubble" unique_id=2011051008]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BattleTutorialOverlay/TutorialBubble/MarginContainer" unique_id=2011051009]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="BattleTutorialOverlay/TutorialBubble/MarginContainer/VBoxContainer" unique_id=2011051010]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.58, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 32
+text = "敌方信息区"
+
+[node name="BodyLabel" type="RichTextLabel" parent="BattleTutorialOverlay/TutorialBubble/MarginContainer/VBoxContainer" unique_id=2011051011]
+custom_minimum_size = Vector2(380, 150)
+layout_mode = 2
+theme_override_colors/default_color = Color(1, 1, 0.96, 1)
+theme_override_fonts/normal_font = ExtResource("4_font")
+theme_override_fonts/bold_font = ExtResource("4_font")
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 24
+fit_content = true
+scroll_active = false
+
+[node name="FooterLabel" type="Label" parent="BattleTutorialOverlay/TutorialBubble/MarginContainer/VBoxContainer" unique_id=2011051012]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 0.82)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 18
+text = "点击任意位置继续  1 / 5"
+horizontal_alignment = 2
 
 [connection signal="pressed" from="DeckPanel/MarginContainer/ContentVBox/HeaderRow/CloseButton" to="." method="hide_deck_panel"]
