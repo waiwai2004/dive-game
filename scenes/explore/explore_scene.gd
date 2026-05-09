@@ -136,7 +136,7 @@ func _save_zone_positions() -> void:
 		elif zone.get_script() == RUINS_NODE_SCRIPT:
 			ruins_pos_list.append({"x": zone.position.x, "y": zone.position.y})
 		else:
-			battle_pos_list.append({"x": zone.position.x, "y": zone.position.y})
+			battle_pos_list.append({"x": zone.position.x, "y": zone.position.y, "enemy_id": str(zone.get_meta("enemy_id", "motor_jellyfish"))})
 
 	Game.explore_wound_position = wound_pos
 	Game.explore_bud_positions = bud_pos_list
@@ -186,7 +186,7 @@ func _restore_zones() -> void:
 		var pos := Vector2(data.x, data.y)
 		var zone := _create_battle_zone(pos)
 		zone.set_meta("battle_index", 2)
-		zone.set_meta("enemy_id", "motor_jellyfish")
+		zone.set_meta("enemy_id", str(data.get("enemy_id", "motor_jellyfish")))
 		$World.add_child(zone)
 		_battle_zones.append(zone)
 
@@ -514,7 +514,7 @@ func _enter_bud_reward() -> void:
 	if Game.has_method("goto_bud_reward"):
 		Game.goto_bud_reward()
 	else:
-		get_tree().change_scene_to_file("res://scenes/reward/RewardScene.tscn")
+		get_tree().change_scene_to_file("res://scenes/Reward/RewardScene.tscn")
 
 
 func _enter_wound_boss() -> void:
@@ -704,276 +704,71 @@ func _add_wall(parent: Node, pos: Vector2, wall_size: Vector2) -> void:
 	body.add_child(col)
 	parent.add_child(body)
 
-
-# --- SpriteFrames 缓存 ---
-
-func _create_animated_sprite_from_frames(frames: SpriteFrames) -> AnimatedSprite2D:
-	var sprite := AnimatedSprite2D.new()
-	sprite.name = "Sprite2D"
-	sprite.sprite_frames = frames
-	sprite.animation = &"default"
-	sprite.play()
-	return sprite
-
-
-func _get_first_frame_from_frames(frames: SpriteFrames) -> Texture2D:
-	if frames and frames.has_animation(&"default") and frames.get_frame_count(&"default") > 0:
-		return frames.get_frame_texture(&"default", 0)
-	return null
-
-
 # --- 随机生成 ---
 
 func _spawn_memory_echoes(count: int) -> void:
-	var positions := _generate_spawn_positions(count)
+	var positions := ExploreMapGenerator.generate_spawn_positions(count, _occupied_positions)
 	for pos in positions:
-		var echo := _create_memory_echo(pos)
+		var echo := ExploreMapGenerator.create_memory_echo(pos)
 		$World.add_child(echo)
 		_memory_zones.append(echo)
 
 
 func _spawn_battle_zones(count: int) -> void:
-	var positions := _generate_spawn_positions(count)
+	var positions := ExploreMapGenerator.generate_spawn_positions(count, _occupied_positions)
 	for pos in positions:
-		var zone := _create_battle_zone(pos)
+		var zone := ExploreMapGenerator.create_battle_zone(pos)
 		zone.set_meta("battle_index", 2)
 		zone.set_meta("enemy_id", "motor_jellyfish")
 		$World.add_child(zone)
 		_battle_zones.append(zone)
 
 
-func _generate_spawn_positions(count: int) -> Array:
-	var positions: Array = []
-	var max_attempts := count * 100
-	var attempts := 0
-
-	while positions.size() < count and attempts < max_attempts:
-		attempts += 1
-		var pos := Vector2(
-			randf_range(SPAWN_MARGIN, MAP_WIDTH - SPAWN_MARGIN),
-			randf_range(SPAWN_MARGIN, GROUND_Y - 200)
-		)
-
-		if pos.distance_to(PLAYER_START) < PLAYER_SAFE_RADIUS:
-			continue
-
-		var too_close := false
-		for occ_pos in _occupied_positions:
-			if pos.distance_to(occ_pos) < MIN_ENTITY_DISTANCE:
-				too_close = true
-				break
-
-		if not too_close:
-			for p in positions:
-				if pos.distance_to(p) < MIN_ENTITY_DISTANCE:
-					too_close = true
-					break
-
-		if not too_close:
-			positions.append(pos)
-			_occupied_positions.append(pos)
-
-	return positions
-
-
 func _create_memory_echo(pos: Vector2) -> Area2D:
-	var echo := Area2D.new()
-	echo.position = pos
-	echo.set_script(MEMORY_ECHO_SCRIPT)
-
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(320, 520) * NON_BOSS_NODE_SCALE
-	col.shape = shape
-	echo.add_child(col)
-
-	var sprite := _create_animated_sprite_from_frames(RUINS_HINT_NODE_FRAMES)
-	sprite.scale = Vector2(0.48, 0.48)
-	echo.add_child(sprite)
-
-	var highlight := Sprite2D.new()
-	highlight.name = "Highlight"
-	highlight.texture = _get_first_frame_from_frames(RUINS_HINT_NODE_FRAMES)
-	highlight.scale = Vector2(0.56, 0.56)
-	highlight.self_modulate = Color(0.75, 0.95, 1.0, 0.78)
-	highlight.visible = false
-	echo.add_child(highlight)
-	_apply_texture_contour_collision(echo, RUINS_HINT_NODE_FRAMES, sprite.scale)
-
-	return echo
+	return ExploreMapGenerator.create_memory_echo(pos)
 
 
 func _create_battle_zone(pos: Vector2) -> Area2D:
-	var zone := Area2D.new()
-	zone.position = pos
-
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(160, 156)
-	col.shape = shape
-	zone.add_child(col)
-
-	var sprite := _create_animated_sprite_from_frames(POLLUTION_NODE_FRAMES)
-	sprite.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
-	sprite.scale = Vector2(1.25, 1.25)
-	zone.add_child(sprite)
-
-	var highlight := Sprite2D.new()
-	highlight.name = "Highlight"
-	highlight.texture = _get_first_frame_from_frames(POLLUTION_NODE_FRAMES)
-	highlight.self_modulate = Color(1.0, 0.45, 0.45, 0.85)
-	highlight.scale = Vector2(1.45, 1.45)
-	highlight.visible = false
-	zone.add_child(highlight)
-	_apply_texture_contour_collision(zone, POLLUTION_NODE_FRAMES, sprite.scale)
-
-	return zone
+	return ExploreMapGenerator.create_battle_zone(pos)
 
 
 # --- 伤口 / 意识花苞 / 认知废墟 ---
 
 func _spawn_wound_boss() -> void:
-	var pos := _generate_wound_position()
-	var wound := _create_wound_node(pos)
+	var pos := ExploreMapGenerator.generate_wound_position(_occupied_positions)
+	var wound := ExploreMapGenerator.create_wound_node(pos)
 	$World.add_child(wound)
 	_battle_zones.append(wound)
 
 
-func _generate_wound_position() -> Vector2:
-	var bottom_top := GROUND_Y - 600.0
-	var bottom_bottom := GROUND_Y - 100.0
-	var max_attempts := 100
-
-	for i in range(max_attempts):
-		var pos := Vector2(
-			randf_range(SPAWN_MARGIN + 300.0, MAP_WIDTH - SPAWN_MARGIN - 300.0),
-			randf_range(bottom_top, bottom_bottom)
-		)
-		var too_close := false
-		for occ_pos in _occupied_positions:
-			if pos.distance_to(occ_pos) < MIN_ENTITY_DISTANCE * 1.5:
-				too_close = true
-				break
-		if not too_close:
-			_occupied_positions.append(pos)
-			return pos
-
-	var fallback := Vector2(MAP_WIDTH * 0.5, bottom_top + 250.0)
-	_occupied_positions.append(fallback)
-	return fallback
-
-
 func _create_wound_node(pos: Vector2) -> Area2D:
-	var wound := Area2D.new()
-	wound.name = "WoundBoss"
-	wound.position = pos
-	wound.set_script(WOUND_NODE_SCRIPT)
-	wound.set_meta("battle_index", 3)
-	wound.set_meta("enemy_id", "black_bubble")
-	wound.monitoring = true
-	wound.monitorable = true
-	wound.collision_layer = 1
-	wound.collision_mask = 1
-
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(350.0, 350.0)
-	col.shape = shape
-	wound.add_child(col)
-
-	var sprite := _create_animated_sprite_from_frames(WOUND_NODE_FRAMES)
-	sprite.scale = Vector2(1.18, 1.18)
-	wound.add_child(sprite)
-
-	var highlight := Sprite2D.new()
-	highlight.name = "Highlight"
-	highlight.texture = _get_first_frame_from_frames(WOUND_NODE_FRAMES)
-	highlight.self_modulate = Color(1.0, 0.25, 0.25, 0.82)
-	highlight.scale = Vector2(1.32, 1.32)
-	highlight.visible = false
-	wound.add_child(highlight)
-
-	return wound
+	return ExploreMapGenerator.create_wound_node(pos)
 
 
 func _spawn_consciousness_buds(count: int) -> void:
-	var positions := _generate_spawn_positions(count)
+	var positions := ExploreMapGenerator.generate_spawn_positions(count, _occupied_positions)
 	for i in range(positions.size()):
-		var bud := _create_consciousness_bud(positions[i])
+		var bud := ExploreMapGenerator.create_consciousness_bud(positions[i])
 		bud.name = "ConsciousnessBud_%d" % i
 		$World.add_child(bud)
 		_battle_zones.append(bud)
 
 
 func _create_consciousness_bud(pos: Vector2) -> Area2D:
-	var bud := Area2D.new()
-	bud.position = pos
-	bud.set_script(BUD_NODE_SCRIPT)
-	bud.monitoring = true
-	bud.monitorable = true
-	bud.collision_layer = 1
-	bud.collision_mask = 1
-
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(250.0, 300.0) * NON_BOSS_NODE_SCALE
-	col.shape = shape
-	bud.add_child(col)
-
-	var sprite := _create_animated_sprite_from_frames(BUD_NODE_FRAMES)
-	sprite.scale = Vector2(0.21, 0.21)
-	bud.add_child(sprite)
-
-	var highlight := Sprite2D.new()
-	highlight.name = "Highlight"
-	highlight.texture = _get_first_frame_from_frames(BUD_NODE_FRAMES)
-	highlight.self_modulate = Color(1.0, 0.82, 1.0, 0.82)
-	highlight.scale = Vector2(0.245, 0.245)
-	highlight.visible = false
-	bud.add_child(highlight)
-	_apply_texture_contour_collision(bud, BUD_NODE_FRAMES, sprite.scale)
-
-	return bud
+	return ExploreMapGenerator.create_consciousness_bud(pos)
 
 
 func _spawn_cognitive_ruins(count: int) -> void:
-	var positions := _generate_spawn_positions(count)
+	var positions := ExploreMapGenerator.generate_spawn_positions(count, _occupied_positions)
 	for i in range(positions.size()):
-		var ruins := _create_cognitive_ruins(positions[i])
+		var ruins := ExploreMapGenerator.create_cognitive_ruins(positions[i])
 		ruins.name = "CognitiveRuins_%d" % i
 		$World.add_child(ruins)
 		_battle_zones.append(ruins)
 
 
 func _create_cognitive_ruins(pos: Vector2) -> Area2D:
-	var ruins := Area2D.new()
-	ruins.position = pos
-	ruins.set_script(RUINS_NODE_SCRIPT)
-	ruins.monitoring = true
-	ruins.monitorable = true
-	ruins.collision_layer = 1
-	ruins.collision_mask = 1
-
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(300.0, 300.0) * NON_BOSS_NODE_SCALE
-	col.shape = shape
-	ruins.add_child(col)
-
-	var sprite := _create_animated_sprite_from_frames(RUINS_HINT_NODE_FRAMES)
-	sprite.scale = Vector2(0.52, 0.52)
-	ruins.add_child(sprite)
-
-	var highlight := Sprite2D.new()
-	highlight.name = "Highlight"
-	highlight.texture = _get_first_frame_from_frames(RUINS_HINT_NODE_FRAMES)
-	highlight.self_modulate = Color(0.75, 0.95, 1.0, 0.78)
-	highlight.scale = Vector2(0.6, 0.6)
-	highlight.visible = false
-	ruins.add_child(highlight)
-	_apply_texture_contour_collision(ruins, RUINS_HINT_NODE_FRAMES, sprite.scale)
-
-	return ruins
+	return ExploreMapGenerator.create_cognitive_ruins(pos)
 
 
 func _set_zone_animated(zone: Area2D, frames: SpriteFrames, sprite_scale: Vector2, sprite_modulate: Color, highlight_scale: Vector2, highlight_modulate: Color) -> void:
@@ -990,13 +785,13 @@ func _set_zone_animated(zone: Area2D, frames: SpriteFrames, sprite_scale: Vector
 
 	var highlight := zone.get_node_or_null("Highlight") as Sprite2D
 	if highlight:
-		highlight.texture = _get_first_frame_from_frames(frames)
+		highlight.texture = ExploreMapGenerator.get_first_frame_from_frames(frames)
 		highlight.scale = highlight_scale
 		highlight.self_modulate = highlight_modulate
 		highlight.position = Vector2.ZERO
 		highlight.visible = false
 
-	_apply_texture_contour_collision(zone, frames, sprite_scale)
+	ExploreMapGenerator.apply_texture_contour_collision(zone, frames, sprite_scale)
 
 
 func _expand_zone_interaction(zone: Area2D, factor: float) -> void:
@@ -1010,65 +805,3 @@ func _expand_zone_interaction(zone: Area2D, factor: float) -> void:
 		(shape as CircleShape2D).radius *= factor
 	collision.shape = shape
 
-
-func _apply_texture_contour_collision(zone: Area2D, frames: SpriteFrames, sprite_scale: Vector2) -> void:
-	var texture := _get_first_frame_from_frames(frames)
-	if texture == null:
-		return
-	var image := texture.get_image()
-	if image == null:
-		return
-
-	var collision := zone.get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if collision:
-		collision.disabled = true
-
-	var old_polygon := zone.get_node_or_null("ContourCollision")
-	if old_polygon:
-		old_polygon.queue_free()
-
-	var polygon := _build_texture_contour_polygon(image, sprite_scale)
-	if polygon.size() < 3:
-		return
-
-	var contour_collision := CollisionPolygon2D.new()
-	contour_collision.name = "ContourCollision"
-	contour_collision.polygon = polygon
-	zone.add_child(contour_collision)
-
-
-func _build_texture_contour_polygon(image: Image, sprite_scale: Vector2) -> PackedVector2Array:
-	var image_size := Vector2(image.get_width(), image.get_height())
-	if image_size.x <= 0.0 or image_size.y <= 0.0:
-		return PackedVector2Array()
-
-	var center := image_size * 0.5
-	var max_radius := image_size.length() * 0.5
-	var points := PackedVector2Array()
-	var ray_count := 56
-	var step_size := 3.0
-
-	for ray_index in range(ray_count):
-		var angle := TAU * float(ray_index) / float(ray_count)
-		var dir := Vector2(cos(angle), sin(angle))
-		var last_visible := center
-		var has_visible := false
-		var distance := 0.0
-		while distance <= max_radius:
-			var pixel_pos := center + dir * distance
-			if pixel_pos.x < 0.0 or pixel_pos.y < 0.0 or pixel_pos.x >= image_size.x or pixel_pos.y >= image_size.y:
-				break
-			if _is_visible_texture_pixel(image, int(pixel_pos.x), int(pixel_pos.y)):
-				last_visible = pixel_pos
-				has_visible = true
-			distance += step_size
-		if has_visible:
-			points.append((last_visible - center) * sprite_scale)
-
-	return points
-
-
-func _is_visible_texture_pixel(image: Image, x: int, y: int) -> bool:
-	var color := image.get_pixel(x, y)
-	var brightness := maxf(color.r, maxf(color.g, color.b))
-	return color.a > 0.08 and brightness > 0.03

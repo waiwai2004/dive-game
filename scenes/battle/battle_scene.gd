@@ -250,6 +250,14 @@ func _end_player_turn() -> void:
 		await _on_battle_lose()
 		return
 	_status_manager.on_turn_end()
+
+	# 检查内驱力额外回合
+	if _inner_drive_extra_turn_pending:
+		_inner_drive_extra_turn_pending = false
+		_log("内驱力爆发！你再次行动！")
+		_start_player_turn()
+		return
+
 	await _enemy_turn()
 
 
@@ -394,11 +402,17 @@ func _on_battle_win() -> void:
 	
 	_state.change_state(BattleStateManager.State.FINISHED)
 	
-	Game.set_meta("battle_is_boss", not _is_normal_battle())
+	var is_boss := not _is_normal_battle()
+	Game.set_meta("battle_is_boss", is_boss)
 	Game.set_meta("battle_turn_count", _get_battle_turn_count())
 	Game.set_meta("battle_boss_card", _roll_boss_drop_card_id())
-	
-	get_tree().change_scene_to_file("res://scenes/battle/VictorySettlementUI.tscn")
+
+	if is_boss:
+		# Boss 战胜利：先展示 Demo 结束画面，点击后再进奖励
+		Game.set_meta("pending_victory_after_end", true)
+		get_tree().change_scene_to_file("res://scenes/end/EndScene.tscn")
+	else:
+		get_tree().change_scene_to_file("res://scenes/battle/VictorySettlementUI.tscn")
 
 
 func _on_battle_lose() -> void:
@@ -671,24 +685,7 @@ func _on_deck_close_button_pressed() -> void:
 	
 func refresh_deck_panel() -> void:
 	_ensure_deck_cards_view()
-	if not has_node("/root/Game"):
-		return
-	for child in _deck_cards_flow.get_children():
-		child.queue_free()
-	if Game.deck.is_empty():
-		var empty_label := Label.new()
-		empty_label.text = "当前牌库为空。"
-		_deck_cards_flow.add_child(empty_label)
-		return
-	var counts: Dictionary = {}
-	var order: Array[String] = []
-	for card_id in Game.deck:
-		if not counts.has(card_id):
-			counts[card_id] = 0
-			order.append(card_id)
-		counts[card_id] += 1
-	for card_id in order:
-		_deck_cards_flow.add_child(_build_card_preview(card_id, int(counts[card_id])))
+	DeckPanelHelper.refresh_deck(_deck_cards_flow)
 		
 func _ensure_deck_cards_view() -> void:
 	if _deck_cards_flow and is_instance_valid(_deck_cards_flow):
@@ -710,32 +707,3 @@ func _ensure_deck_cards_view() -> void:
 	_deck_cards_flow.add_theme_constant_override("v_separation", 16)
 	_deck_scroll.add_child(_deck_cards_flow)
 	
-func _build_card_preview(card_id: String, count: int) -> Control:
-	var db = get_node_or_null("/root/CardDatabase")
-	var card: Dictionary = {}
-	if db and db.has_method("get_card"):
-		card = db.get_card(card_id)
-	
-	# 直接实例化 CardUI
-	var card_scene = preload("res://scenes/battle/CardUI.tscn")
-	var card_ui = card_scene.instantiate()
-	
-	# 调用 setup 来初始化卡牌，但不设置 battle_scene
-	if card_ui.has_method("setup"):
-		card_ui.call("setup", card, -1, null)
-	
-	# 完全禁用交互
-	card_ui.disabled = true
-	card_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
-	# 添加数量标签
-	var vbox = VBoxContainer.new()
-	vbox.add_child(card_ui)
-	
-	if count > 1:
-		var count_label = Label.new()
-		count_label.text = "x%d" % count
-		count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		vbox.add_child(count_label)
-	
-	return vbox

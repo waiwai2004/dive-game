@@ -12,6 +12,7 @@ func _ensure_repo() -> void:
 	if _repo != null:
 		return
 	_repo = EnemyRepository.new()
+	_repo.enemies_json_path = ProjectSettings.get_setting("data/enemies_path", "res://data/enemies/enemies.json")
 
 
 func load_enemies() -> bool:

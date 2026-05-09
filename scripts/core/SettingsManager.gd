@@ -17,16 +17,19 @@ func _load_settings() -> void:
 			while not file.eof_reached():
 				var line := file.get_line()
 				if line.contains("="):
-					var parts := line.split("=")
-					if parts.size() >= 2:
-						var key := parts[0].strip_edges()
-						var value := parts[1].strip_edges()
-						if value == "true":
-							_settings[key] = true
-						elif value == "false":
-							_settings[key] = false
-						elif value.is_valid_float():
-							_settings[key] = value.to_float()
+					var eq_pos := line.find("=")
+					var key := line.substr(0, eq_pos).strip_edges()
+					var value := line.substr(eq_pos + 1).strip_edges()
+					if value == "true":
+						_settings[key] = true
+					elif value == "false":
+						_settings[key] = false
+					elif value.is_valid_int():
+						_settings[key] = value.to_int()
+					elif value.is_valid_float():
+						_settings[key] = value.to_float()
+					else:
+						_settings[key] = value
 
 
 func _apply_settings() -> void:

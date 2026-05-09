@@ -13,6 +13,7 @@ func _ensure_repo() -> void:
 	if _repo != null:
 		return
 	_repo = CardRepository.new()
+	_repo.cards_json_path = ProjectSettings.get_setting("data/cards_path", "res://data/cards/cards.json")
 
 
 func load_cards() -> bool:

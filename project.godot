@@ -24,6 +24,16 @@ SettingsManager="*res://scripts/core/SettingsManager.gd"
 GlobalUI="*res://scenes/ui/GlobalUI.tscn"
 AudioManager="*res://scripts/core/AudioManager.gd"
 
+[configuration]
+
+data/cards_path="res://data/cards/cards.json"
+data/enemies_path="res://data/enemies/enemies.json"
+audio/bgm_path="res://assets/audio/bgm/Eight.wav"
+audio/sfx_card_hover="res://assets/audio/sfx/sfx_card_hover.wav"
+audio/sfx_card_play="res://assets/audio/sfx/sfx_card_play.wav"
+audio/sfx_end_turn="res://assets/audio/sfx/sfx_end_turn.wav"
+audio/sfx_hit="res://assets/audio/sfx/sfx_hit.wav"
+
 [display]
 
 window/size/viewport_width=1920

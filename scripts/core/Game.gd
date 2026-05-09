@@ -261,8 +261,10 @@ func _load_battle_tutorial_state() -> void:
 		battle_tutorial_shown = bool((json.data as Dictionary).get("shown", false))
 
 
-func damage_player(amount: int, _san_loss: int = -1):
+func damage_player(amount: int, san_loss: int = -1):
 	player_hp = max(player_hp - amount, 0)
+	if san_loss > 0:
+		player_san = maxi(player_san - san_loss, 0)
 	if has_node("/root/AudioManager"):
 		AudioManager.play_sfx("hit")
 
@@ -433,7 +435,7 @@ func build_chapter_one_summary() -> String:
 
 
 func goto_title():
-	get_tree().change_scene_to_file("res://scenes/main_manu/MainMenu.tscn")
+	get_tree().change_scene_to_file("res://scenes/main_menu/MainMenu.tscn")
 
 
 func goto_base():
@@ -441,7 +443,7 @@ func goto_base():
 	get_tree().change_scene_to_file("res://scenes/base-new/BaseNew.tscn")
 
 
-func save_and_exit():
+func return_to_title():
 	goto_title()
 
 
@@ -462,4 +464,4 @@ func goto_ai():
 
 # 跳转到意识花苞奖励界面（新增）
 func goto_bud_reward() -> void:
-	get_tree().change_scene_to_file("res://scenes/reward/RewardScene.tscn")
+	get_tree().change_scene_to_file("res://scenes/Reward/RewardScene.tscn")

@@ -11,8 +11,7 @@ func _init():
 
 func on_turn_end() -> void:
 	if stacks > 0 and typeof(Game) == TYPE_OBJECT and Game.has_method("damage_player"):
-		Game.player_hp = maxi(int(Game.player_hp) - 1, 0)
-		Game.player_san -= 2
+		Game.damage_player(1, 2)
 
 
 func on_round_end() -> void:

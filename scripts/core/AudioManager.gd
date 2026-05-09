@@ -1,23 +1,9 @@
 extends Node
 
-const BGM_PATH := "res://assets/audio/bgm/Eight.wav"
 const SILENT_DB := -60.0
 
-const SFX_PATHS := {
-	"card_hover": "res://assets/audio/sfx/sfx_card_hover.wav",
-	"card_play": "res://assets/audio/sfx/sfx_card_play.wav",
-	"end_turn": "res://assets/audio/sfx/sfx_end_turn.wav",
-	"hit": "res://assets/audio/sfx/sfx_hit.wav"
-}
-
-var segments: Dictionary = {
-	"menu": {"start": 0.0, "end": 18.0},
-	"story": {"start": 18.0, "end": 52.0},
-	"base": {"start": 52.0, "end": 88.0},
-	"explore": {"start": 88.0, "end": 126.0},
-	"battle": {"start": 126.0, "end": 170.0},
-	"end": {"start": 170.0, "end": 200.0}
-}
+var _segments: Dictionary
+var _sfx_paths: Dictionary
 
 var _player: AudioStreamPlayer
 var _fade_tween: Tween
@@ -38,18 +24,16 @@ var _sfx_streams: Dictionary = {}
 
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS
 	_player = AudioStreamPlayer.new()
 	_player.name = "BGMPlayer"
-	_player.stream = load(BGM_PATH)
-	_player.volume_db = _percent_to_db(_bgm_volume_percent)
 	add_child(_player)
-	
-	for sfx_name in SFX_PATHS:
-		var path: String = SFX_PATHS[sfx_name]
-		if ResourceLoader.exists(path):
-			_sfx_streams[sfx_name] = load(path)
-	
+
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_load_config()
+
+	_sfx_players = []
+	_sfx_streams = {}
+
 	_load_settings()
 
 
@@ -67,11 +51,11 @@ func _process(_delta: float) -> void:
 
 
 func play_bgm_segment(segment_name: String, fade_duration := 0.35) -> void:
-	if not segments.has(segment_name):
+	if not _segments.has(segment_name):
 		push_warning("AudioManager: unknown segment '%s'" % segment_name)
 		return
 
-	var seg: Dictionary = segments[segment_name]
+	var seg: Dictionary = _segments[segment_name]
 	var start := float(seg.get("start", 0.0))
 	var end := float(seg.get("end", start + 1.0))
 	var stream_length := 0.0
@@ -254,6 +238,34 @@ func _load_settings() -> void:
 		_bgm_enabled = SettingsManager.get_setting("bgm", true)
 	if SettingsManager.get_setting("bgm_volume", 70) != null:
 		_bgm_volume_percent = SettingsManager.get_setting("bgm_volume", 70)
-	
+
 	var db := _percent_to_db(_bgm_volume_percent) if _bgm_enabled and _master_enabled else SILENT_DB
 	_player.volume_db = db
+
+
+func _load_config() -> void:
+	var bgm_path: String = ProjectSettings.get_setting("audio/bgm_path", "res://assets/audio/bgm/Eight.wav")
+	var stream: AudioStream = load(bgm_path) if ResourceLoader.exists(bgm_path) else null
+	_player.stream = stream
+	_player.volume_db = _percent_to_db(_bgm_volume_percent)
+
+	_sfx_paths = {
+		"card_hover": ProjectSettings.get_setting("audio/sfx_card_hover", "res://assets/audio/sfx/sfx_card_hover.wav"),
+		"card_play": ProjectSettings.get_setting("audio/sfx_card_play", "res://assets/audio/sfx/sfx_card_play.wav"),
+		"end_turn": ProjectSettings.get_setting("audio/sfx_end_turn", "res://assets/audio/sfx/sfx_end_turn.wav"),
+		"hit": ProjectSettings.get_setting("audio/sfx_hit", "res://assets/audio/sfx/sfx_hit.wav")
+	}
+
+	for sfx_name in _sfx_paths:
+		var path: String = _sfx_paths[sfx_name]
+		if ResourceLoader.exists(path):
+			_sfx_streams[sfx_name] = load(path)
+
+	_segments = {
+		"menu": {"start": 0.0, "end": 18.0},
+		"story": {"start": 18.0, "end": 52.0},
+		"base": {"start": 52.0, "end": 88.0},
+		"explore": {"start": 88.0, "end": 126.0},
+		"battle": {"start": 126.0, "end": 170.0},
+		"end": {"start": 170.0, "end": 200.0}
+	}

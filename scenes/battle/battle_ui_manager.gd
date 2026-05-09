@@ -56,6 +56,7 @@ var _hand_hint_label: Label
 # ====== 手牌区 ======
 var _bottom_hand_panel: Control
 var _hand_row: HBoxContainer
+var _card_pool: Array[Control] = []
 
 # ====== 弹窗 ======
 var _discard_panel: PanelContainer
@@ -82,6 +83,7 @@ var _discard_pile_button: Button
 # Tooltip state
 var _current_tooltip_source: Control = null
 var _current_tooltip_builder: Callable
+var _boss_tooltip_showing: bool = false
 
 
 func setup(scene: Node, card_system: BattleCardSystem, enemy_ai: BattleEnemyAI, state_manager: BattleStateManager) -> void:
@@ -97,10 +99,12 @@ func setup(scene: Node, card_system: BattleCardSystem, enemy_ai: BattleEnemyAI, 
 
 
 func _process(_delta: float) -> void:
+	# Boss portrait tooltip: check every frame if mouse is on visible pixels
+	_update_boss_portrait_tooltip()
+
 	if _tooltip_panel and _tooltip_panel.visible:
 		_reposition_tooltip()
 	_handle_log_drag()
-
 
 func _handle_log_drag() -> void:
 	if not _battle_log_window or not _battle_log_drag_bar:
@@ -232,7 +236,6 @@ func _connect_button_signals() -> void:
 	_register_tooltip_area(_cognition_section, Callable(self, "_build_cognition_tooltip"))
 
 	# BOSS 肖像悬停 tooltip
-	_register_tooltip_area(_boss_portrait, Callable(self, "_build_enemy_tooltip"))
 
 
 func _on_drag_bar_input(event: InputEvent) -> void:
@@ -444,16 +447,26 @@ func _add_status_icon(label_text: String, stack: int, color: Color, display_name
 
 
 func refresh_hand() -> void:
+	# 回收现有手牌到对象池
 	for child in _hand_row.get_children():
-		child.queue_free()
+		_hand_row.remove_child(child)
+		child.visible = false
+		_card_pool.append(child)
 
 	var can_play := _state_manager.is_player_turn()
 	var is_manic := _card_system.is_manic_active()
 	for i in range(_card_system.hand.size()):
 		var card_id: String = _card_system.hand[i]
 		var card_data: Dictionary = CardDatabase.get_card(card_id)
-		var card_ui: Control = CARD_SCENE.instantiate()
+
+		# 从池中取出或实例化新卡
+		var card_ui: Control
+		if _card_pool.size() > 0:
+			card_ui = _card_pool.pop_back()
+		else:
+			card_ui = CARD_SCENE.instantiate()
 		card_ui.custom_minimum_size = Vector2(165, 250)
+		card_ui.visible = true
 		card_ui.call("setup", card_data, i, _scene)
 		card_ui.disabled = not can_play or _card_system.get_effective_cost(card_data) > _card_system.energy
 		_hand_row.add_child(card_ui)
@@ -600,6 +613,22 @@ func refresh_battle_log(lines: Array[String]) -> void:
 
 
 # ====== 敌人信息 Tooltip ======
+
+func _update_boss_portrait_tooltip() -> void:
+	if _boss_portrait == null or not is_instance_valid(_boss_portrait):
+		return
+	if _boss_tooltip_showing:
+		if not _is_mouse_over_visible_pixel(_boss_portrait):
+			_boss_tooltip_showing = false
+			_hide_tooltip()
+	else:
+		if _is_mouse_over_visible_pixel(_boss_portrait):
+			_boss_tooltip_showing = true
+			_current_tooltip_source = _boss_portrait
+			_current_tooltip_builder = Callable(self, "_build_enemy_tooltip")
+			_show_active_tooltip()
+
+
 func _build_enemy_tooltip() -> String:
 	var intent := _enemy_ai.get_current_intent()
 	var preview_text := (", ".join(_enemy_ai.hand_preview)
@@ -644,6 +673,44 @@ func _register_tooltip_area(control: Control, builder: Callable) -> void:
 			_current_tooltip_source = null
 			_hide_tooltip()
 	)
+
+
+## 检查鼠标是否在 TextureRect 的非透明像素上
+func _is_mouse_over_visible_pixel(tex_rect: TextureRect) -> bool:
+	var tex: Texture2D = tex_rect.texture
+	if tex == null:
+		return false
+	var img := tex.get_image()
+	if img == null:
+		return false
+	var local_pos := tex_rect.get_local_mouse_position()
+	# 将本地坐标转换为纹理 UV 坐标
+	var uv := _control_pos_to_uv(tex_rect, local_pos)
+	if uv.x < 0.0 or uv.y < 0.0 or uv.x >= 1.0 or uv.y >= 1.0:
+		return false
+	var px := int(uv.x * float(img.get_width()))
+	var py := int(uv.y * float(img.get_height()))
+	if px < 0 or py < 0 or px >= img.get_width() or py >= img.get_height():
+		return false
+	var color := img.get_pixel(px, py)
+	return color.a > 0.1
+
+
+## 将 Control 本地坐标转为 UV（适配 stretch_mode / anchors）
+func _control_pos_to_uv(tex_rect: TextureRect, local_pos: Vector2) -> Vector2:
+	var tex: Texture2D = tex_rect.texture
+	if tex == null:
+		return Vector2(-1.0, -1.0)
+	var tex_size := tex.get_size()
+	if tex_size.x <= 0.0 or tex_size.y <= 0.0:
+		return Vector2(-1.0, -1.0)
+	var rect := tex_rect.get_rect()
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return Vector2(-1.0, -1.0)
+	# TextureRect 默认 stretch_mode = FIT_WIDTH, 按比例映射
+	var uv_x := (local_pos.x - rect.position.x) / rect.size.x
+	var uv_y := (local_pos.y - rect.position.y) / rect.size.y
+	return Vector2(uv_x, uv_y)
 
 
 func _show_active_tooltip() -> void:

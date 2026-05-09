@@ -15,27 +15,20 @@ func _ready():
 		body_exited.connect(_on_body_exited)
 
 	set_highlight(false)
-	print("[Interactable ready] ", name, " type=", interact_type)
 
 func _on_body_entered(body):
-	print("[ENTER] area=", name, " body=", body.name)
-
 	if not body.is_in_group("player"):
-		print("[ENTER] body not in player group")
 		return
 
 	player_inside = true
 	set_highlight(true)
 
 	var base_scene = get_tree().get_first_node_in_group("base_scene")
-	print("[ENTER] base_scene=", base_scene)
 
 	if base_scene:
 		base_scene.set_current_interactable(self)
 
 func _on_body_exited(body):
-	print("[EXIT] area=", name, " body=", body.name)
-
 	if not body.is_in_group("player"):
 		return
 
@@ -47,11 +40,8 @@ func _on_body_exited(body):
 		base_scene.clear_current_interactable(self)
 
 func interact():
-	print("[INTERACT] ", name, " type=", interact_type)
-
 	var base_scene = get_tree().get_first_node_in_group("base_scene")
 	if base_scene == null:
-		print("[INTERACT] no base_scene found")
 		return
 
 	match interact_type:

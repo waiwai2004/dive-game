@@ -20,6 +20,7 @@ var san_max: int = 10
 
 var _current_side: int = 0  # 0 无，1 左(SAN)，2 右(HP)
 var _phase: float = 0.0  # 液面轻微波动用
+var _needs_redraw := true  # 标记是否需要重绘
 
 
 func _ready() -> void:
@@ -32,12 +33,20 @@ func set_stats(hp: int, hp_max_val: int, san: int, san_max_val: int) -> void:
 	hp_max = max(hp_max_val, 1)
 	san_current = san
 	san_max = max(san_max_val, 1)
-	queue_redraw()
+	_needs_redraw = true
 
 
 func _process(delta: float) -> void:
 	_phase += delta
-	queue_redraw()
+
+	# 检查是否有液面需要波动动画
+	var san_ratio := clampf(float(san_current) / float(maxi(san_max, 1)), 0.0, 1.0)
+	var hp_ratio := clampf(float(hp_current) / float(maxi(hp_max, 1)), 0.0, 1.0)
+	var has_wave := (san_ratio > 0.02 and san_ratio < 0.98) or (hp_ratio > 0.02 and hp_ratio < 0.98)
+
+	if has_wave or _needs_redraw:
+		queue_redraw()
+		_needs_redraw = false
 
 	var mpos: Vector2 = get_local_mouse_position()
 	var center: Vector2 = size * 0.5

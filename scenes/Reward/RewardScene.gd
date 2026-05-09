@@ -9,7 +9,7 @@ extends Control
 const BUD_TEXTURE_PATH := "res://assets/art/explore/bud.png"
 
 ## 结算弹窗场景路径
-const RESULT_SCENE_PATH := "res://scenes/reward/RewardResultScene.tscn"
+const RESULT_SCENE_PATH := "res://scenes/Reward/RewardResultScene.tscn"
 
 # ------- 节点引用 -------
 @onready var bud_display: TextureRect = $Center/BudDisplay
