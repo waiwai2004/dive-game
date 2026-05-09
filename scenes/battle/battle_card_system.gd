@@ -152,6 +152,8 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 	var damage: int = _get_modified_card_int(card, "damage")
 	if damage > 0:
+		if _player_buff_manager:
+			damage = _player_buff_manager.modify_damage_dealt(damage)
 		if _enemy_buff_manager:
 			damage = _enemy_buff_manager.modify_damage_taken(damage)
 		var final_damage := apply_weak_to_damage(damage, player_weak)
@@ -260,7 +262,7 @@ func _apply_card_effect(card: Dictionary) -> void:
 
 	var effect_key := str(card.get("effect_key", "")).strip_edges()
 	match effect_key:
-		"state_inner_drive", "activate_inner_drive":
+		"state_inner_drive", "activate_inner_drive", "apply_inner_drive":
 			if _status_manager:
 				_status_manager.activate_status("内驱力")
 			fragments.append("进入内驱力状态")

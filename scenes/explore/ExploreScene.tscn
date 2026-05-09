@@ -69,6 +69,9 @@ position = Vector2(1440, 938.5)
 scale = Vector2(0.5, 0.43449074)
 texture = ExtResource("2_tp2w0")
 
+[node name="BlockRangeViz" type="Node2D" parent="." unique_id=99999999]
+visible = false
+
 [node name="World" type="Node2D" parent="." unique_id=1240991108]
 
 [node name="Ground" type="StaticBody2D" parent="World" unique_id=1758090870]

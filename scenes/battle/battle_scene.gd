@@ -95,9 +95,16 @@ func _ready() -> void:
 	_apply_enemy_portrait()
 	_log("深处的水影开始收束：%s 现身了。" % _enemy_ai.enemy_name)
 	_card_system.start_battle()
+	_ui.refresh_all(_battle_log_lines)
 	_start_player_turn()
 	_setup_battle_tutorial_overlay()
 	_maybe_start_battle_tutorial()
+	_force_battle_log_on()
+
+
+func _force_battle_log_on() -> void:
+	if has_node("BattleLogWindow"):
+		get_node("BattleLogWindow").visible = true
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _battle_tutorial_active:
@@ -485,6 +492,14 @@ func _log(text: String) -> void:
 	while _battle_log_lines.size() > 64:
 		_battle_log_lines.pop_front()
 	_ui.refresh_battle_log(_battle_log_lines)
+
+
+func open_battle_log() -> void:
+	if has_node("BattleLogWindow"):
+		var log_win = get_node("BattleLogWindow")
+		log_win.visible = true
+		if has_method("_refresh_battle_log_from_scene"):
+			call("_refresh_battle_log_from_scene")
 
 
 func _is_normal_battle() -> bool:

@@ -95,7 +95,9 @@ func setup(scene: Node, card_system: BattleCardSystem, enemy_ai: BattleEnemyAI, 
 	_cache_node_refs()
 	_apply_initial_styles()
 	_connect_button_signals()
-	close_all_popups()
+	_tooltip_panel.visible = false
+	if _battle_log_window:
+		_battle_log_window.visible = true
 
 
 func _process(_delta: float) -> void:

@@ -114,16 +114,21 @@ func play_sfx(sfx_name: String) -> void:
 	if not _sfx_enabled or not _master_enabled:
 		return
 	if not _sfx_streams.has(sfx_name):
+		if _sfx_paths.has(sfx_name):
+			var path: String = _sfx_paths[sfx_name]
+			if ResourceLoader.exists(path):
+				_sfx_streams[sfx_name] = load(path)
+	if not _sfx_streams.has(sfx_name):
 		push_warning("AudioManager: unknown sfx '%s'" % sfx_name)
 		return
-	
+
 	var sfx_player := AudioStreamPlayer.new()
 	sfx_player.stream = _sfx_streams[sfx_name]
 	sfx_player.volume_db = _percent_to_db(_sfx_volume_percent)
 	add_child(sfx_player)
 	sfx_player.play()
 	_sfx_players.append(sfx_player)
-	
+
 	sfx_player.finished.connect(func():
 		sfx_player.queue_free()
 		_sfx_players.erase(sfx_player)

@@ -35,6 +35,9 @@ const WOUND_NODE_SCRIPT := preload("res://scenes/explore/wound_node.gd")
 const BUD_NODE_SCRIPT := preload("res://scenes/explore/consciousness_bud_node.gd")
 const RUINS_NODE_SCRIPT := preload("res://scenes/explore/cognitive_ruins_node.gd")
 
+const BLOCK_RANGE_RADIUS := 500.0
+const LOCK_RADIUS := 250.0
+
 enum ExplorePhase {
 	TO_MEMORY,
 	MEMORY_EVENT,
@@ -44,6 +47,8 @@ enum ExplorePhase {
 }
 
 @onready var player: CharacterBody2D = $World/Player
+@onready var darkness_overlay: ColorRect = $DarknessLayer/DarknessOverlay
+@onready var block_range_viz: Node2D = $BlockRangeViz
 @onready var hint_label: Label = $CanvasLayer/HintLabel
 @onready var memory_event_ui: Control = $CanvasLayer/MemoryEventUI
 @onready var interaction_panel: Control = $HudOverlay/BottomInteractionPanel
@@ -64,6 +69,8 @@ var _player_in_memory_zones: Array = []
 var _player_in_battle_zones: Array = []
 var _active_memory_zone: Area2D = null
 var _active_battle_zone: Area2D = null
+var _active_block_zone: Area2D = null  # 当前所在的封锁区域
+var _player_locked: bool = false  # 玩家是否被污染点锁定
 var _occupied_positions: Array = []
 
 
@@ -227,10 +234,27 @@ func _process(_delta: float) -> void:
 	if memory_event_open or _transitioning:
 		return
 
+	var in_block := _update_block_range_state()
+	_apply_block_range_effect(in_block)
+
+	if _player_locked and _active_block_zone:
+		_constrain_player_in_lock()
+
 	_update_interaction_target()
 
 	if Input.is_action_just_pressed("interact"):
 		_interact_current_target()
+
+
+func _constrain_player_in_lock() -> void:
+	if not _active_block_zone or not player:
+		return
+	var lock_center: Vector2 = _active_block_zone.global_position
+	var player_pos: Vector2 = player.global_position
+	var dist: float = player_pos.distance_to(lock_center)
+	if dist > LOCK_RADIUS:
+		var direction: Vector2 = (player_pos - lock_center).normalized()
+		player.global_position = lock_center + direction * LOCK_RADIUS
 
 
 func _connect_signals() -> void:
@@ -255,6 +279,8 @@ func _reset_scene_state() -> void:
 	_player_in_battle_zones.clear()
 	_active_memory_zone = null
 	_active_battle_zone = null
+	_active_block_zone = null
+	_player_locked = false
 	_event_context = ""
 	_transitioning = false
 	Game.in_dialogue = false
@@ -282,6 +308,13 @@ func _interact_current_target() -> void:
 			_open_memory_event()
 		"battle":
 			_enter_battle_or_reward()
+
+
+func _show_blocked_interaction_feedback() -> void:
+	if interaction_label:
+		interaction_label.text = "无法与该区域交互，请先击败污染点"
+	if hint_label:
+		hint_label.text = "无法与该区域交互，请先击败污染点"
 
 
 func _open_memory_event() -> void:
@@ -490,6 +523,109 @@ func _set_zone_grey(zone: Area2D) -> void:
 			highlight.visible = false
 
 
+func _is_zone_in_block_range(zone: Area2D) -> bool:
+	if zone == null:
+		return false
+	if _is_zone_triggered(zone):
+		return false
+	if zone.get_script() == BUD_NODE_SCRIPT or zone.get_script() == RUINS_NODE_SCRIPT:
+		return false
+	return player.global_position.distance_to(zone.global_position) < BLOCK_RANGE_RADIUS
+
+
+func _update_block_range_state() -> bool:
+	var lock_target := _active_block_zone
+
+	if _player_locked:
+		if lock_target and _is_zone_triggered(lock_target):
+			_player_locked = false
+			_active_block_zone = null
+			return false
+		if lock_target:
+			_active_block_zone = lock_target
+			return true
+
+	_active_block_zone = null
+	for zone in _battle_zones:
+		if _is_zone_in_block_range(zone):
+			_active_block_zone = zone
+			if player.global_position.distance_to(zone.global_position) < LOCK_RADIUS:
+				_player_locked = true
+			return true
+	return false
+
+
+func _apply_block_range_effect(in_block: bool) -> void:
+	if darkness_overlay and darkness_overlay.has_method("set_block_mode"):
+		darkness_overlay.block_mode = false
+	_update_block_range_visual()
+
+
+func _update_block_range_visual() -> void:
+	if not block_range_viz:
+		return
+	for child in block_range_viz.get_children():
+		child.queue_free()
+
+	if not _player_locked or not _active_block_zone:
+		block_range_viz.visible = false
+		return
+
+	block_range_viz.visible = true
+	var lock_center: Vector2 = _active_block_zone.global_position
+
+	var outer_ring := Line2D.new()
+	outer_ring.width = 5.0
+	outer_ring.default_color = Color(0.9, 0.05, 0.05, 1.0)
+	outer_ring.joint_mode = Line2D.LINE_JOINT_ROUND
+	outer_ring.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	outer_ring.end_cap_mode = Line2D.LINE_CAP_ROUND
+	var points := PackedVector2Array()
+	for i in range(65):
+		var angle := TAU * i / 64.0
+		points.append(lock_center + Vector2(cos(angle), sin(angle)) * LOCK_RADIUS)
+	outer_ring.points = points
+	block_range_viz.add_child(outer_ring)
+
+	var inner_ring := Line2D.new()
+	inner_ring.width = 3.0
+	inner_ring.default_color = Color(1.0, 0.15, 0.15, 0.7)
+	inner_ring.joint_mode = Line2D.LINE_JOINT_ROUND
+	var inner_points := PackedVector2Array()
+	for i in range(65):
+		var angle := TAU * i / 64.0
+		inner_points.append(lock_center + Vector2(cos(angle), sin(angle)) * (LOCK_RADIUS - 12.0))
+	inner_ring.points = inner_points
+	block_range_viz.add_child(inner_ring)
+
+	var glow_sprite := Sprite2D.new()
+	glow_sprite.position = lock_center
+	var tex := _create_evil_glow_texture()
+	glow_sprite.texture = tex
+	glow_sprite.scale = Vector2(LOCK_RADIUS * 2.8 / 256.0, LOCK_RADIUS * 2.8 / 256.0)
+	glow_sprite.modulate = Color(0.7, 0.0, 0.0, 0.2)
+	block_range_viz.add_child(glow_sprite)
+
+
+func _create_evil_glow_texture() -> ImageTexture:
+	var img := Image.create(256, 256, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var center := Vector2(128, 128)
+	for y in range(256):
+		for x in range(256):
+			var pos := Vector2(x, y)
+			var dist: float = pos.distance_to(center)
+			var alpha: float = 0.0
+			if dist > 90.0 and dist < 128.0:
+				alpha = (dist - 90.0) / 38.0 * 0.4
+			elif dist <= 90.0:
+				alpha = 0.15
+			var color := Color(0.8, 0.0, 0.0, alpha)
+			img.set_pixel(x, y, color)
+	var tex := ImageTexture.create_from_image(img)
+	return tex
+
+
 func _enter_enemy_battle() -> void:
 	if _active_battle_zone:
 		_mark_zone_triggered(_active_battle_zone)
@@ -540,22 +676,29 @@ func _update_interaction_target() -> void:
 	if memory_event_open or _transitioning:
 		return
 
+	var in_block := _update_block_range_state()
+
 	var next_target: String = ""
 	_active_memory_zone = null
 	_active_battle_zone = null
 
-	for zone in _player_in_memory_zones:
-		if not _is_zone_triggered(zone) and _is_zone_discovered(zone):
-			_active_memory_zone = zone
-			next_target = "memory"
-			break
-	
-	if next_target.is_empty() and _player_in_battle_zones.size() > 0:
-		for zone in _player_in_battle_zones:
-			if not _is_zone_triggered(zone):
-				_active_battle_zone = zone
-				next_target = "battle"
+	if in_block:
+		if not _is_zone_triggered(_active_block_zone):
+			_active_battle_zone = _active_block_zone
+			next_target = "battle"
+	else:
+		for zone in _player_in_memory_zones:
+			if not _is_zone_triggered(zone) and _is_zone_discovered(zone):
+				_active_memory_zone = zone
+				next_target = "memory"
 				break
+
+		if next_target.is_empty() and _player_in_battle_zones.size() > 0:
+			for zone in _player_in_battle_zones:
+				if not _is_zone_triggered(zone):
+					_active_battle_zone = zone
+					next_target = "battle"
+					break
 
 	current_target = next_target
 	_update_target_highlight()
@@ -584,13 +727,16 @@ func _update_target_highlight() -> void:
 
 func _update_hint_text() -> void:
 	var prompt_text := ""
-	match current_target:
-		"memory":
-			prompt_text = "按 E 聆听这段浮上海面的残响"
-		"battle":
-			prompt_text = _get_battle_prompt_text()
-		_:
-			prompt_text = "海水仍在回响，留意那些不该出现的讯号"
+	if _player_locked:
+		prompt_text = "你已被困于此污染区域，按 E 直面异变"
+	elif _active_block_zone != null and current_target == "battle":
+		prompt_text = "按 E 直面潜伏于水影中的异变（该区域已被封锁）"
+	elif current_target == "memory":
+		prompt_text = "按 E 聆听这段浮上海面的残响"
+	elif current_target == "battle":
+		prompt_text = _get_battle_prompt_text()
+	else:
+		prompt_text = "海水仍在回响，留意那些不该出现的讯号"
 
 	if hint_label:
 		hint_label.text = prompt_text

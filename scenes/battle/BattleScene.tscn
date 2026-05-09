@@ -514,13 +514,12 @@ text = "教程"
 horizontal_alignment = 1
 
 [node name="BattleLogWindow" type="Control" parent="." unique_id=2076702888]
-visible = false
 z_index = 19
 anchors_preset = 0
-offset_left = 691.0
-offset_top = 139.0
-offset_right = 1324.0
-offset_bottom = 898.0
+offset_left = 1036.87
+offset_top = 133.0
+offset_right = 1669.8704
+offset_bottom = 892.0
 
 [node name="Background" type="TextureRect" parent="BattleLogWindow" unique_id=2076702889]
 layout_mode = 1

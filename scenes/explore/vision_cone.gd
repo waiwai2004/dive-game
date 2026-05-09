@@ -13,6 +13,8 @@ extends ColorRect
 @export var peripheral_feather: float = 110.0
 @export var origin_forward_offset: float = 24.0
 
+@export var block_mode: bool = false
+
 var _player: Node2D = null
 var _camera: Camera2D = null
 var _shader_material: ShaderMaterial = null
@@ -49,6 +51,7 @@ func _process(_delta: float) -> void:
 	_shader_material.set_shader_parameter("peripheral_radius", peripheral_radius)
 	_shader_material.set_shader_parameter("peripheral_feather", peripheral_feather)
 	_shader_material.set_shader_parameter("darkness_alpha", darkness_alpha)
+	_shader_material.set_shader_parameter("block_mode", block_mode)
 
 
 func _ensure_material() -> void:
@@ -74,6 +77,8 @@ uniform float angle_feather = 0.31415927;
 uniform float peripheral_radius = 130.0;
 uniform float peripheral_feather = 110.0;
 uniform float darkness_alpha = 0.95;
+
+uniform bool block_mode = false;
 
 float angle_diff(float a, float b) {
 	float d = a - b;
@@ -104,6 +109,10 @@ void fragment() {
 
 	float visibility = max(cone_visibility, peripheral_visibility);
 	float alpha = darkness_alpha * (1.0 - visibility);
+
+	if (block_mode) {
+		alpha = darkness_alpha;
+	}
 
 	COLOR = vec4(0.0, 0.0, 0.0, alpha);
 }
